@@ -18,7 +18,6 @@ From version 1.0.0, dbt-oracle is maintained and distributed by Oracle.
   - [Core dependencies](#core-dependencies)
 - [Getting Started](#getting-started)
 - [Documentation](#documentation-todo)
-  - [Features](#features)
 - [Contributing](#contributing)
 - [Security](#security)
 - [License](#license)
@@ -200,25 +199,6 @@ dbt debug
 Link to the homepage - https://oracle.github.io/dbt-oracle
 
 Link to documentation - https://dbt-oracle.readthedocs.io
-
-### Features <a name='features'></a>
-
-- Connection to Oracle Autonomous Database
-  - OracleConnectionMethod.TNS
-  - OracleConnectionMethod.HOST
-  - OracleConnectionMethod.CONNECTION_STRING
-- Table materialization
-- View materialization
-- Incremental materialization
-- Ephemeral materialization
-- Seeds
-- Sources
-- Custom data tests
-- Docs generate
-- Snapshots
-- Exposures
-- Oracle Adapter specific custom configurations
-
 
 ## Contributing <a name='contributing'></a>
 This project welcomes contributions from the community. Before submitting a pull request, please review our [contribution guide](CONTRIBUTING.md).
