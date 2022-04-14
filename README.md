@@ -295,4 +295,4 @@ This project welcomes contributions from the community. Before submitting a pull
 Please consult the [security guide](SECURITY.md) for our responsible security vulnerability disclosure process.
 
 ## License <a name='license'></a>
-dbt-oracle is licensed under Apache 2.0 License which you can find [here](LICENSE)
+dbt-oracle is licensed under Apache 2.0 License which you can find [here](LICENSE.txt)
