@@ -19,8 +19,6 @@ From version 1.0.0, dbt-oracle is maintained and distributed by Oracle.
 - [Getting Started](#getting-started)
 - [Documentation](#documentation-todo)
   - [Features](#features)
-- [Changes added in this release (v1.0.0)](#changes-in-this-release)
-- [Upcoming Features](#upcoming-features)
 - [Contributing](#contributing)
 - [Security](#security)
 - [License](#license)
@@ -104,25 +102,20 @@ dbt-oracle will provide support for the following
 ### Core dependencies <a name='core-dependencies'></a>
 dbt-oracle requires the following 3 python packages.
 
-`dbt-core==1.0.4`
+`dbt-core`
 
   - Open source framework for data transformation
   - Jinja Templating and core SQL compilation logic
   - `dbt-core==1.0.4` is preferred as it supports Python 3.7 and higher
   - For Python 3.6, pip will fallback to `dbt-core==0.21.1`
-  - Apache 2.0 License
 
-`cx-Oracle==8.3.0`
+`cx-Oracle`
  - Python driver for Oracle database
  - Oracle client libraries should be installed on the system. For details check, https://cx-oracle.readthedocs.io/en/latest/user_guide/installation.html
- - BSD License
 
 `dataclasses; python_version < '3.7'`
  - dataclasses package was introduced in the standard Python library from Python 3.7. This is conditional dependency and required only for Python 3.6
- - Apache Software License
-
-These core dependencies are defined as install requirements in `setup.py` and `setup.cfg`. Additionally, `dbt-core` defines a list of **required** dependencies which can be found [here](https://pypistats.org/packages/dbt-core)
-
+ 
 ## Getting Started <a name='getting-started'></a>
 
 Create a dbt project for oracle database using the `dbt init` command. The init command is interactive and will help you get started with a new project.
@@ -202,67 +195,6 @@ dbt debug
 
    All checks passed!
 ```
-
-## Changes added in this release (v1.0.0) <a name='changes-in-this-release'></a>
-
-### Python versions
-- Python 3.6, 3.7, 3.8 and 3.9 are supported.
-- Removed support for [Python 3.5](https://www.python.org/downloads/release/python-3510/). Python 3.5 reached end-of-life in September 2020. Previous releases of `dbt-oracle` supported Python 3.5
-
-### Enhancements <a name ='ch-features'></a>
-- Following dependencies are upgraded
-  - `cx_Oracle v8.3.0`
-  - `dbt-core v1.0.4`
-- Following development dependencies are removed
-  - `watchdog`
-  - `bumpversion`
-  - `flake8`
-  - `docutils`
-  - `Sphinx`
-- Added conditional dependency on `dataclasses` package for Python 3.6.
-  `dataclasses` package was included in the standard library from Python 3.7
-- Fallback to dbt-core `v0.21.1` for Python 3.6
-- Added support to connect to a shard
-- Added support for Database Resident Connection Pooling (DRCP)
-- Remove hardcoded configurations. Configurations should be specified using environment variables and follow the prefix pattern `DBT_ORACLE_*`
-- [PEP-517](https://www.python.org/dev/peps/pep-0517/) and [PEP-518](https://www.python.org/dev/peps/pep-0518/) compliant build system.
-  - Introduced [pyproject.toml](pyproject.toml) file is used to specify build dependencies.
-  - Modified [setup.py](setup.py) and [setup.cfg](setup.cfg) to define dynamic and static metadata respectively.
-- tox automation to test the adapter plugin for Python versions 3.6, 3.7, 3.8 and 3.9
-
-
-### Fixes <a name='ch-fixes'></a>
-- Fix: **ORA-12537** for OracleConnectionMethod.HOST
-- Fix: Generic tests and singular tests. Introduced macro `oracle__get_test_sql` and changed macro signatures in `schema_tests.sql`
-- Fix: tests/oracle.dbtspec::test_dbt_snapshot_strategy_check_cols - **ORA-00942**: table or view does not exist
-- Fix: tests/oracle.dbtspec::test_dbt_ephemeral_data_tests - **ORA-32034**: unsupported use of WITH clause
-- Fix: **ORA-00933**: SQL command not properly ended raised in https://github.com/techindicium/dbt-oracle/issues/26
-- Fix: Return an object of type `AdapterResponse` in adapter's `get_response(cls, cursor)` method. Cursor's rowcount attribute is included in the `AdapterResponse`
-- Commented the method `list_relations_without_caching` in `dbt/adapters/oracle/impl.py`
-
-### Integration Testing with Autonomous Database Service (ADBS) <a name='ch-integration-testing'></a>
-
-The test project `dbt_adbs_test_project` can be used to perform integration testing with Oracle's Autonomous Database Cloud Service.
-Following features are tested
-- View materialization
-- Table materialization
-- Ephemeral materialization
-- Incremental materialization
-- Snapshots
-- Generic Tests - Not null, Accepted values, Unique and Relationships
-- Singular Tests
-- Seed
-- Data Sources
-- Analyses
-- Operations
-- Document Generation and Serving
-
-## Upcoming features <a name ='upcoming-features'></a>
-
-We plan to support the following
-
-- Partitioning; A partitioned table is easier to manage and decreases latency and cost when querying large tables.
-- External Tables; Staging data from external sources i.e. OCI Object Store or S3
 
 ## Documentation [TODO] <a name='documentation-todo'></a>
 Link to the homepage - https://oracle.github.io/dbt-oracle
