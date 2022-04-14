@@ -1,0 +1,39 @@
+version: 2
+
+sources:
+  - name: sh_database
+    schema: sh
+    quoting:
+        database: false
+        schema: false
+        identifier: false
+    tables:
+      - name: customers
+      - name: sales
+      - name: products
+      - name: times
+      - name: channels
+      - name: countries
+      - name: promotions
+      - name: costs
+
+models:
+  - name: people
+    columns:
+      - name: id
+        tests:
+          - not_null
+          - unique
+      - name: gender
+        tests:
+          - accepted_values:
+              values: ['Male', 'Female']
+  - name: eu_direct_sales_channels_promo_costs
+    columns:
+      - name: country_id
+        tests:
+          - relationships:
+              to: ref('countries')
+              field: country_id
+
+

@@ -1,0 +1,22 @@
+version: 2
+
+exposures:
+  - name: internet_sales_data_science_team
+    type: ml
+    description: >
+      Data Science jobs using Internet Sales dataset
+    depends_on:
+      - ref('internet_sales_channel_customers')
+      - source('sh_database', 'customers')
+    owner:
+      email: abc@xyz.com
+
+  - name: product_sales_ranking_in_us
+    type: dashboard
+    description: >
+      A monthly updating dashboard which shows rank-ordering of product sales in US market.
+    depends_on:
+      - ref('us_product_sales_channel_ranking')
+      - ref('us_seed_customers')
+    owner:
+      email: abc@xyz.com

@@ -1,0 +1,11 @@
+
+name: dbt_oracle
+config-version: 2
+version: 1.0
+
+quoting:
+  database: false
+  schema: false
+  identifier: false
+
+macro-paths: ["macros"]

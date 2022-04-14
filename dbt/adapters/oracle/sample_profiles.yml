@@ -1,0 +1,20 @@
+default:
+   target: dev
+   outputs:
+      dev:
+         type: oracle
+         protocol: tcps
+         host: "{{ env_var('DBT_ORACLE_HOST') }}"
+         user: "{{ env_var('DBT_ORACLE_USER') }}"
+         password: "{{ env_var('DBT_ORACLE_PASSWORD') }}"
+         port: 1522
+         service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
+         dbname: "{{ env_var('DBT_ORACLE_DATABASE') }}"
+         schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
+         threads: 1
+         shardingkey:
+            - skey
+         supershardingkey:
+            - sskey
+         cclass: CONNECTIVITY_CLASS
+         purity: self|new|default

@@ -1,0 +1,7 @@
+pip
+wheel
+build
+setuptools>=40.6.0
+tox
+coverage
+twine

@@ -1,0 +1,46 @@
+target:
+  type: oracle
+  user: "{{ env_var('DBT_ORACLE_USER') }}"
+  pass: "{{ env_var('DBT_ORACLE_PASSWORD') }}"
+  host: "{{ env_var('DBT_ORACLE_HOST') }}"
+  database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
+  schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
+  service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
+  protocol: tcps
+  port: 1522
+  threads: 1
+projects:
+  - overrides:  data_test_ephemeral_models
+    dbt_project_yml: &override-dbt-project
+       seeds:
+          dbt_test_project:
+             quote_columns: false
+    paths:
+      models/ephemeral.sql: |
+        {{ config(materialized='ephemeral') }}
+        select name, id from {{ ref('base') }} where id is not null
+  - overrides: base
+    dbt_project_yml: *override-dbt-project
+  - overrides: ephemeral
+    dbt_project_yml: *override-dbt-project
+  - overrides: incremental
+    dbt_project_yml: *override-dbt-project
+  - overrides: snapshot_strategy_timestamp
+    dbt_project_yml: *override-dbt-project
+  - overrides: snapshot_strategy_check_cols
+    dbt_project_yml: *override-dbt-project
+  - overrides: schema_tests
+    dbt_project_yml: *override-dbt-project
+  - overrides: data_tests
+    dbt_project_yml: *override-dbt-project
+
+sequences:
+  # test_dbt_empty: empty
+  test_dbt_base: base
+  test_dbt_ephemeral: ephemeral
+  test_dbt_incremental: incremental
+  test_dbt_snapshot_strategy_timestamp: snapshot_strategy_timestamp
+  test_dbt_snapshot_strategy_check_cols: snapshot_strategy_check_cols
+  test_dbt_schema_test: schema_test
+  test_dbt_data_test: data_test
+  #test_dbt_ephemeral_data_tests: data_test_ephemeral_models

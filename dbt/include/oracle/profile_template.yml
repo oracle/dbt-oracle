@@ -1,0 +1,39 @@
+fixed:
+  type: oracle
+prompts:
+  protocol:
+    hint: 'tcp or tcps'
+    type: string
+    default: tcps
+  host:
+    hint: 'adb.<oci-region>.oraclecloud.com'
+    default: "{{ env_var('DBT_ORACLE_HOST') }}"
+  port:
+    type: int
+    default: 1522
+  user:
+    hint: 'database username'
+    type: string
+    default: "{{ env_var('DBT_ORACLE_USER') }}"
+  password:
+    hint: 'database user password'
+    hide_input: true
+    default: "{{ env_var('DBT_ORACLE_PASSWORD') }}"
+  service:
+    hint: 'service name in tnsnames.ora'
+    type: string
+    default: "{{ env_var('DBT_ORACLE_SERVICE') }}"
+  dbname:
+    hint: 'database name in which dbt objects should be created'
+    type: string
+    default: "{{ env_var('DBT_ORACLE_DATABASE') }}"
+  schema:
+    hint: 'database schema in which dbt objects should be created'
+    type: string
+    default: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
+  threads:
+    hint: '1 or more'
+    type: int
+    default: 1
+
+

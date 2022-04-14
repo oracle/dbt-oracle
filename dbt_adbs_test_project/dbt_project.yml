@@ -1,0 +1,25 @@
+name: dbt_adbs_test_project
+config-version: 2
+version: 1.0
+profile: dbt_test
+analysis-paths: ['analysis']
+test-paths: ['test']
+
+quoting:
+  database: false
+  identifier: false
+  schema: false
+
+seeds:
+    dbt_adbs_test_project:
+        quote_columns: false
+
+snapshots:
+    dbt_adbs_test_project:
+        target_schema: "{{ env_var('DBT_ORACLE_USER') }}"
+
+on-run-start:
+    - "select 'hook start' from dual"
+
+on-run-end:
+    - "select 'hook ended' from dual"

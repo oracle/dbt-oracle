@@ -1,0 +1,6 @@
+[run]
+source = dbt
+
+omit =
+    /*/tests/*
+    .dbt-oracle-env/*
