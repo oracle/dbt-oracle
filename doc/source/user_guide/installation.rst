@@ -14,17 +14,10 @@ To use dbt-oracle you need
 - Oracle Client libraries. These can be from the free `Oracle Instant Client
   <https://www.oracle.com/database/technologies/instant-client.html>`__, from a
   full Oracle Client installation, or from those included in Oracle Database if
-  Python is on the same machine as the database.  Oracle client libraries
-  versions 21, 19, 18, 12, and 11.2 are supported where available on Linux,
-  Windows and macOS (Intel x86).  Users have also reported success with other
-  platforms.  Use the latest client possible: Oracle's standard client-server
+  Python is on the same machine as the database. Use the latest client possible: Oracle's standard client-server
   version interoperability allows connection to both older and newer databases.
 
 - An Oracle Database, either local or remote.
-
-The cx_Oracle module loads Oracle Client libraries which communicate
-over Oracle Net to an existing database.  Oracle Net is not a separate
-product: it is how the Oracle Client and Oracle Database communicate.
 
 Dependencies
 ==================================
@@ -43,6 +36,10 @@ dbt-oracle requires the following 3 python packages.
 
 * dataclasses; python_version < '3.7'
     * This is conditional dependency and required only for Python 3.6
+
+The cx_Oracle module loads Oracle Client libraries which communicate
+over Oracle Net to an existing database.  Oracle Net is not a separate
+product: it is how the Oracle Client and Oracle Database communicate.
 
 Installation
 ==================================

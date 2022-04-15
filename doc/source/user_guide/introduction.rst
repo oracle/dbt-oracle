@@ -16,9 +16,11 @@ One way to think of dbt is an orchestration layer which sits on top of your data
 
 .. figure:: /images/dbt_data_flow.png
 
+Features
+^^^^^^^^
 
 * With dbt, you can express all transforms with SQL select
-* No need to write boilerplate code
+* No need to write boilerplate code for different materialization strategies
 * Idempotence; rerun models
 * All transformation code is accessible and can be version controlled.
 * Use of ref() function select * from {{ ref('MODEL_NAME')}}
@@ -50,7 +52,7 @@ This example shows initialization of test project `dbt_oracle_test_project`
     dbt init
     02:01:53  Running with dbt=1.0.4
     Enter a name for your project (letters, digits, underscore): dbt_oracle_test_project
-    The profile dbt_oracle_test_project already exists in /Users/abhisoms/.dbt/profiles.yml. Continue and overwrite it? [y/N]: y
+    The profile dbt_oracle_test_project already exists in ~/.dbt/profiles.yml. Continue and overwrite it? [y/N]: y
     Which database would you like to use?
     [1] oracle
     (Don't see the one you want? https://docs.getdbt.com/docs/available-adapters)
@@ -85,7 +87,7 @@ Then it will:
 
 * Create a connection profile on your local machine. The default location is `~/.dbt/profiles.yml`
 
-Next, configure connection related parameters and test if dbt connection works using dbt debug command
+Next, :ref:`configure connection<connection>` related parameters and test if dbt connection works using dbt debug command
 
 .. code-block:: text
    :emphasize-lines: 1, 3-6, 9-17
@@ -100,13 +102,13 @@ Next, configure connection related parameters and test if dbt connection works u
    Required dependencies:
     - git [OK found]
    Connection:
-     user: dbt_test
-     database: ga01d76d2ecd5e0_db202112221108
-     schema: dbt_test
+     user: ***
+     database: ***
+     schema: ***
      protocol: tcps
      host: adb.us-ashburn-1.oraclecloud.com
      port: 1522
-     service: ga01d76d2ecd5e0_db202112221108_high.adb.oraclecloud.com
+     service: ***.adb.oraclecloud.com
      connection_string: None
      shardingkey: []
      supershardingkey: []

@@ -57,26 +57,24 @@ dbt does the T in ELT (Extract, Load, Transform). To work with dbt you need a co
 ### An example <a name='an-example'></a>
 
 dbt model
-```oracle
+```sql
 -- models/customer_view.sql
 {{config(materialized='view')}}
-with customers_filtered as(
-    select * from {{ source('sh_database', 'sales') }}
-    where cust_id = 14787
+WITH customers_filtered AS (
+    SELECT * FROM {{ source('sh_database', 'sales') }}
+    WHERE cust_id = 14787
 )
-select * from customers_filtered
+SELECT * from customers_filtered
 ```
 dbt compiles the above SQL template to run the below DDL statement.
-```oracle
-create  table dbt_test.customer_view
-
-  as
-
-with customers_filtered as(
-    select * from sh.sales
-    where cust_id = 14787
+```sql
+CREATE  TABLE dbt_test.customer_view
+  AS
+WITH customers_filtered AS (
+    SELECT * FROM sh.sales
+    WHERE cust_id = 14787
 )
-select * from customers_filtered
+SELECT * FROM customers_filtered
 ```
 
 For dbt documentation, refer https://docs.getdbt.com/docs/introduction

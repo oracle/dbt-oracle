@@ -18,7 +18,7 @@ To test dbt with Autonomous Database, you can start with OCI's Always Free Auton
 Connection specific environment variables
 =========================================
 
-Define the following variables from where you can source them before running dbt commands. For example, in `~/.bashrc` file
+Define the following environment variables.
 
 .. code-block:: bash
 
@@ -29,7 +29,7 @@ Define the following variables from where you can source them before running dbt
     DYLD_LIBRARY_PATH # For MacOS
     LD_LIBRARY_PATH # For Linux
 
-    # For ADBS, cx_oracle will need the path to the folder
+    # cx_oracle will need the path to the folder
     # containing client wallet, sqlnet.ora and tnsnames.ora
     TNS_ADMIN
 
@@ -48,7 +48,7 @@ Every dbt project needs a `dbt_project.yml` file — this is how dbt knows a dir
 Specify the connection profile as shown below
 
 .. code-block:: yaml
-    :emphasize-lines: 3
+    :emphasize-lines: 4
 
     name: dbt_oracle_test_project
     config-version: 2
@@ -81,54 +81,69 @@ Specify the connection profile as shown below
 Connection Profile Parameters
 =============================
 
-* type
-   * description - type of dbt adapter
-   * value - oracle
+type
+^^^^
+* Description - The type of dbt adapter
+* Value - `oracle`
 
-* user
-   * description - Oracle database username
-   * value - Value can be set in environment variable DBT_ORACLE_USER
+user
+^^^^
+* Description - Oracle database username
+* Value - Value can be set in environment variable `DBT_ORACLE_USER`
 
-* pass
-   * description - Oracle database password
-   * value - Value can be set in environment variable DBT_ORACLE_PASSWORD
+pass
+^^^^
+* Description - Oracle database password
+* Value - Value can be set in environment variable `DBT_ORACLE_PASSWORD`
 
-* protocol
-   * description - tcp or tcps
+protocol
+^^^^^^^^
+* Description - TCP/IP or TCP/IP with SSL
+* Value - `tcp` or `tcps`
 
-* host
-   * description - Oracle Autonomous Database host
-   * value - Value can be set in environment variable DBT_ORACLE_HOST
-   * example - adb.us-ashburn-1.oraclecloud.com
+host
+^^^^
+* Description - Oracle Database host
+* Value - Value can be set in environment variable `DBT_ORACLE_HOST`
+* Example - adb.us-ashburn-1.oraclecloud.com
 
-* port
-   * description - Oracle Autonomous Database port (1521 or 1522)
-   * value - Value can be set in environment variable DBT_ORACLE_PORT
+port
+^^^^
+* Description - Oracle Database port (1521 or 1522)
+* Value - Value can be set in environment variable `DBT_ORACLE_PORT`
 
-* service
-   * description - Service name as defined in tnsnames.ora
-   * value - Value can be set in environment variable DBT_ORACLE_SERVICE
-   * example - <databasename>_high.adb.oraclecloud.com
+service
+^^^^^^^
+* Description - Service name as defined in tnsnames.ora
+* Value - Value can be set in environment variable `DBT_ORACLE_SERVICE`
+* Example - <databasename>_high.adb.oraclecloud.com
 
-* database
-   * description - database name
-   * value - Value can be set in environment variable DBT_ORACLE_DATABASE
+database
+^^^^^^^^
+* Description - Database name
+* Value - Value can be set in environment variable `DBT_ORACLE_DATABASE`
 
-* schema
-   * description - database schema; For Oracle this is the same as database user
-   * value - Value can be set in environment variable DBT_ORACLE_SCHEMA
+schema
+^^^^^^
+* Description - database schema; For Oracle this is the same as database user
+* Value - Value can be set in environment variable `DBT_ORACLE_SCHEMA`
 
-* shardingkey
-   * description - List of sharding keys to connect to shard
+shardingkey
+^^^^^^^^^^^
+* Description - List of sharding keys to connect to shard
 
-* supershardingkey
-    * description - List of super-sharding keys to connect to shard
+supershardingkey
+^^^^^^^^^^^^^^^^
+* Description - List of super-sharding keys to connect to shard
 
-* cclass
-    * description - Connectivity class to enable Database Resident Connection Pooling (DRCP)
+cclass
+^^^^^^
+* Description - Connectivity class to enable Database Resident Connection Pooling (DRCP)
 
-* purity
-    * description - self|new|default
+purity
+^^^^^^
+* Description - DRCP Session purity
+* Value - Must be one of `self`, `new`, `default`
 
 Connection Profile
 ==================
