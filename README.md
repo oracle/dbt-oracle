@@ -130,7 +130,7 @@ dbt init
 
     02:01:53  Running with dbt=1.0.4
     Enter a name for your project (letters, digits, underscore): dbt_oracle_test_project
-    The profile dbt_oracle_test_project already exists in /Users/abhisoms/.dbt/profiles.yml. Continue and overwrite it? [y/N]: y
+    The profile dbt_oracle_test_project already exists in ~/.dbt/profiles.yml. Continue and overwrite it? [y/N]: y
     Which database would you like to use?
     [1] oracle
     (Don't see the one you want? https://docs.getdbt.com/docs/available-adapters)
@@ -176,9 +176,9 @@ dbt debug
    Required dependencies:
     - git [OK found]
    Connection:
-     user: dbt_test
+     user: ***
      database: ga01d76d2ecd5e0_db202112221108
-     schema: dbt_test
+     schema: ***
      protocol: tcps
      host: adb.us-ashburn-1.oraclecloud.com
      port: 1522
