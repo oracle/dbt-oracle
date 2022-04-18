@@ -36,6 +36,11 @@ test_requirements = [
     "pytest-dbt-adapter==0.6.0; python_version >= '3.7'"
 ]
 
+project_urls = {
+    'Documentation': ' https://dbt-oracle.readthedocs.io',
+    'Source': 'https://github.com/oracle-samples/dbt-oracle'
+}
+
 VERSION='1.0.0'
 setup(
     author="Oracle",
@@ -62,7 +67,7 @@ setup(
     packages=find_packages(),
     test_suite='tests',
     tests_require=test_requirements,
-    url='',
+    project_urls=project_urls,
     version=VERSION,
     zip_safe=False,
     package_data={
