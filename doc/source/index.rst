@@ -6,7 +6,7 @@
 Welcome to dbt-oracle's documentation!
 ======================================
 
-dbt-oracle implements dbt (data build tool) functionalities for the Oracle database. It is currently tested with Oracle Database versions 19c and 21c and seamlessly integrates with Autonomous Database Cloud Service (ADB-S)
+dbt-oracle implements dbt (data build tool) functionalities for the Oracle database. It is currently tested with Oracle Database versions 19c and 21c and seamlessly integrates with Oracle Autonomous Database (ADB-S).
 It supports Python versions 3.6, 3.7, 3.8 and 3.9. Older versions of dbt-oracle may be used with Python 3.5
 
 dbt-oracle is distributed under :ref:`Apache 2.0 License<license>`. A detailed description of dbt-oracle changes can be found in the :ref:`release notes<releasenotes>`.

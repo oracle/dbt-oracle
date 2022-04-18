@@ -9,11 +9,40 @@ Overview
 
 Oracle Autonomous Database is the world’s first autonomous data management in the cloud to deliver automated patching, upgrades, and tuning—including performing all routine database maintenance tasks while the system is running - without human intervention. This new autonomous database cloud is self-driving, self-securing, and self-repairing, which helps to eliminate manual database management and human errors.
 
-To test dbt with Autonomous Database, you can start with OCI's Always Free Autonomous Database. The database is provided free of charge with the following settings.
+To test dbt with Autonomous Database, you can start with OCI's `Always Free Autonomous Database <https://docs.oracle.com/en-us/iaas/Content/Database/Concepts/adbfreeoverview.htm>`__. The database is provided free of charge with the following settings.
 
-* Processor: 1 Oracle CPU processor
-* Database Storage: 20 GB storage
+* 1 Oracle CPU processor
+* 20 GB storage
 * Workload Type could be either ATP (Autonomous Transaction Processing) or ADW (Autonomous Data Warehouse)
+
+The database also provides a read-only Sales History data set. dbt models can directly use source tables in `sh` schema without any additional steps
+
+
+Client Credential Wallet
+========================
+
+If your Autonomous Database instance is configured to allow only mTLS connections then you will need the client credentials wallet with the following files
+
+* tnsnames.ora
+* sqlnet.ora
+* cwallet.sso
+* ewallet.p12
+
+After downloading the wallet, put the unzipped wallet files in a secure directory and set the TNS_ADMIN environment variable to that directory name.
+Next, edit the `sqlnet.ora` file to point to the wallet directory
+
+
+.. code-block:: text
+
+   WALLET_LOCATION = (SOURCE = (METHOD = file) (METHOD_DATA = (DIRECTORY="/path/to/wallet/directory")))
+   SSL_SERVER_DN_MATCH=yes
+
+References
+^^^^^^^^^^
+
+* `Download client credential wallet <https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/connect-download-wallet.html#GUID-B06202D2-0597-41AA-9481-3B174F75D4B1>`__
+* `Connect using mTLS <https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/connecting-nodejs.html#GUID-AB1E323A-65B9-47C4-840B-EC3453F3AD53>`__
+* `Connect using TLS with out a wallet <https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/connecting-nodejs-tls.html#GUID-B3809B88-D2FB-4E08-8F9B-65A550F93A07>`__
 
 Connection specific environment variables
 =========================================
@@ -42,10 +71,10 @@ Define the following environment variables.
     DBT_ORACLE_DATABASE
     DBT_ORACLE_SCHEMA
 
+
 dbt project configuration
 =========================
-Every dbt project needs a `dbt_project.yml` file — this is how dbt knows a directory is a dbt project. It also contains important information that tells dbt how to operate on your project.
-Specify the connection profile as shown below
+Specify the connection profile in `dbt_project.yml` file as shown below
 
 .. code-block:: yaml
     :emphasize-lines: 4
@@ -78,6 +107,35 @@ Specify the connection profile as shown below
     on-run-end:
         - "select 'hook ended' from dual"
 
+
+Connection Profile
+==================
+
+Below is an example of `dbt_test` connection profile referred in `dbt_project.yml` as shown above
+
+.. code-block:: yaml
+
+   dbt_test:
+       target: "{{ env_var('DBT_TARGET', 'dev') }}"
+       outputs:
+          dev:
+             type: oracle
+             user: "{{ env_var('DBT_ORACLE_USER') }}"
+             pass: "{{ env_var('DBT_ORACLE_PASSWORD') }}"
+             protocol: "tcps"
+             host: "{{ env_var('DBT_ORACLE_HOST') }}"
+             port: 1522
+             service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
+             database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
+             schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
+             shardingkey:
+               - skey
+             supershardingkey:
+               - sskey
+             cclass: CONNECTIVITY_CLASS
+             purity: self
+             threads: 4
+
 Connection Profile Parameters
 =============================
 
@@ -98,7 +156,7 @@ pass
 
 protocol
 ^^^^^^^^
-* Description - TCP/IP or TCP/IP with SSL
+* Description - Client-Server communication protocol i.e. TCP/IP or TCP/IP with SSL
 * Value - `tcp` or `tcps`
 
 host
@@ -130,11 +188,11 @@ schema
 
 shardingkey
 ^^^^^^^^^^^
-* Description - List of sharding keys to connect to shard
+* Description - List of sharding keys to connect to a shard
 
 supershardingkey
 ^^^^^^^^^^^^^^^^
-* Description - List of super-sharding keys to connect to shard
+* Description - List of super-sharding keys to connect to a shard
 
 cclass
 ^^^^^^
@@ -144,31 +202,3 @@ purity
 ^^^^^^
 * Description - DRCP Session purity
 * Value - Must be one of `self`, `new`, `default`
-
-Connection Profile
-==================
-
-
-.. code-block:: yaml
-
-   dbt_test:
-       target: "{{ env_var('DBT_TARGET', 'dev') }}"
-       outputs:
-          dev:
-             type: oracle
-             user: "{{ env_var('DBT_ORACLE_USER') }}"
-             pass: "{{ env_var('DBT_ORACLE_PASSWORD') }}"
-             protocol: "tcps"
-             host: "{{ env_var('DBT_ORACLE_HOST') }}"
-             port: 1522
-             service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
-             database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
-             schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
-             shardingkey:
-               - skey
-             supershardingkey:
-               - sskey
-             cclass: CONNECTIVITY_CLASS
-             purity: self
-             threads: 4
-

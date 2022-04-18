@@ -22,7 +22,7 @@ To use dbt-oracle you need
 Dependencies
 ==================================
 
-dbt-oracle requires the following 3 python packages.
+dbt-oracle depends on the following 3 python packages.
 
 * dbt-core
     * Open source framework for data transformation
@@ -55,7 +55,7 @@ Installation
       python -m pip install dbt-oracle --upgrade
 
 Support
-=========
+=======
 dbt-oracle will provide support for the following
 
 * Python versions 3.6, 3.7, 3.8 and 3.9

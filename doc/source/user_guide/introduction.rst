@@ -4,7 +4,6 @@
 Introduction to dbt-oracle
 **************************
 dbt (data build tool) adapter for the Oracle database.
-dbt-oracle contains all code to enable dbt to work with Oracle's Autonomous Database.
 
 
 What is dbt?
@@ -20,7 +19,7 @@ Features
 ^^^^^^^^
 
 * With dbt, you can express all transforms with SQL select
-* No need to write boilerplate code for different materialization strategies
+* All code to create table or views is generated using macros. No need to write boilerplate code
 * Idempotence; rerun models
 * All transformation code is accessible and can be version controlled.
 * Use of ref() function select * from {{ ref('MODEL_NAME')}}
@@ -30,6 +29,30 @@ Features
 * Generate documentation for your project and render it as a website.
 * Use macros to write reusable SQL
 
+Example
+^^^^^^^
+
+.. code-block:: sql
+
+   -- models/customer_view.sql
+   {{config(materialized='view')}}
+   WITH customers_filtered AS (
+       SELECT * FROM {{ source('sh_database', 'sales') }}
+       WHERE cust_id = 14787
+   )
+   SELECT * from customers_filtered
+
+dbt compiles the above SQL template to run the below DDL statement.
+
+.. code-block:: sql
+
+   CREATE  TABLE dbt_test.customer_view
+   AS
+   WITH customers_filtered AS (
+       SELECT * FROM sh.sales
+       WHERE cust_id = 14787
+   )
+   SELECT * FROM customers_filtered
 
 Getting Started
 ---------------

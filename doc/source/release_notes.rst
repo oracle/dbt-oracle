@@ -6,6 +6,7 @@ dbt-oracle Release Notes
 ========================
 
 Version 1.0.0 (May 2022)
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Python versions
    * Python 3.6, 3.7, 3.8 and 3.9 are supported.
