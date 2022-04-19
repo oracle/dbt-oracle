@@ -126,7 +126,7 @@ Create a dbt project for oracle database using the `dbt init` command. The init 
 This example shows initialization of test project `dbt_oracle_test_project`
 
 ```text
->>> dbt init
+>> dbt init
 
 Running with dbt=1.0.4
 Enter a name for your project (letters, digits, underscore): dbt_oracle_test_project
@@ -166,7 +166,7 @@ Create a connection profile on your local machine. The default location is `~/.d
 Next, [configure connection](dbt_adbs_test_project) related parameters and test if dbt connection works using dbt debug command
 
 ```text
->>> dbt debug
+>> dbt debug
  
 os info: macOS-11.6-x86_64-i386-64bit
    Using profiles.yml file at ~/.dbt/profiles.yml

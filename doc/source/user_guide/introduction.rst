@@ -52,15 +52,11 @@ For complete list of dbt functionalities check dbt documentation
 
 Getting Started
 ---------------
-dbt adapters "adapt" dbt functionalities for a given database.
-
-`dbt-oracle` efficiently implements dbt functionalities for the Oracle database and seamlessly integrates with Autonomous Database
+dbt adapters "adapt" dbt functionalities for a given database. `dbt-oracle` efficiently implements dbt functionalities for the Oracle database and seamlessly integrates with Autonomous Database
 
 To get started, install `dbt-oracle` using the :ref:`installation <installation>` steps.
 
-Create a dbt project using the `dbt init` command. The init command is interactive and will help you get started with a new project.
-
-`dbt init` command will:
+Create a dbt project using the `dbt init` command. `dbt init` command will:
 
 * ask you the name of the project
 * ask you the database adapter you are using i.e. oracle
