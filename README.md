@@ -126,28 +126,28 @@ Create a dbt project for oracle database using the `dbt init` command. The init 
 This example shows initialization of test project `dbt_oracle_test_project`
 
 ```text
-dbt init
+>>> dbt init
 
-    02:01:53  Running with dbt=1.0.4
-    Enter a name for your project (letters, digits, underscore): dbt_oracle_test_project
-    The profile dbt_oracle_test_project already exists in ~/.dbt/profiles.yml. Continue and overwrite it? [y/N]: y
-    Which database would you like to use?
-    [1] oracle
-    (Don't see the one you want? https://docs.getdbt.com/docs/available-adapters)
-    Enter a number: 1
-    protocol (tcp or tcps) [tcps]:
-    host (adb.<oci-region>.oraclecloud.com) [{{ env_var('DBT_ORACLE_HOST') }}]:
-    port [1522]:
-    user (database username) [{{ env_var('DBT_ORACLE_USER') }}]:
-    password (database user password) [{{ env_var('DBT_ORACLE_PASSWORD') }}]:
-    service (service name in tnsnames.ora) [{{ env_var('DBT_ORACLE_SERVICE') }}]:
-    dbname (database name in which dbt objects should be created) [{{ env_var('DBT_ORACLE_DATABASE') }}]:
-    schema (database schema in which dbt objects should be created) [{{ env_var('DBT_ORACLE_SCHEMA') }}]:
-    threads (1 or more) [1]: 4
+Running with dbt=1.0.4
+Enter a name for your project (letters, digits, underscore): dbt_oracle_test_project
+Which database would you like to use?
+[1] oracle
+  Enter a number: 1
+  protocol (tcp or tcps) [tcps]: 
+  host (adb.<oci-region>.oraclecloud.com) [{{ env_var('DBT_ORACLE_HOST') }}]: 
+  port [1522]: 
+  user [{{ env_var('DBT_ORACLE_USER') }}]: 
+  password [{{ env_var('DBT_ORACLE_PASSWORD') }}]: 
+  service (service name in tnsnames.ora) [{{ env_var('DBT_ORACLE_SERVICE') }}]: 
+  dbname (database name in which dbt objects should be created) [{{ env_var('DBT_ORACLE_DATABASE') }}]: 
+  schema (database schema in which dbt objects should be created) [{{ env_var('DBT_ORACLE_SCHEMA') }}]: 
+  threads (1 or more) [1]: 4
+Profile dbt_oracle_test_project written to ~/.dbt/profiles.yml using target's profile_template.yml and your supplied values. Run 'dbt debug' to validate the connection.
+Your new dbt project "dbt_oracle_test_project" was created!
 
 ```
 
-Then it will:
+Then dbt init command will:
 
 Create a new folder with project name and sample files to get you started
   ```text
@@ -166,29 +166,30 @@ Create a connection profile on your local machine. The default location is `~/.d
 Next, [configure connection](dbt_adbs_test_project) related parameters and test if dbt connection works using dbt debug command
 
 ```text
-dbt debug
-   os info: macOS-11.6-x86_64-i386-64bit
+>>> dbt debug
+ 
+os info: macOS-11.6-x86_64-i386-64bit
    Using profiles.yml file at ~/.dbt/profiles.yml
    Using dbt_project.yml file at /dbt_oracle_test_project/dbt_project.yml
    Configuration:
-     profiles.yml file [OK found and valid]
-     dbt_project.yml file [OK found and valid]
+    profiles.yml file [OK found and valid]
+    dbt_project.yml file [OK found and valid]
    Required dependencies:
-    - git [OK found]
+   - git [OK found]
    Connection:
-     user: ***
-     database: ga01d76d2ecd5e0_db202112221108
-     schema: ***
-     protocol: tcps
-     host: adb.us-ashburn-1.oraclecloud.com
-     port: 1522
-     service: ga01d76d2ecd5e0_db202112221108_high.adb.oraclecloud.com
-     connection_string: None
-     shardingkey: []
-     supershardingkey: []
-     cclass: None
-     purity: None
-     Connection test: [OK connection ok]
+    user: ***
+    database: ga01d76d2ecd5e0_db202112221108
+    schema: ***
+    protocol: tcps
+    host: adb.us-ashburn-1.oraclecloud.com
+    port: 1522
+    service: <service_name>_high.adb.oraclecloud.com
+    connection_string: None
+    shardingkey: []
+    supershardingkey: []
+    cclass: None
+    purity: None
+    Connection test: [OK connection ok]
 
    All checks passed!
 ```
