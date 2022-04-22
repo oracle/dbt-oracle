@@ -18,7 +18,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'dbt-oracle'
-copyright = '2022, Oracle and/or its affiliates.' \
+copyright = '2022, Oracle and/or its affiliates.\n' \
             'Based on original contribution from TechIndicium Copyright (c) 2020, Vitor Avancini'
 author = 'Oracle'
 
@@ -32,7 +32,9 @@ version = '1.0.0'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
+extensions = [ # ...
+    'sphinx.ext.autodoc',
+    'rst2pdf.pdfbuilder',
 ]
 
 # The name of the Pygments (syntax highlighting) style to use.
@@ -73,7 +75,15 @@ html_theme_options = {
     'includehidden': True,
     'titles_only': False
 }
-
+# Grouping the document tree into PDF files. List of tuples
+# (source start file, target name, title, author, options).
+pdf_fit_mode = "shrink"
+pdf_documents = [
+    ('index', 'dbt-oracle', 'dbt-oracle', 'Oracle'),
+]
+pdf_break_level = 0
+pdf_default_dpi = 72
+pdf_fit_background_mode = 'scale'
 #html_style = 'default.css'
 
 # Add any paths that contain custom static files (such as style sheets) here,

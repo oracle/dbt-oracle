@@ -196,9 +196,9 @@ supershardingkey
 
 cclass
 ^^^^^^
-* Description - Connectivity class to enable Database Resident Connection Pooling (DRCP)
+* Description - Connectivity class to use for  Database Resident Connection Pooling (DRCP). When a pooled session has a connection class the session is not shared outside the connection class
 
 purity
 ^^^^^^
-* Description - DRCP Session purity
+* Description - Session purity specifies whether an application can reuse a pooled session (self) or must use a new session (new)
 * Value - Must be one of `self`, `new`, `default`

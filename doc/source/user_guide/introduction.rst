@@ -92,15 +92,15 @@ Then the `dbt init` command will:
 
 .. code-block:: text
 
-   ├── README.md
-   ├── analyses
-   ├── dbt_project.yml
-   ├── macros
-   ├── models
-   │   └── example
-   ├── seeds
-   ├── snapshots
-   └── tests
+   |-- README.md
+   |-- analyses
+   |-- dbt_project.yml
+   |-- macros
+   |-- models
+   |--     |--- example
+   |-- seeds
+   |-- snapshots
+   |-- tests
 
    7 directories, 2 files
 

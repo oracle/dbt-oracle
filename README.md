@@ -58,23 +58,20 @@ dbt does the T in ELT (Extract, Load, Transform). To work with dbt you need a co
 
 dbt model
 ```sql
--- models/customer_view.sql
-{{config(materialized='view')}}
-WITH customers_filtered AS (
-    SELECT * FROM {{ source('sh_database', 'sales') }}
-    WHERE cust_id = 14787
-)
-SELECT * from customers_filtered
+--models/sales_internet_channel.sql
+{{ config(materialized='table') }}
+WITH sales_internet AS (
+       SELECT * FROM {{ source('sh_database', 'sales') }}
+       WHERE channel_id = 4 )
+SELECT * FROM sales_internet
 ```
 dbt compiles the above SQL template to run the below DDL statement.
 ```sql
-CREATE  TABLE dbt_test.customer_view
-  AS
-WITH customers_filtered AS (
-    SELECT * FROM sh.sales
-    WHERE cust_id = 14787
-)
-SELECT * FROM customers_filtered
+CREATE TABLE dbt_test.sales_internet_channel AS
+WITH sales_internet AS (
+         SELECT * from sh.sales
+         WHERE channel_id = 4 )
+SELECT * FROM sales_internet
 ```
 
 For dbt documentation, refer https://docs.getdbt.com/docs/introduction
@@ -163,7 +160,7 @@ Create a new folder with project name and sample files to get you started
   ```
 Create a connection profile on your local machine. The default location is `~/.dbt/profiles.yml`
 
-Next, [configure connection](dbt_adbs_test_project) related parameters and test if dbt connection works using dbt debug command
+Next, [configure connection](dbt_adbs_test_project/profiles.yml) related parameters and test if dbt connection works using dbt debug command
 
 ```text
 >> dbt debug
