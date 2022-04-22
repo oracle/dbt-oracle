@@ -146,50 +146,50 @@ Your new dbt project "dbt_oracle_test_project" was created!
 
 Then dbt init command will:
 
-Create a new folder with project name and sample files to get you started
-  ```text
-   ├── README.md
-   ├── analyses
-   ├── dbt_project.yml
-   ├── macros
-   ├── models
-   │   └── example
-   ├── seeds
-   ├── snapshots
-   └── tests
-  ```
-Create a connection profile on your local machine. The default location is `~/.dbt/profiles.yml`
+1. Create the following folder with project name and sample files to get you started
+    ```text
+     ├── README.md
+     ├── analyses
+     ├── dbt_project.yml
+     ├── macros
+     ├── models
+     │   └── example
+     ├── seeds
+     ├── snapshots
+     └── tests
+    ```
+2. Create a connection profile on your local machine. The default location is `~/.dbt/profiles.yml`
 
-Next, [configure connection](dbt_adbs_test_project/profiles.yml) related parameters and test if dbt connection works using dbt debug command
-
-```text
->> dbt debug
- 
-os info: macOS-11.6-x86_64-i386-64bit
-   Using profiles.yml file at ~/.dbt/profiles.yml
-   Using dbt_project.yml file at /dbt_oracle_test_project/dbt_project.yml
-   Configuration:
-    profiles.yml file [OK found and valid]
-    dbt_project.yml file [OK found and valid]
-   Required dependencies:
-   - git [OK found]
-   Connection:
-    user: ***
-    database: ga01d76d2ecd5e0_db202112221108
-    schema: ***
-    protocol: tcps
-    host: adb.us-ashburn-1.oraclecloud.com
-    port: 1522
-    service: <service_name>_high.adb.oraclecloud.com
-    connection_string: None
-    shardingkey: []
-    supershardingkey: []
-    cclass: None
-    purity: None
-    Connection test: [OK connection ok]
-
-   All checks passed!
-```
+    Next step, [configure connection](dbt_adbs_test_project/profiles.yml) related parameters and test if dbt connection works using dbt debug command
+    
+    ```text
+    >> dbt debug
+     
+    os info: macOS-11.6-x86_64-i386-64bit
+       Using profiles.yml file at ~/.dbt/profiles.yml
+       Using dbt_project.yml file at /dbt_oracle_test_project/dbt_project.yml
+       Configuration:
+        profiles.yml file [OK found and valid]
+        dbt_project.yml file [OK found and valid]
+       Required dependencies:
+       - git [OK found]
+       Connection:
+        user: ***
+        database: ga01d76d2ecd5e0_db202112221108
+        schema: ***
+        protocol: tcps
+        host: adb.us-ashburn-1.oraclecloud.com
+        port: 1522
+        service: <service_name>_high.adb.oraclecloud.com
+        connection_string: None
+        shardingkey: []
+        supershardingkey: []
+        cclass: None
+        purity: None
+        Connection test: [OK connection ok]
+    
+       All checks passed!
+    ```
 
 ## Documentation [TODO] <a name='documentation-todo'></a>
 Link to the homepage - https://oracle.github.io/dbt-oracle
