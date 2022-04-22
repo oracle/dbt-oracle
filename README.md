@@ -100,8 +100,8 @@ dbt-oracle requires the following 3 python packages.
 
   - Open source framework for data transformation
   - Jinja Templating and core SQL compilation logic
-  - `dbt-core==1.0.4` is preferred as it supports Python 3.7 and higher
-  - For Python 3.6, pip will fallback to `dbt-core==0.21.1`
+  - Latest version of dbt-core is preferred; From version 1.0.0, dbt-core supports Python 3.7 or higher
+  - For Python 3.6, pip will fallback to version 0.21.1 of dbt-core
 
 `cx-Oracle`
  - Python driver for Oracle database
