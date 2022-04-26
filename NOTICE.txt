@@ -1,2 +1,2 @@
 Copyright (c) 2022, Oracle and/or its affiliates
-Based on original contribution from TechIndicium Copyright (c) 2020, Vitor Avancini
+Based on original contribution from Indicium; Copyright (c) 2020, Vitor Avancini
