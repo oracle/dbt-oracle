@@ -18,15 +18,26 @@ dbt_test:
          cclass: CONNECTIVITY_CLASS
          purity: self
          threads: 4
+      test:
+          type: oracle
+          user: "{{ env_var('DBT_ORACLE_USER') }}"
+          pass: "{{ env_var('DBT_ORACLE_PASSWORD') }}"
+          database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
+          schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
+          connection_string: "{{ env_var('DBT_ORACLE_CONNECT_STRING') }}"
+          shardingkey:
+            - skey
+          supershardingkey:
+            - sskey
+          cclass: CONNECTIVITY_CLASS
+          purity: self
+          threads: 4
       prod:
           type: oracle
           user: "{{ env_var('DBT_ORACLE_USER') }}"
           pass: "{{ env_var('DBT_ORACLE_PASSWORD') }}"
-          protocol: "tcps"
-          host: "{{ env_var('DBT_ORACLE_HOST') }}"
-          port: 1522
-          service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
           database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
+          tns_name: "{{ env_var('DBT_ORACLE_TNS_NAME') }}"
           schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
           shardingkey:
               - skey

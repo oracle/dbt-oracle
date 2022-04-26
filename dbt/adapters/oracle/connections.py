@@ -56,14 +56,15 @@ class OracleAdapterCredentials(Credentials):
     # Mandatory required arguments.
     user: str
     password: str
-
-    # OracleConnectionMethod.TNS
     database: str
 
+    # OracleConnectionMethod.TNS
+    tns_name: Optional[str] = None
+
     # OracleConnectionMethod.HOST
-    protocol: Optional[str] = 'tcp'
+    protocol: Optional[str] = None
     host: Optional[str] = None
-    port: Port = 1521
+    port: Optional[Port] = None
     service: Optional[str] = None
 
     # OracleConnectionMethod.CONNECTION_STRING
@@ -80,7 +81,7 @@ class OracleAdapterCredentials(Credentials):
 
     _ALIASES = {
         'dbname': 'database',
-        'pass': 'password'
+        'pass': 'password',
     }
 
     @property
@@ -97,7 +98,7 @@ class OracleAdapterCredentials(Credentials):
         """
         return (
             'user', 'database', 'schema',
-            'protocol', 'host', 'port',
+            'protocol', 'host', 'port', 'tns_name',
             'service', 'connection_string',
             'shardingkey', 'supershardingkey',
             'cclass', 'purity'
@@ -119,7 +120,7 @@ class OracleAdapterCredentials(Credentials):
 
         method = self.connection_method()
         if method == OracleConnectionMethod.TNS:
-            return self.database
+            return self.tns_name
         if method == OracleConnectionMethod.CONNECTION_STRING:
             return self.connection_string
 
