@@ -37,8 +37,8 @@ test_requirements = [
 ]
 
 project_urls = {
-    'Documentation': ' https://dbt-oracle.readthedocs.io',
-    'Source': 'https://github.com/oracle-samples/dbt-oracle'
+    'Source': 'https://github.com/oracle/dbt-oracle',
+    'Tracker': 'https://github.com/oracle/dbt-oracle/issues'
 }
 
 VERSION='1.0.0'
@@ -46,7 +46,7 @@ setup(
     author="Oracle",
     python_requires='>=3.6',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
