@@ -159,7 +159,7 @@ Then dbt init command will:
     ```
 2. Create a connection profile on your local machine. The default location is `~/.dbt/profiles.yml`
 
-    Next step, [configure connection](dbt_adbs_test_project/profiles.yml) related parameters and test if dbt connection works using dbt debug command
+    Next step, [configure connection][1] related parameters and test if dbt connection works using dbt debug command
     
     ```text
     >> dbt debug
@@ -196,10 +196,15 @@ Link to the homepage - https://oracle.github.io/dbt-oracle
 Link to documentation - https://dbt-oracle.readthedocs.io
 
 ## Contributing <a name='contributing'></a>
-This project welcomes contributions from the community. Before submitting a pull request, please review our [contribution guide](CONTRIBUTING.md).
+This project welcomes contributions from the community. Before submitting a pull request, please review our [contribution guide][2].
 
 ## Security <a name='security'></a>
-Please consult the [security guide](SECURITY.md) for our responsible security vulnerability disclosure process.
+Please consult the [security guide][3] for our responsible security vulnerability disclosure process.
 
 ## License <a name='license'></a>
-dbt-oracle is licensed under Apache 2.0 License which you can find [here](LICENSE.txt)
+dbt-oracle is licensed under Apache 2.0 License which you can find [here][4]
+
+[1]: https://github.com/oracle/dbt-oracle/blob/main/dbt_adbs_test_project/profiles.yml
+[2]: https://github.com/oracle/dbt-oracle/blob/main/CONTRIBUTING.md
+[3]: https://github.com/oracle/dbt-oracle/blob/main/SECURITY.md
+[4]: https://github.com/oracle/dbt-oracle/blob/main/LICENSE.txt
