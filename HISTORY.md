@@ -14,5 +14,5 @@
 
 ## v1.0.0 (YYYY-MM-DD)
 
-- First release of `dbt-oracle` by Oracle. 
+- First release of vendor-built adapter by Oracle. 
 - This version supports Python 3.6, 3.7, 3.8 and 3.9

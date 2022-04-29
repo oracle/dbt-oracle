@@ -38,7 +38,7 @@ test_requirements = [
 
 project_urls = {
     'Source': 'https://github.com/oracle/dbt-oracle',
-    'Tracker': 'https://github.com/oracle/dbt-oracle/issues'
+    'Bug Tracker': 'https://github.com/oracle/dbt-oracle/issues'
 }
 
 VERSION='1.0.0'
