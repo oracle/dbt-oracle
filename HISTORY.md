@@ -12,7 +12,7 @@
 
 - Last stable release of [dbt-oracle](https://github.com/techindicium/dbt-oracle) by Techindicium
 
-## v1.0.0 (YYYY-MM-DD)
+## v1.0.0 (2022-05)
 
 - First release of vendor-built adapter by Oracle. 
 - This version supports Python 3.6, 3.7, 3.8 and 3.9
