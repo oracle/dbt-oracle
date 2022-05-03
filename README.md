@@ -1,25 +1,10 @@
-# dbt-oracle version 1.0.0
+# dbt-oracle
 
-dbt (data build tool) adapter for the Oracle database.
-dbt "adapters" are responsible for adapting dbt's functionality to a given database. Check
+dbt "adapters" are responsible for adapting dbt's functionality to a given database. `dbt-oracle` implements dbt functionalities for the Oracle database. To learn more about building adapters, check
 https://docs.getdbt.com/docs/contributing/building-a-new-adapter
 
 > Prior to version 1.0.0, dbt-oracle was created and maintained by [Indicium](https://indicium.tech/) on [their GitHub repo](https://github.com/techindicium/dbt-oracle). Contributors in this repo are credited for laying the groundwork and maintaining the adapter till version 0.4.3.
 From version 1.0.0, dbt-oracle is maintained and distributed by Oracle.
-
-# Table of contents
-
-- [What is dbt?](#what-is-dbt)
-  - [dbt features](#core-concepts)
-  - [An Example](#an-example)
-- [Installation](#install)
-  - [Support](#support)
-  - [Core dependencies](#core-dependencies)
-- [Getting Started](#getting-started)
-- [Documentation](#documentation-todo)
-- [Contributing](#contributing)
-- [Security](#security)
-- [License](#license)
 
 ## What is dbt? <a name='what-is-dbt'></a>
 
