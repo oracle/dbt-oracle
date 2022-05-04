@@ -14,7 +14,7 @@ Version 1.0.0 (May 2022)
 * Enhancements
    * Following dependencies are upgraded
       * cx_Oracle v8.3.0
-      * dbt-core v1.0.4
+      * dbt-core v1.0.6
    * Following development dependencies are removed
       * watchdog
       * bumpversion
