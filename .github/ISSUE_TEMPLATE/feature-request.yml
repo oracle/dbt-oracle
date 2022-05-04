@@ -1,0 +1,36 @@
+name: Feature
+description: Suggest an idea for dbt-oracle
+title: "[Feature] <title>"
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature request!
+  - type: textarea
+    attributes:
+      label: Describe the Feature
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Describe alternatives you've considered
+      description: |
+        A clear and concise description of any alternative solutions or features you've considered.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Who will this benefit?
+      description: |
+        What kind of use case will this feature be useful for? Please be specific and provide examples, this will help us prioritize properly.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Anything else?
+      description: |
+        Links? References? Anything that will give us more context about the feature you are suggesting!
+    validations:
+      required: false
