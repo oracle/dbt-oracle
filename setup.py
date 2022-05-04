@@ -35,6 +35,7 @@ test_requirements = [
 ]
 
 project_urls = {
+    'Documentation': 'https://docs.getdbt.com/reference/warehouse-profiles/oracle-profile',
     'Source': 'https://github.com/oracle/dbt-oracle',
     'Bug Tracker': 'https://github.com/oracle/dbt-oracle/issues'
 }
