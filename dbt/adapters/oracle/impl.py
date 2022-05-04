@@ -20,6 +20,7 @@ from typing import (
 
 import dbt.exceptions
 from dbt.adapters.sql import SQLAdapter
+from dbt.adapters.base import BaseRelation
 from dbt.adapters.base.meta import available
 from dbt.adapters.oracle import OracleAdapterConnectionManager
 from dbt.adapters.oracle.relation import OracleRelation
@@ -110,6 +111,14 @@ class OracleAdapter(SQLAdapter):
             )
         # return an empty string on success so macros can call this
         return ''
+
+    def get_relation(
+        self, database: str, schema: str, identifier: str
+    ) -> Optional[BaseRelation]:
+        if not self.Relation.include_policy.database:
+            database = None
+
+        return super().get_relation(database, schema, identifier)
 
     def get_rows_different_sql(
         self,
