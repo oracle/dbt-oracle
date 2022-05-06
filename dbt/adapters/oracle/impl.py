@@ -99,9 +99,6 @@ class OracleAdapter(SQLAdapter):
     def convert_time_type(cls, agate_table, col_idx):
         return "timestamp"
 
-    def quote(self, identifier):
-        return '`{}`'.format(identifier)
-
     def get_relation(
         self, database: str, schema: str, identifier: str
     ) -> Optional[BaseRelation]:
