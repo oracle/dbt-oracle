@@ -56,6 +56,9 @@ class OracleAdapterCredentials(Credentials):
     # Mandatory required arguments.
     user: str
     password: str
+    # Database will always be None or must be the same as schema
+    # as the database name (userenv DB_NAME) is not needed when initiating a connection
+    database: Optional[str] = None
 
     # OracleConnectionMethod.TNS
     tns_name: Optional[str] = None
@@ -90,6 +93,17 @@ class OracleAdapterCredentials(Credentials):
     def unique_field(self):
         return self.user
 
+    def __post_init__(self):
+        # In Oracle the userenv DB_NAME (database) is not needed when initiating a connection
+        if self.database is not None and self.database != self.schema:
+            raise dbt.exceptions.RuntimeException(
+                f'    schema: {self.schema} \n'
+                f'    database: {self.database} \n'
+                f'On Oracle, database must be omitted or have the same value as'
+                f' schema.'
+            )
+        self.database = None
+
     def _connection_keys(self) -> Tuple[str]:
         """
         List of keys to display in the `dbt debug` output. Omit password.
@@ -123,7 +137,7 @@ class OracleAdapterCredentials(Credentials):
             return self.connection_string
 
         # Assume host connection method OracleConnectionMethod.HOST
-        return f'{self.protocol}://{self.host}:{self.port}/{service}'
+        return f'{self.protocol}://{self.host}:{self.port}/{self.service}'
 
 
 class OracleAdapterConnectionManager(SQLConnectionManager):

@@ -90,7 +90,7 @@
 
   create {% if temporary -%}
     global temporary
-  {%- endif %} table {{ relation.include(schema=(not temporary)).quote(schema=False, identifier=False) }}
+  {%- endif %} table {{ relation.include(database=False, schema=(not temporary)).quote(schema=False, identifier=False) }}
   {% if temporary -%} on commit preserve rows {%- endif %}
   as
     {{ sql }}
@@ -105,7 +105,7 @@
 
   create {% if temporary -%}
     global temporary
-  {%- endif %} table {{ relation.include(schema=(not temporary)).quote(schema=False, identifier=False) }}
+  {%- endif %} table {{ relation.include(database=False, schema=(not temporary)).quote(schema=False, identifier=False) }}
   {% if temporary -%} on commit preserve rows {%- endif %}
   as
     {{ sql }}
@@ -115,7 +115,7 @@
   {%- set sql_header = config.get('sql_header', none) -%}
 
   {{ sql_header if sql_header is not none }}
-  create view {{ relation.quote(schema=False, identifier=False)  }} as
+  create view {{ relation.include(database=False).quote(schema=False, identifier=False)  }} as
     {{ sql }}
 
 {% endmacro %}
