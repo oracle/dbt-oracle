@@ -68,6 +68,7 @@ class OracleAdapterCredentials(Credentials):
     host: Optional[str] = None
     port: Optional[Port] = None
     service: Optional[str] = None
+    schema: Optional[str] = None
 
     # OracleConnectionMethod.CONNECTION_STRING
     connection_string: Optional[str] = None
