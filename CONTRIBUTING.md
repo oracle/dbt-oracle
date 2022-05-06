@@ -100,7 +100,6 @@ The following environment variables should be set to test `dbt-oracle`
     DBT_ORACLE_PORT
     DBT_ORACLE_SERVICE
     DBT_ORACLE_PASSWORD
-    DBT_ORACLE_DATABASE
     DBT_ORACLE_SCHEMA
 ```
 

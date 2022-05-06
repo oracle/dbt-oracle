@@ -68,7 +68,6 @@ Define the following environment variables.
     DBT_ORACLE_PORT
     DBT_ORACLE_SERVICE
     DBT_ORACLE_PASSWORD
-    DBT_ORACLE_DATABASE
     DBT_ORACLE_SCHEMA
 
 
@@ -126,7 +125,6 @@ Below is an example of `dbt_test` connection profile referred in `dbt_project.ym
              host: "{{ env_var('DBT_ORACLE_HOST') }}"
              port: 1522
              service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
-             database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
              schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
              shardingkey:
                - skey
@@ -175,11 +173,6 @@ service
 * Description - Service name as defined in tnsnames.ora
 * Value - Value can be set in environment variable `DBT_ORACLE_SERVICE`
 * Example - <databasename>_high.adb.oraclecloud.com
-
-database
-^^^^^^^^
-* Description - Database name
-* Value - Value can be set in environment variable `DBT_ORACLE_DATABASE`
 
 schema
 ^^^^^^

@@ -120,7 +120,6 @@ Which database would you like to use?
   user [{{ env_var('DBT_ORACLE_USER') }}]: 
   password [{{ env_var('DBT_ORACLE_PASSWORD') }}]: 
   service (service name in tnsnames.ora) [{{ env_var('DBT_ORACLE_SERVICE') }}]: 
-  dbname (database name in which dbt objects should be created) [{{ env_var('DBT_ORACLE_DATABASE') }}]: 
   schema (database schema in which dbt objects should be created) [{{ env_var('DBT_ORACLE_SCHEMA') }}]: 
   threads (1 or more) [1]: 4
 Profile dbt_oracle_test_project written to ~/.dbt/profiles.yml using target's profile_template.yml and your supplied values. Run 'dbt debug' to validate the connection.
@@ -159,7 +158,6 @@ Then dbt init command will:
        - git [OK found]
        Connection:
         user: ***
-        database: ga01d76d2ecd5e0_db202112221108
         schema: ***
         protocol: tcps
         host: adb.us-ashburn-1.oraclecloud.com

@@ -29,7 +29,6 @@ The following environment variables should be set to test `dbt-oracle`
     DBT_ORACLE_PORT
     DBT_ORACLE_SERVICE
     DBT_ORACLE_PASSWORD
-    DBT_ORACLE_DATABASE
     DBT_ORACLE_SCHEMA
 ```
 
@@ -206,7 +205,6 @@ jaffle_shop:
       host: "{{ env_var('DBT_ORACLE_HOST') }}"
       port: 1522
       service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
-      database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
       schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
       shardingkey:
          - skey
@@ -225,7 +223,6 @@ To test connection, run the `dbt debug` command
 ```text
 Connection:
   user: <...>
-  database: <...>
   schema: <...>
   protocol: tcps
   host: <...>

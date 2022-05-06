@@ -56,7 +56,6 @@ class OracleAdapterCredentials(Credentials):
     # Mandatory required arguments.
     user: str
     password: str
-    database: str
 
     # OracleConnectionMethod.TNS
     tns_name: Optional[str] = None
@@ -80,7 +79,6 @@ class OracleAdapterCredentials(Credentials):
 
 
     _ALIASES = {
-        'dbname': 'database',
         'pass': 'password',
     }
 
@@ -90,14 +88,14 @@ class OracleAdapterCredentials(Credentials):
 
     @property
     def unique_field(self):
-        return self.database
+        return self.user
 
     def _connection_keys(self) -> Tuple[str]:
         """
         List of keys to display in the `dbt debug` output. Omit password.
         """
         return (
-            'user', 'database', 'schema',
+            'user', 'schema',
             'protocol', 'host', 'port', 'tns_name',
             'service', 'connection_string',
             'shardingkey', 'supershardingkey',
@@ -125,14 +123,6 @@ class OracleAdapterCredentials(Credentials):
             return self.connection_string
 
         # Assume host connection method OracleConnectionMethod.HOST
-
-        # If the 'service' property is not provided, use 'database' property for
-        # purposes of connecting.
-        if self.service:
-            service = self.service
-        else:
-            service = self.database
-
         return f'{self.protocol}://{self.host}:{self.port}/{service}'
 
 

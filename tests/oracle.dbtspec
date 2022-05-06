@@ -3,7 +3,6 @@ target:
   user: "{{ env_var('DBT_ORACLE_USER') }}"
   pass: "{{ env_var('DBT_ORACLE_PASSWORD') }}"
   host: "{{ env_var('DBT_ORACLE_HOST') }}"
-  database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
   schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
   service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
   protocol: tcps

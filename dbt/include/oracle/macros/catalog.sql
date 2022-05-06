@@ -21,8 +21,6 @@
       If the user has multiple databases set and the first one is wrong, this will fail.
       But we won't fail in the case where there are multiple quoting-difference-only dbs, which is better.
     #}
-    {% set database = information_schema.database %}
-    {{ adapter.verify_database(database) }}
 
     with columns as (
             select

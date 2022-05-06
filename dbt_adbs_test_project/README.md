@@ -31,7 +31,6 @@ The following environment variables should be set to test integration with ADBS.
     DBT_ORACLE_PORT
     DBT_ORACLE_SERVICE
     DBT_ORACLE_PASSWORD
-    DBT_ORACLE_DATABASE
     DBT_ORACLE_SCHEMA
 ```
 Check [profiles.yml](profiles.yml) to understand how these environment variables are used.

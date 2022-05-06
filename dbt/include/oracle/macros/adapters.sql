@@ -26,9 +26,6 @@
 {% endmacro %}
 
 {% macro oracle__create_schema(database_name, schema_name) -%}
-  {% if relation.database -%}
-    {{ adapter.verify_database(relation.database) }}
-  {%- endif -%}
   {%- call statement('drop_schema') -%}
     -- Noop for not breaking tests, oracle
     -- schemas are actualy users, we can't
@@ -38,9 +35,6 @@
 {% endmacro %}
 
 {% macro oracle__drop_schema(schema) -%}
-  {% if schema.database -%}
-    {{ adapter.verify_database(schema.database) }}
-  {%- endif -%}
   {%- call statement('drop_schema') -%}
     -- from https://gist.github.com/rafaeleyng/33eaef673fc4ee98a6de4f70c8ce3657
     BEGIN
@@ -280,16 +274,10 @@
 {% endmacro %}
 
 {% macro oracle__information_schema_name(database) -%}
-  {% if database -%}
-    {{ adapter.verify_database(database) }}
-  {%- endif -%}
   sys
 {%- endmacro %}
 
 {% macro oracle__list_schemas(database) %}
-  {% if database -%}
-    {{ adapter.verify_database(database) }}
-  {%- endif -%}
   {% call statement('list_schemas', fetch_result=True, auto_begin=False) -%}
      	select lower(username) as "name"
       from sys.all_users
@@ -299,9 +287,6 @@
 {% endmacro %}
 
 {% macro oracle__check_schema_exists(information_schema, schema) -%}
-  {% if information_schema.database -%}
-    {{ adapter.verify_database(information_schema.database) }}
-  {%- endif -%}
   {% call statement('check_schema_exists', fetch_result=True, auto_begin=False) %}
     select count(*) from sys.all_users where username = upper('{{ schema }}')
   {% endcall %}

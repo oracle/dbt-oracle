@@ -99,18 +99,8 @@ class OracleAdapter(SQLAdapter):
     def convert_time_type(cls, agate_table, col_idx):
         return "timestamp"
 
-    @available
-    def verify_database(self, database):
-        if database.startswith('"'):
-            database = database.strip('"')
-        expected = self.config.credentials.database
-        if database.lower() != expected.lower():
-            raise dbt.exceptions.NotImplementedException(
-                'Cross-db references not allowed in {} ({} vs {})'
-                .format(self.type(), database, expected)
-            )
-        # return an empty string on success so macros can call this
-        return ''
+    def quote(self, identifier):
+        return '`{}`'.format(identifier)
 
     def get_relation(
         self, database: str, schema: str, identifier: str
