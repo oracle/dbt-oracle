@@ -56,9 +56,8 @@ class OracleAdapterCredentials(Credentials):
     # Mandatory required arguments.
     user: str
     password: str
-    # Database will always be None or must be the same as schema
-    # as the database name (userenv DB_NAME) is not needed when initiating a connection
-    database: Optional[str] = None
+    # Database is not needed when initiating an Oracle DB connecting
+    database = 'UNDEFINED'
 
     # OracleConnectionMethod.TNS
     tns_name: Optional[str] = None
