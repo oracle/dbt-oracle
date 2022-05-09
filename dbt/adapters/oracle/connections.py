@@ -95,12 +95,10 @@ class OracleAdapterCredentials(Credentials):
 
     def __post_init__(self):
         # In Oracle the userenv DB_NAME (database) is not needed when initiating a connection
-        if self.database is not None and self.database != self.schema:
+        if self.database != 'UNDEFINED':
             raise dbt.exceptions.RuntimeException(
-                f'    schema: {self.schema} \n'
                 f'    database: {self.database} \n'
-                f'On Oracle, database must be omitted or have the same value as'
-                f' schema.'
+                f'With Oracle DB the database property must not be set'
             )
         self.database = None
 

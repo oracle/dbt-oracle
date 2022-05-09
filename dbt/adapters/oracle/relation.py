@@ -40,7 +40,7 @@ class OracleRelation(BaseRelation):
     include_policy: OracleIncludePolicy = OracleIncludePolicy()
 
     def __post_init__(self):
-        if self.database != self.schema and self.database:
+        if self.database != 'UNDEFINED':
             raise dbt.exceptions.RuntimeException(
                 f'Cannot set database {self.database} in Oracle!'
             )
@@ -48,11 +48,3 @@ class OracleRelation(BaseRelation):
     @staticmethod
     def add_ephemeral_prefix(name):
         return f'dbt__cte__{name}__'
-
-    def render(self):
-        if self.include_policy.database and self.include_policy.schema:
-            raise dbt.exceptions.RuntimeException(
-                'Got a Oracle relation with schema and database set to '
-                'include, but only one can be set'
-            )
-        return super().render()
