@@ -57,7 +57,7 @@ class OracleAdapterCredentials(Credentials):
     user: str
     password: str
     # Database is not needed when initiating an Oracle DB connecting
-    database = 'UNDEFINED'
+    database: str = 'UNDEFINED'
 
     # OracleConnectionMethod.TNS
     tns_name: Optional[str] = None
