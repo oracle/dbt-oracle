@@ -57,7 +57,7 @@ class OracleAdapterCredentials(Credentials):
     user: str = 'default'
     password: str = ''
     # Database is not needed when initiating an Oracle DB connecting
-    database: str = 'UNDEFINED'
+    database: Optional[str] = None
     schema: str = 'default'
 
     # OracleConnectionMethod.TNS
@@ -95,7 +95,7 @@ class OracleAdapterCredentials(Credentials):
 
     def __post_init__(self):
         # In Oracle the userenv DB_NAME (database) is not needed when initiating a connection
-        if self.database != 'UNDEFINED':
+        if self.database is not None:
             raise dbt.exceptions.RuntimeException(
                 f'    database: {self.database} \n'
                 f'With Oracle DB the database property must not be set'
