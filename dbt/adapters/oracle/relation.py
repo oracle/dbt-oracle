@@ -48,3 +48,11 @@ class OracleRelation(BaseRelation):
     @staticmethod
     def add_ephemeral_prefix(name):
         return f'dbt__cte__{name}__'
+
+    def render(self):
+        if self.include_policy.database and self.include_policy.schema:
+            raise dbt.exceptions.RuntimeException(
+                'Got a Oracle relation with schema and database include policy set to '
+                'True, but only schema should be set.'
+            )
+        return super().render()
