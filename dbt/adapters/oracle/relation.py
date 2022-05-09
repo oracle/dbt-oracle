@@ -55,4 +55,4 @@ class OracleRelation(BaseRelation):
                 'Got a Oracle relation with schema and database set to '
                 'include, but only one can be set'
             )
-    return super().render()
+        return super().render()

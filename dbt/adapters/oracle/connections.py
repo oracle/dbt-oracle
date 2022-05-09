@@ -46,7 +46,7 @@ class OracleConnectionMethod(enum.Enum):
     CONNECTION_STRING = 3
 
 
-@dataclass
+@dataclass(init=False)
 class OracleAdapterCredentials(Credentials):
     """Collect Oracle credentials
 
@@ -93,6 +93,11 @@ class OracleAdapterCredentials(Credentials):
     @property
     def unique_field(self):
         return self.user
+
+    def __init__(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self, k, v)
+            self.database = None
 
     def __post_init__(self):
         # In Oracle the userenv DB_NAME (database) is not needed when initiating a connection
