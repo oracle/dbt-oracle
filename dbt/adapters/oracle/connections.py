@@ -54,10 +54,11 @@ class OracleAdapterCredentials(Credentials):
     of parameters profiled in the profile.
     """
     # Mandatory required arguments.
-    user: str
-    password: str
+    user: str = 'default'
+    password: str = ''
     # Database is not needed when initiating an Oracle DB connecting
     database: str = 'UNDEFINED'
+    schema: str = 'default'
 
     # OracleConnectionMethod.TNS
     tns_name: Optional[str] = None
