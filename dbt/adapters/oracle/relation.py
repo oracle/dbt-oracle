@@ -14,6 +14,7 @@ Copyright (c) 2020, Vitor Avancini
   See the License for the specific language governing permissions and
   limitations under the License.
 """
+import dbt.exceptions
 from dataclasses import dataclass
 
 from dbt.adapters.base.relation import BaseRelation, Policy

@@ -80,18 +80,9 @@ class OracleAdapterCredentials(Credentials):
     cclass: Optional[str] = None
     purity: Optional[str] = None
 
-
     _ALIASES = {
         'pass': 'password',
     }
-
-    @property
-    def type(self):
-        return 'oracle'
-
-    @property
-    def unique_field(self):
-        return self.user
 
     def __post_init__(self):
         # In Oracle the userenv DB_NAME (database) is not needed when initiating a connection
@@ -101,6 +92,14 @@ class OracleAdapterCredentials(Credentials):
                 f'With Oracle DB the database property must not be set'
             )
         self.database = None
+
+    @property
+    def type(self):
+        return 'oracle'
+
+    @property
+    def unique_field(self):
+        return self.user
 
     def _connection_keys(self) -> Tuple[str]:
         """
