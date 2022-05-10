@@ -41,7 +41,7 @@ class OracleRelation(BaseRelation):
     include_policy: OracleIncludePolicy = OracleIncludePolicy()
 
     def __post_init__(self):
-        if self.database is not None:
+        if self.database:
             raise dbt.exceptions.RuntimeException(
                 f'Cannot set database {self.database} in Oracle!'
             )
