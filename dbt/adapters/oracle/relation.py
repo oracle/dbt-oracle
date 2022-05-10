@@ -40,12 +40,6 @@ class OracleRelation(BaseRelation):
     quote_policy: OracleQuotePolicy = OracleQuotePolicy()
     include_policy: OracleIncludePolicy = OracleIncludePolicy()
 
-    def __post_init__(self):
-        if self.database:
-            raise dbt.exceptions.RuntimeException(
-                f'Cannot set database {self.database} in Oracle!'
-            )
-
     @staticmethod
     def add_ephemeral_prefix(name):
         return f'dbt__cte__{name}__'
