@@ -358,7 +358,7 @@
 {% endmacro %}
 
 {% macro get_database_name() %}
-    {% set results = run_query("select UPPER(SYS_CONTEXT('userenv', 'DB_NAME')) FROM DUAL") %}
+    {% set results = run_query("select SYS_CONTEXT('userenv', 'DB_NAME') FROM DUAL") %}
     {% set db_name = results.columns[0].values()[0] %}
     {{ return(db_name) }}
 {% endmacro %}

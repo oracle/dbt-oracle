@@ -21,12 +21,11 @@ from itertools import chain
 
 import dbt.exceptions
 from dbt.adapters.base.relation import BaseRelation, InformationSchema
-from dbt.adapters.base.impl import GET_CATALOG_MACRO_NAME, _catalog_filter_schemas
+from dbt.adapters.base.impl import GET_CATALOG_MACRO_NAME
 from dbt.adapters.sql import SQLAdapter
 from dbt.adapters.base.meta import available
 from dbt.adapters.oracle import OracleAdapterConnectionManager
 from dbt.adapters.oracle.relation import OracleRelation
-from dbt.clients.agate_helper import table_from_rows
 from dbt.contracts.graph.manifest import Manifest
 
 
