@@ -15,14 +15,20 @@ Copyright (c) 2020, Vitor Avancini
   limitations under the License.
 """
 from typing import (
-    Optional, List
+    Optional, List, Set
 )
+from itertools import chain
 
 import dbt.exceptions
+from dbt.adapters.base.relation import BaseRelation, InformationSchema
+from dbt.adapters.base.impl import GET_CATALOG_MACRO_NAME, _catalog_filter_schemas
 from dbt.adapters.sql import SQLAdapter
 from dbt.adapters.base.meta import available
 from dbt.adapters.oracle import OracleAdapterConnectionManager
 from dbt.adapters.oracle.relation import OracleRelation
+from dbt.clients.agate_helper import table_from_rows
+from dbt.contracts.graph.manifest import Manifest
+
 
 
 import agate
@@ -56,6 +62,7 @@ join diff_count using (id)
 '''.strip()
 
 LIST_RELATIONS_MACRO_NAME = 'list_relations_without_caching'
+GET_DATABASE_MACRO_NAME = 'get_database_name'
 
 
 class OracleAdapter(SQLAdapter):
@@ -103,7 +110,7 @@ class OracleAdapter(SQLAdapter):
         if database.startswith('"'):
             database = database.strip('"')
         expected = self.config.credentials.database
-        if database.lower() != expected.lower():
+        if expected and database.lower() != expected.lower():
             raise dbt.exceptions.NotImplementedException(
                 'Cross-db references not allowed in {} ({} vs {})'
                 .format(self.type(), database, expected)
@@ -150,3 +157,59 @@ class OracleAdapter(SQLAdapter):
         # '+ interval' syntax used in postgres/redshift is relatively common
         # and might even be the SQL standard's intention.
         return f"{add_to} + interval '{number}' {interval}"
+
+    def get_relation(self, database: str, schema: str, identifier: str) -> Optional[BaseRelation]:
+        if database == 'None':
+            database = self.config.credentials.database
+        return super().get_relation(database, schema, identifier)
+
+    def _get_one_catalog(
+            self,
+            information_schema: InformationSchema,
+            schemas: Set[str],
+            manifest: Manifest,
+    ) -> agate.Table:
+
+        kwargs = {"information_schema": information_schema, "schemas": schemas}
+        table = self.execute_macro(
+            GET_CATALOG_MACRO_NAME,
+            kwargs=kwargs,
+            # pass in the full manifest so we get any local project
+            # overrides
+            manifest=manifest,
+        )
+        # In case database is not defined, we can use the the configured database which we set as part of credentials
+        for node in chain(manifest.nodes.values(), manifest.sources.values()):
+            if not node.database or node.database == 'None':
+                node.database = self.config.credentials.database
+
+        results = self._catalog_filter_table(table, manifest)
+        return results
+
+    def list_relations_without_caching(
+            self, schema_relation: BaseRelation,
+    ) -> List[BaseRelation]:
+
+        # Set database if not supplied
+        if not self.config.credentials.database:
+            self.config.credentials.database = self.execute_macro(GET_DATABASE_MACRO_NAME)
+
+        kwargs = {'schema_relation': schema_relation}
+        results = self.execute_macro(
+            LIST_RELATIONS_MACRO_NAME,
+            kwargs=kwargs
+        )
+        relations = []
+        for _database, name, _schema, _type in results:
+            try:
+                _type = self.Relation.get_relation_type(_type)
+            except ValueError:
+                _type = self.Relation.External
+            relations.append(self.Relation.create(
+                database=_database,
+                schema=_schema,
+                identifier=name,
+                quote_policy=self.config.quoting,
+                type=_type
+            ))
+        return relations

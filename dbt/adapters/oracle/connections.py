@@ -14,7 +14,7 @@ Copyright (c) 2020, Vitor Avancini
   See the License for the specific language governing permissions and
   limitations under the License.
 """
-from typing import List, Optional, Tuple, Any
+from typing import List, Optional, Tuple, Any, Dict
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 import enum
@@ -56,7 +56,8 @@ class OracleAdapterCredentials(Credentials):
     # Mandatory required arguments.
     user: str
     password: str
-    database: str
+    # Specifying database is optional
+    database: Optional[str]
 
     # OracleConnectionMethod.TNS
     tns_name: Optional[str] = None
@@ -104,6 +105,14 @@ class OracleAdapterCredentials(Credentials):
             'cclass', 'purity'
         )
 
+    @classmethod
+    def __pre_deserialize__(cls, data: Dict[Any, Any]) -> Dict[Any, Any]:
+        # If database is not defined as adapter credentials
+        data = super().__pre_deserialize__(data)
+        if "database" not in data:
+            data["database"] = None
+        return data
+
     def connection_method(self) -> OracleConnectionMethod:
         """Return an OracleConnecitonMethod inferred from the configuration"""
         if self.connection_string:
@@ -124,16 +133,8 @@ class OracleAdapterCredentials(Credentials):
         if method == OracleConnectionMethod.CONNECTION_STRING:
             return self.connection_string
 
-        # Assume host connection method OracleConnectionMethod.HOST
-
-        # If the 'service' property is not provided, use 'database' property for
-        # purposes of connecting.
-        if self.service:
-            service = self.service
-        else:
-            service = self.database
-
-        return f'{self.protocol}://{self.host}:{self.port}/{service}'
+        # Assume host connection method OracleConnectionMethod.HOST and necessary parameters are defined
+        return f'{self.protocol}://{self.host}:{self.port}/{self.service}'
 
 
 class OracleAdapterConnectionManager(SQLConnectionManager):

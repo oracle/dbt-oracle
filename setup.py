@@ -40,7 +40,7 @@ project_urls = {
     'Bug Tracker': 'https://github.com/oracle/dbt-oracle/issues'
 }
 
-VERSION='1.0.0'
+VERSION='1.0.1b1'
 setup(
     author="Oracle",
     python_requires='>=3.6',
