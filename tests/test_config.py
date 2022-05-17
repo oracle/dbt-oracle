@@ -50,6 +50,7 @@ SCENARIOS = {
                         pass: dbt_test
                         protocol: tcps
                         database: xe
+                        service: xe
                         schema: dbt_test
                         port: 1522
                         threads: 1
@@ -86,7 +87,7 @@ SCENARIOS = {
                         type: oracle
                         user: dbt_test
                         pass: dbt_test
-                        database: xe
+                        tns_name: xe
                         schema: dbt_test
                         port: 1522
                         protocol: tcps
@@ -105,7 +106,7 @@ SCENARIOS = {
                         host: localhost
                         user: dbt_test
                         pass: dbt_test
-                        database: xe
+                        service: xe
                         connection_string: "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1522))(CONNECT_DATA=(SERVICE_NAME=xe)))"
                         schema: dbt_test
                         port: 1522
