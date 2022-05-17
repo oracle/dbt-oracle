@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Check out dbt-oracle repository code
         uses: actions/checkout@v3
+        with:
+          clean: false
 
       - name: Install Oracle Instantclient
         run: |
