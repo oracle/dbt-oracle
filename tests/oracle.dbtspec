@@ -6,8 +6,8 @@ target:
   database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
   schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
   service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
-  protocol: tcps
-  port: 1522
+  protocol: "{{ env_var('DBT_ORACLE_PROTOCOL') }}"
+  port: "{{ env_var('DBT_ORACLE_PORT') }}"
   threads: 1
 projects:
   - overrides:  data_test_ephemeral_models
