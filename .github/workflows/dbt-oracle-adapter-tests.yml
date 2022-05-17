@@ -15,8 +15,7 @@ jobs:
         image: container-registry.oracle.com/database/express:latest
         env:
           ORACLE_PWD: 8b58975df2
-        volumes:
-          - ${{ github.workspace }}/.github/scripts/db_setup:/u01/app/oracle/scripts/setup
+        options: -v ${{ github.workspace }}/.github/scripts/db_setup:/u01/app/oracle/scripts/setup --name oracle_db_xe
         ports:
           - 1521:1521
 
@@ -27,6 +26,11 @@ jobs:
 
       - name: Check out dbt-oracle repository code
         uses: actions/checkout@v3
+
+      - name: Restart Oracle DB
+        uses: docker://docker
+        with:
+          args: docker restart oracle_db_xe
 
       - name: Install Oracle Instantclient
         run: |
