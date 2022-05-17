@@ -16,7 +16,7 @@ jobs:
         env:
           ORACLE_PWD: 8b58975df2
         volumes:
-          - ${GITHUB_WORKSPACE}/.github/scripts/db_setup:/opt/oracle/scripts/setup
+          - ${{ github.workspace }}/.github/scripts/db_setup:/opt/oracle/scripts/setup
 
     steps:
       - name: Check out dbt-oracle repository code
@@ -24,8 +24,8 @@ jobs:
 
       - name: Install Oracle Instantclient
         run: |
-          chmod +x ${GITHUB_WORKSPACE}/.github/scripts/install_oracle_instantclient.sh
-          ${GITHUB_WORKSPACE}/.github/scripts/install_oracle_instantclient.sh
+          chmod +x ${{ github.workspace }}/.github/scripts/install_oracle_instantclient.sh
+          ${{ github.workspace }}/.github/scripts/install_oracle_instantclient.sh
 
       - name: Install dbt-oracle with dependencies
         run: |
