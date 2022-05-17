@@ -19,10 +19,12 @@ jobs:
           - ${{ github.workspace }}/.github/scripts/db_setup:/opt/oracle/scripts/setup
 
     steps:
+      - name: Change File Permissions
+        run: |
+          sudo chown -R $USER:$USER ${{ github.workspace }}/dbt-oracle
+
       - name: Check out dbt-oracle repository code
         uses: actions/checkout@v3
-        with:
-          clean: false
 
       - name: Install Oracle Instantclient
         run: |
