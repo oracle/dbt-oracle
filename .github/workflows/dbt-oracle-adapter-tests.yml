@@ -22,13 +22,16 @@ jobs:
           - 1521:1521
 
     steps:
-      - name: Check out dbt-oracle repository code
-        uses: actions/checkout@v3
-
       - name: Install Oracle Instantclient
         run: |
-          chmod +x ${{ github.workspace }}/.github/scripts/install_oracle_instantclient.sh
-          ${{ github.workspace }}/.github/scripts/install_oracle_instantclient.sh
+          apt-get update
+          apt-get install wget libaio1
+          mkdir -p /opt/oracle
+          wget https://download.oracle.com/otn_software/linux/instantclient/216000/instantclient-basiclite-linux.x64-21.6.0.0.0dbru.zip -P /tmp
+          unzip /tmp/instantclient-basiclite-linux.x64-21.6.0.0.0dbru.zip -d /opt/oracle
+
+      - name: Check out dbt-oracle repository code
+        uses: actions/checkout@v3
 
       - name: Install dbt-oracle with dependencies
         run: |
@@ -50,8 +53,4 @@ jobs:
           DBT_ORACLE_SERVICE: XEPDB1
           DBT_ORACLE_PROTOCOL: tcp
           LD_LIBRARY_PATH: /opt/oracle/instantclient_21_6
-
-
-
-
 
