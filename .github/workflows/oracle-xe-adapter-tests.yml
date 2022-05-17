@@ -29,7 +29,7 @@ jobs:
 
       - name: Install dbt-oracle with core dependencies
         run: |
-          python3 -m pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install pytest pytest-dbt-adapter==0.6.0
           pip install -r requirements.txt
           pip install -e .
@@ -76,7 +76,7 @@ jobs:
 
       - name: Install dbt-oracle with core dependencies
         run: |
-          python3 -m pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install pytest pytest-dbt-adapter==0.4.0
           pip install -r requirements.txt
           pip install -e .
