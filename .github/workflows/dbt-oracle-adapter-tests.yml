@@ -38,10 +38,10 @@ jobs:
         run: |
           pytest tests/oracle.dbtspec tests/test_config.py
         env:
-          DBT_ORACLE_USER: sys
+          DBT_ORACLE_USER: system
           DBT_ORACLE_HOST: localhost
           DBT_ORACLE_PORT: 1521
-          DBT_ORACLE_SCHEMA: sys
+          DBT_ORACLE_SCHEMA: system
           DBT_ORACLE_PASSWORD: 8b58975df2
           DBT_ORACLE_DATABASE: XEPDB1
           DBT_ORACLE_SERVICE: XEPDB1
