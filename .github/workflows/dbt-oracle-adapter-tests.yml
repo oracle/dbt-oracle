@@ -16,7 +16,7 @@ jobs:
         env:
           ORACLE_PWD: 8b58975df2
         volumes:
-          - ${{ github.workspace }}/.github/scripts/db_setup:/opt/oracle/scripts/setup
+          - ${{ github.workspace }}/.github/scripts/db_setup:/u01/app/oracle/scripts/setup
         ports:
           - 1521:1521
 
