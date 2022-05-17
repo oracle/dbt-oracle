@@ -22,10 +22,6 @@ jobs:
           - 1521:1521
 
     steps:
-      - name: Change File Permissions
-        run: |
-          chown -R $USER:$USER ${{ github.workspace }}
-
       - name: Check out dbt-oracle repository code
         uses: actions/checkout@v3
 
