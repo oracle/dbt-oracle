@@ -30,12 +30,18 @@ jobs:
           wget https://download.oracle.com/otn_software/linux/instantclient/216000/instantclient-basiclite-linux.x64-21.6.0.0.0dbru.zip -P /tmp
           unzip /tmp/instantclient-basiclite-linux.x64-21.6.0.0.0dbru.zip -d /opt/oracle
 
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+
       - name: Check out dbt-oracle repository code
         uses: actions/checkout@v3
 
       - name: Install dbt-oracle with dependencies
         run: |
-          python3 -m pip install --upgrade pip
+          pip install --upgrade pip
           pip install pytest pytest-dbt-adapter==0.6.0
           pip install -r requirements.txt
           pip install -e .
