@@ -4,7 +4,6 @@ on: push
 jobs:
   dbt-oracle-adapter-tests:
     runs-on: ${{ matrix.os }}
-    container: ubuntu
     strategy:
       fail-fast: true
       matrix:
@@ -22,26 +21,21 @@ jobs:
           - 1521:1521
 
     steps:
-      - name: Install Oracle Instantclient
+      - name: Change File Permissions
         run: |
-          apt-get update && apt-get -y upgrade
-          apt-get install -y wget libaio1 unzip
-          mkdir -p /opt/oracle
-          wget https://download.oracle.com/otn_software/linux/instantclient/216000/instantclient-basiclite-linux.x64-21.6.0.0.0dbru.zip -P /tmp
-          unzip /tmp/instantclient-basiclite-linux.x64-21.6.0.0.0dbru.zip -d /opt/oracle
-
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
+          sudo chown -R $USER:$USER ${{ github.workspace }}
 
       - name: Check out dbt-oracle repository code
         uses: actions/checkout@v3
 
+      - name: Install Oracle Instantclient
+        run: |
+          chmod +x ${{ github.workspace }}/.github/scripts/install_oracle_instantclient.sh
+          ${{ github.workspace }}/.github/scripts/install_oracle_instantclient.sh
+
       - name: Install dbt-oracle with dependencies
         run: |
-          python -m pip install --upgrade pip
+          python3 -m pip install --upgrade pip
           pip install pytest pytest-dbt-adapter==0.6.0
           pip install -r requirements.txt
           pip install -e .
@@ -51,7 +45,7 @@ jobs:
           pytest tests/oracle.dbtspec tests/test_config.py
         env:
           DBT_ORACLE_USER: pdbadmin
-          DBT_ORACLE_HOST: oracle_db_xe
+          DBT_ORACLE_HOST: localhost
           DBT_ORACLE_PORT: 1521
           DBT_ORACLE_SCHEMA: pdbadmin
           DBT_ORACLE_PASSWORD: 8b58975df2
@@ -59,4 +53,8 @@ jobs:
           DBT_ORACLE_SERVICE: XEPDB1
           DBT_ORACLE_PROTOCOL: tcp
           LD_LIBRARY_PATH: /opt/oracle/instantclient_21_6
+
+
+
+
 
