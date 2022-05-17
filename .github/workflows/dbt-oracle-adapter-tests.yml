@@ -24,8 +24,8 @@ jobs:
     steps:
       - name: Install Oracle Instantclient
         run: |
-          apt-get update
-          apt-get install wget libaio1
+          apt-get update && apt-get -y upgrade
+          apt-get install -y wget libaio1
           mkdir -p /opt/oracle
           wget https://download.oracle.com/otn_software/linux/instantclient/216000/instantclient-basiclite-linux.x64-21.6.0.0.0dbru.zip -P /tmp
           unzip /tmp/instantclient-basiclite-linux.x64-21.6.0.0.0dbru.zip -d /opt/oracle
