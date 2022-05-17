@@ -45,7 +45,7 @@ jobs:
           pytest tests/oracle.dbtspec tests/test_config.py
         env:
           DBT_ORACLE_USER: pdbadmin
-          DBT_ORACLE_HOST: localhost
+          DBT_ORACLE_HOST: 0.0.0.0
           DBT_ORACLE_PORT: 1521
           DBT_ORACLE_SCHEMA: pdbadmin
           DBT_ORACLE_PASSWORD: 8b58975df2
