@@ -2,7 +2,6 @@
 
 [![PyPI version](https://badge.fury.io/py/dbt-oracle.svg)](https://pypi.python.org/pypi/dbt-oracle)
 ![Build](https://github.com/oracle/dbt-oracle/actions/workflows/oracle-xe-adapter-tests.yml/badge.svg)
-[![Downloads](https://pepy.tech/badge/dbt-oracle/month)](https://pepy.tech/project/dbt-oracle)
 
 dbt "adapters" are responsible for adapting dbt's functionality to a given database. `dbt-oracle` implements dbt functionalities for the Oracle database. To learn more about building adapters, check
 https://docs.getdbt.com/docs/contributing/building-a-new-adapter
