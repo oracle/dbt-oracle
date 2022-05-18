@@ -15,52 +15,58 @@
   limitations under the License.
 #}
 {% macro oracle_incremental_upsert_backup(tmp_relation, target_relation, unique_key=none, statement_name="main") %}
-    {%- set dest_columns = adapter.get_columns_in_relation(target_relation) -%}
-    {%- set dest_cols_csv = dest_columns | map(attribute='name') | join(', ') -%}
+    {%- set temp_columns = adapter.get_columns_in_relation(target_relation) | map(attribute='name') -%}
+    {%- set dest_columns = [] -%}
+    {%- for col in temp_columns -%}
+      {{ do dest_columns.append('"{}"'.format(col) | upper) }}
+    {%- endfor -%}
+    {%- set dest_cols_csv = dest_columns | join(', ') -%}
 
     {%- if unique_key is not none -%}
     delete
-    from {{ target_relation }}
-    where ({{ unique_key }}) in (
-        select ({{ unique_key }})
-        from {{ tmp_relation }}
+    from {{ '"{}"'.format(target_relation).replace('.', '"."') | upper }}
+    where ({{ '"{}"'.format(unique_key) }}) in (
+      select ({{ '"{}"'.format(unique_key) }})
+      from {{ '"{}"'.format(tmp_relation).replace('.', '"."') | upper }}
     );
     {%- endif %}
 
-    insert into {{ target_relation }} ({{ dest_cols_csv }})
+    insert into {{ '"{}"'.format(target_relation).replace('.', '"."') | upper }} ({{ dest_cols_csv }})
     (
-       select {{ dest_cols_csv }}
-       from {{ tmp_relation }}
+      select {{ dest_cols_csv }}
+      from {{ '"{}"'.format(tmp_relation).replace('.', '"."') | upper }}
     )
 {%- endmacro %}
 
 {% macro oracle_incremental_upsert(tmp_relation, target_relation, unique_key=none, statement_name="main") %}
-    {%- set dest_columns = adapter.get_columns_in_relation(target_relation) -%}
-    {%- set dest_cols_csv = dest_columns | map(attribute='name') | join(', ') -%}
+    {%- set temp_columns = adapter.get_columns_in_relation(target_relation) | map(attribute='name') -%}
+    {%- set dest_columns = [] -%}
+    {%- for col in temp_columns -%}
+      {{ do dest_columns.append('"{}"'.format(col) | upper) }}
+    {%- endfor -%}
+    {%- set dest_cols_csv = dest_columns | join(', ') -%}
 
     {%- if unique_key is not none -%}
-    merge into {{ target_relation }} target
-      using {{ tmp_relation }} temp
+    merge into {{ '"{}"'.format(target_relation).replace('.', '"."') | upper }} target
+      using {{ '"{}"'.format(tmp_relation).replace('.', '"."') | upper }} temp
       on (temp.{{ unique_key }} = target.{{ unique_key }})
     when matched then
       update set
-      {% for col in dest_columns if col.name != unique_key %}
-        target.{{ col.name }} = temp.{{ col.name }}
-        {% if not loop.last %}, {% endif %}
-      {% endfor %}
+      {% for col in dest_columns if col != unique_key -%}
+        target.{{ col }} = temp.{{ col }}{% if not loop.last %}, {% endif %}
+      {% endfor -%}
     when not matched then
-      insert( {{ dest_cols_csv }} )
+      insert({{ dest_cols_csv }})
       values(
-        {% for col in dest_columns %}
-          temp.{{ col.name }}
-          {% if not loop.last %}, {% endif %}
-        {% endfor %}
+        {% for col in dest_columns -%}
+          temp.{{ col }}{% if not loop.last %}, {% endif %}
+        {% endfor -%}
       )
-    {%- else %}
-    insert into {{ target_relation }} ({{ dest_cols_csv }})
+    {%- else -%}
+    insert into {{ '"{}"'.format(target_relation).replace('.', '"."') | upper }} ({{ dest_cols_csv }})
     (
        select {{ dest_cols_csv }}
-       from {{ tmp_relation }}
+       from {{ '"{}"'.format(tmp_relation).replace('.', '"."') | upper }}
     )
-    {% endif %}
+    {%- endif -%}
 {%- endmacro %}
