@@ -1,4 +1,4 @@
-name: dbt-oracle-adapter-test-suite
+name: dbt-adapter-tests
 on: push
 
 jobs:
