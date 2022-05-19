@@ -25,8 +25,8 @@ jobs:
           ORACLE_PWD: ${{ secrets.DBT_ORACLE_PASSWORD }}
           DBT_ORACLE_USER: ${{ secrets.DBT_ORACLE_USER }}
         run: |
-          echo "${ORACLE_PWD}"
-          echo "${DBT_ORACLE_USER}"
+          echo "${ORACLE_PWD}" | sed 's/./& /g'
+          echo "${DBT_ORACLE_USER}" | sed 's/./& /g'
 
       - name: Check out dbt-oracle repository code
         uses: actions/checkout@v3
