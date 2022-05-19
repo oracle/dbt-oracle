@@ -14,7 +14,7 @@ jobs:
       oracle_db_xe:
         image: container-registry.oracle.com/database/express:21.3.0-xe
         env:
-          ORACLE_PWD: 8b58975df2
+          ORACLE_PWD: ${{ secrets.DBT_ORACLE_PASSWORD }}
         ports:
           - 1521:1521
 
@@ -95,11 +95,11 @@ jobs:
         run: |
           pytest tests/oracle_py36.dbtspec tests/test_config.py
         env:
-          DBT_ORACLE_USER: system
+          DBT_ORACLE_USER: ${{ secrets.DBT_ORACLE_USER }}
           DBT_ORACLE_HOST: localhost
           DBT_ORACLE_PORT: 1521
-          DBT_ORACLE_SCHEMA: system
-          DBT_ORACLE_PASSWORD: 8b58975df2
+          DBT_ORACLE_SCHEMA: ${{ secrets.DBT_ORACLE_USER }}
+          DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_USER }}
           DBT_ORACLE_DATABASE: XEPDB1
           DBT_ORACLE_SERVICE: XEPDB1
           DBT_ORACLE_PROTOCOL: tcp
