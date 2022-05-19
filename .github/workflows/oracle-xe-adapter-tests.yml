@@ -99,7 +99,7 @@ jobs:
           DBT_ORACLE_HOST: localhost
           DBT_ORACLE_PORT: 1521
           DBT_ORACLE_SCHEMA: ${{ secrets.DBT_ORACLE_USER }}
-          DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_USER }}
+          DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_PASSWORD }}
           DBT_ORACLE_DATABASE: XEPDB1
           DBT_ORACLE_SERVICE: XEPDB1
           DBT_ORACLE_PROTOCOL: tcp
