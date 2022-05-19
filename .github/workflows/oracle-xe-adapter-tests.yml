@@ -19,6 +19,15 @@ jobs:
           - 1521:1521
 
     steps:
+
+      - name: Check Secrets are set
+        env:
+          ORACLE_PWD: ${{ secrets.DBT_ORACLE_PASSWORD }}
+          DBT_ORACLE_USER: ${{ secrets.DBT_ORACLE_USER }}
+        run: |
+          echo "${ORACLE_PWD}"
+          echo "${DBT_ORACLE_USER}"
+
       - name: Check out dbt-oracle repository code
         uses: actions/checkout@v3
 
