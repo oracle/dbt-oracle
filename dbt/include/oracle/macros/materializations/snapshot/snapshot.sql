@@ -208,12 +208,17 @@
   {%- set strategy_name = config.get('strategy') -%}
   {%- set unique_key = config.get('unique_key') %}
 
-  {% if not adapter.check_schema_exists(model.database, model.schema) %}
-    {% do create_schema(model.database, model.schema) %}
+  {% set model_database = model.database %}
+  {% if model_database == 'None' or model_database is undefined or model_database is none %}
+    {% set model_database = get_database_name() %}
+  {% endif %}
+
+  {% if not adapter.check_schema_exists(model_database, model.schema) %}
+    {% do create_schema(model_database, model.schema) %}
   {% endif %}
 
   {% set target_relation_exists, target_relation = get_or_create_relation(
-          database=model.database,
+          database=model_database,
           schema=model.schema,
           identifier=target_table,
           type='table') -%}

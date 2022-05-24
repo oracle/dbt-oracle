@@ -22,6 +22,9 @@
       But we won't fail in the case where there are multiple quoting-difference-only dbs, which is better.
     #}
     {% set database = information_schema.database %}
+    {% if database == 'None' or database is undefined or database is none %}
+      {% set database = get_database_name() %}
+    {% endif %}
     {{ adapter.verify_database(database) }}
 
     with columns as (

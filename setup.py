@@ -37,10 +37,13 @@ test_requirements = [
 project_urls = {
     'Documentation': 'https://docs.getdbt.com/reference/warehouse-profiles/oracle-profile',
     'Source': 'https://github.com/oracle/dbt-oracle',
-    'Bug Tracker': 'https://github.com/oracle/dbt-oracle/issues'
+    'Bug Tracker': 'https://github.com/oracle/dbt-oracle/issues',
+    'CI': 'https://github.com/oracle/dbt-oracle/actions',
 }
 
-VERSION='1.0.0'
+url = 'https://github.com/oracle/dbt-oracle'
+
+VERSION='1.0.1'
 setup(
     author="Oracle",
     python_requires='>=3.6',
@@ -66,6 +69,7 @@ setup(
     packages=find_packages(),
     test_suite='tests',
     tests_require=test_requirements,
+    url=url,
     project_urls=project_urls,
     version=VERSION,
     zip_safe=False,
