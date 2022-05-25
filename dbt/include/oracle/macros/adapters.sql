@@ -182,9 +182,6 @@
         {% if relation.schema %}
         and table_schema = upper('{{ relation.schema }}')
         {% endif %}
-        {% if relation.database %}
-        and table_catalog = upper('{{ relation.database }}')
-        {% endif %}
       order by ordinal_position
 
   {% endcall %}
@@ -341,7 +338,6 @@
     end as "kind"
   from tables
   where table_type in ('BASE TABLE', 'VIEW')
-    and table_catalog = upper('{{ schema_relation.database }}')
     and table_schema = upper('{{ schema_relation.schema }}')
   {% endcall %}
   {{ return(load_result('list_relations_without_caching').table) }}
@@ -359,4 +355,10 @@
                                 path={"identifier": tmp_identifier}) -%}
 
     {% do return(tmp_relation) %}
+{% endmacro %}
+
+{% macro get_database_name() %}
+    {% set results = run_query("select SYS_CONTEXT('userenv', 'DB_NAME') FROM DUAL") %}
+    {% set db_name = results.columns[0].values()[0] %}
+    {{ return(db_name) }}
 {% endmacro %}

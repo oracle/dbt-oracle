@@ -21,10 +21,6 @@ prompts:
     hint: 'service name in tnsnames.ora'
     type: string
     default: "{{ env_var('DBT_ORACLE_SERVICE') }}"
-  dbname:
-    hint: 'database name in which dbt objects should be created'
-    type: string
-    default: "{{ env_var('DBT_ORACLE_DATABASE') }}"
   schema:
     hint: 'database schema in which dbt objects should be created'
     type: string
