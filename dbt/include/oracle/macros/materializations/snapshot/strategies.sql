@@ -77,8 +77,13 @@
         {{ return([false, query_columns]) }}
     {%- endif -%}
     {# handle any schema changes #}
+    {% set node_database = node.database %}
+    {% if node_database == 'None' or model_database is undefined or model_database is none %}
+        {% set node_database = get_database_name() %}
+    {% endif %}
     {%- set target_table = node.get('alias', node.get('name')) -%}
-    {%- set target_relation = adapter.get_relation(database=node.database, schema=node.schema, identifier=target_table) -%}
+
+    {%- set target_relation = adapter.get_relation(database=node_database, schema=node.schema, identifier=target_table) -%}
     {%- set existing_cols = get_columns_in_query('select * from ' ~ target_relation.quote(schema=False, identifier=False)) -%}
     {%- set ns = namespace() -%} {# handle for-loop scoping with a namespace #}
     {%- set ns.column_added = false -%}
