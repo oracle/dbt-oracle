@@ -268,9 +268,12 @@
 {% endmacro %}
 
 {% macro oracle__truncate_relation(relation) -%}
-  {% call statement('truncate_relation') -%}
-    truncate table {{ relation.quote(schema=False, identifier=False) }}
-  {%- endcall %}
+  {#-- To avoid `ORA-01702: a view is not appropriate here` we check that the relation to be truncated is a table #}
+  {% if relation.is_table %}
+    {% call statement('truncate_relation') -%}
+        truncate table {{ relation.quote(schema=False, identifier=False) }}
+    {%- endcall %}
+  {% endif %}
 {% endmacro %}
 
 {% macro oracle__rename_relation(from_relation, to_relation) -%}
