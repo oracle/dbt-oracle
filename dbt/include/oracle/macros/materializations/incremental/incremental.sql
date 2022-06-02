@@ -62,6 +62,7 @@
   {% do adapter.commit() %}
 
   {% for rel in to_drop %}
+      {% do adapter.truncate_relation(rel) %}
       {% do adapter.drop_relation(rel) %}
   {% endfor %}
 

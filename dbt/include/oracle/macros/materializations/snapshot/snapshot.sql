@@ -35,8 +35,9 @@
   {{ adapter.dispatch('post_snapshot')(staging_relation) }}
 {% endmacro %}
 
-{% macro default__post_snapshot(staging_relation) %}
-    {# no-op #}
+{% macro oracle__post_snapshot(staging_relation) %}
+    {% do adapter.truncate_relation(staging_relation) %}
+    {% do adapter.drop_relation(staging_relation) %}
 {% endmacro %}
 
 
