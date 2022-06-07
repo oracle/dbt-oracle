@@ -36,8 +36,11 @@
       {% set backup_identifier = existing_relation.identifier ~ "__dbt_backup" %}
       {% set backup_relation = existing_relation.incorporate(path={"identifier": backup_identifier}) %}
       {% do adapter.drop_relation(backup_relation) %}
-
-      {% do adapter.rename_relation(target_relation, backup_relation) %}
+      {% if existing_relation.is_view %}
+            {% do adapter.drop_relation(existing_relation) %}
+      {% else %}
+            {% do adapter.rename_relation(existing_relation, backup_relation) %}
+      {% endif %}
       {% set build_sql = create_table_as(False, target_relation, sql) %}
       {% do to_drop.append(backup_relation) %}
   {% else %}
