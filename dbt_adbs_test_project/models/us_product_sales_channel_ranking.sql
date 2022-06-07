@@ -16,11 +16,14 @@
 {{
     config(
         materialized='incremental',
-        unique_key='calendar_month_desc'
+        unique_key='group_id',
+        schema='dbt_test'
     )
 }}
 
-SELECT prod_name, channel_desc, calendar_month_desc, TO_CHAR(SUM(amount_sold), '9,999,999,999') SALES$,
+SELECT prod_name, channel_desc, calendar_month_desc,
+   {{ snapshot_hash_arguments(['prod_name', 'channel_desc', 'calendar_month_desc']) }} AS group_id,
+   TO_CHAR(SUM(amount_sold), '9,999,999,999') SALES$,
    RANK() OVER (ORDER BY SUM(amount_sold)) AS default_rank,
    RANK() OVER (ORDER BY SUM(amount_sold) DESC NULLS LAST) AS custom_rank
 FROM {{ source('sh_database', 'sales') }}, {{ source('sh_database', 'products') }}, {{ source('sh_database', 'customers') }},
