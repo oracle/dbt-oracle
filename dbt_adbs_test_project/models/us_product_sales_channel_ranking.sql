@@ -16,9 +16,7 @@
 {{
     config(
         materialized='incremental',
-        unique_key='group_id',
-        schema='dbt_test'
-    )
+        unique_key='group_id')
 }}
 
 SELECT prod_name, channel_desc, calendar_month_desc,

@@ -14,7 +14,7 @@
   limitations under the License.
 #}
 {{config(materialized='table',
-         schema='dbt_test')}}
+         schema=env_var('DBT_ORACLE_CUSTOM_SCHEMA')) }}
 SELECT * FROM {{ source('sh_database', 'countries')}}
 where country_iso_code in ('AT', 'BE', 'BG', 'DK', 'CZ', 'DE', 'IT',
                            'FI', 'FR', 'GR', 'NL', 'IE', 'HU', 'ES', 'SE',
