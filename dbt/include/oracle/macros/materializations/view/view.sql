@@ -17,20 +17,11 @@
 {%- materialization view, adapter='oracle' -%}
 
   {%- set identifier = model['alias'] -%}
-  {%- set tmp_identifier = model['name'] + '__dbt_tmp' -%}
   {%- set backup_identifier = model['name'] + '__dbt_backup' -%}
 
   {%- set old_relation = adapter.get_relation(database=database, schema=schema, identifier=identifier) -%}
   {%- set target_relation = api.Relation.create(identifier=identifier, schema=schema, database=database,
                                                 type='view') -%}
-  {%- set intermediate_relation = api.Relation.create(identifier=tmp_identifier,
-                                                      schema=schema, database=database, type='view') -%}
-  -- the intermediate_relation should not already exist in the database; get_relation
-  -- will return None in that case. Otherwise, we get a relation that we can drop
-  -- later, before we try to use this name for the current operation
-  {%- set preexisting_intermediate_relation = adapter.get_relation(identifier=tmp_identifier,
-                                                                   schema=schema,
-                                                                   database=database) -%}
   /*
      This relation (probably) doesn't exist yet. If it does exist, it's a leftover from
      a previous run, and we're going to try to drop it immediately. At the end of this
@@ -55,24 +46,20 @@
 
   {{ run_hooks(pre_hooks, inside_transaction=False) }}
 
-  -- drop the temp relations if they exist already in the database
-  {{ drop_relation_if_exists(preexisting_intermediate_relation) }}
   {{ drop_relation_if_exists(preexisting_backup_relation) }}
 
   -- `BEGIN` happens here:
   {{ run_hooks(pre_hooks, inside_transaction=True) }}
 
-  -- build model
-  {% call statement('main') -%}
-    {{ create_view_as(intermediate_relation, sql) }}
-  {%- endcall %}
-
-  -- cleanup
-  -- move the existing view out of the way
-  {% if old_relation is not none %}
+  -- if old_relation was a table
+  {% if old_relation is not none and old_relation.type == 'table' %}
     {{ adapter.rename_relation(old_relation, backup_relation) }}
   {% endif %}
-  {{ adapter.rename_relation(intermediate_relation, target_relation) }}
+
+  -- build model
+  {% call statement('main') -%}
+    {{ create_view_as(target_relation, sql) }}
+  {%- endcall %}
 
   {% do persist_docs(target_relation, model) %}
 
