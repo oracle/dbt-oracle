@@ -26,9 +26,6 @@
 {% endmacro %}
 
 {% macro oracle__create_schema(database_name, schema_name) -%}
-  {% if relation.database -%}
-    {{ adapter.verify_database(relation.database) }}
-  {%- endif -%}
   {%- call statement('drop_schema') -%}
     -- Noop for not breaking tests, oracle
     -- schemas are actualy users, we can't
@@ -278,7 +275,7 @@
 
 {% macro oracle__rename_relation(from_relation, to_relation) -%}
   {% call statement('rename_relation') -%}
-    rename {{ from_relation.include(False, False, True).quote(schema=False, identifier=False) }} to {{ to_relation.include(False, False, True).quote(schema=False, identifier=False) }}
+    alter table {{ from_relation.include(False, True, True).quote(schema=False, identifier=False) }} rename to {{ to_relation.include(False, False, True).quote(schema=False, identifier=False) }}
   {%- endcall %}
 {% endmacro %}
 
