@@ -25,6 +25,7 @@
     {{ return(load_result('get_columns_in_query').table.columns | map(attribute='name') | list) }}
 {% endmacro %}
 
+
 {% macro oracle__create_schema(relation, schema_name) -%}
   {% if relation.database -%}
     {{ adapter.verify_database(relation.database) }}
@@ -365,4 +366,3 @@
     {% set db_name = results.columns[0].values()[0] %}
     {{ return(db_name) }}
 {% endmacro %}
-
