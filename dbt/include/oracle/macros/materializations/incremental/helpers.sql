@@ -45,15 +45,13 @@
     when matched then
       update set
       {% for col in dest_columns if col.name.upper() != unique_key.upper() -%}
-        target.{{ col.name }} = temp.{{ col.name }}
-        {% if not loop.last %}, {% endif %}
+        target.{{ col.name }} = temp.{{ col.name }}{% if not loop.last %}, {% endif %}
       {% endfor -%}
     when not matched then
       insert({{ dest_cols_csv }})
       values(
         {% for col in dest_columns -%}
-          temp.{{ col.name }}
-          {% if not loop.last %}, {% endif %}
+          temp.{{ col.name }}{% if not loop.last %}, {% endif %}
         {% endfor -%}
       )
     {%- else -%}
