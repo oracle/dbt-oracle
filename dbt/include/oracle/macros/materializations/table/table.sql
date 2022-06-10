@@ -68,7 +68,11 @@
 
   -- cleanup
   {% if old_relation is not none %}
-      {{ adapter.rename_relation(old_relation, backup_relation) }}
+      {% if old_relation.is_view %}
+            {% do adapter.drop_relation(old_relation) %}
+      {% else %}
+            {% do adapter.rename_relation(old_relation, backup_relation) %}
+      {% endif %}
   {% endif %}
 
   {{ adapter.rename_relation(intermediate_relation, target_relation) }}

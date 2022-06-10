@@ -28,7 +28,12 @@ from dbt.adapters.oracle import OracleAdapterConnectionManager
 from dbt.adapters.oracle.relation import OracleRelation
 from dbt.contracts.graph.manifest import Manifest
 
+from dbt.exceptions import raise_compiler_error
+from dbt.utils import filter_null_values
 
+from dbt.events import AdapterLogger
+
+logger = AdapterLogger("oracle")
 
 import agate
 
@@ -116,6 +121,21 @@ class OracleAdapter(SQLAdapter):
             )
         # return an empty string on success so macros can call this
         return ''
+
+    def _make_match_kwargs(self, database, schema, identifier):
+        quoting = self.config.quoting
+        if identifier is not None and quoting["identifier"] is False:
+            identifier = identifier.upper()
+
+        if schema is not None and quoting["schema"] is False:
+            schema = schema.upper()
+
+        if database is not None and quoting["database"] is False:
+            database = database.upper()
+
+        return filter_null_values(
+            {"identifier": identifier, "schema": schema, "database": database}
+        )
 
     def get_rows_different_sql(
         self,
@@ -212,3 +232,23 @@ class OracleAdapter(SQLAdapter):
                 type=_type
             ))
         return relations
+
+    @available
+    def quote_seed_column(
+            self, column: str, quote_config: Optional[bool]
+    ) -> str:
+        quote_columns: bool = False
+        if isinstance(quote_config, bool):
+            quote_columns = quote_config
+        elif quote_config is None:
+            pass
+        else:
+            raise_compiler_error(
+                f'The seed configuration value of "quote_columns" has an '
+                f'invalid type {type(quote_config)}'
+            )
+
+        if quote_columns:
+            return self.quote(column)
+        else:
+            return column

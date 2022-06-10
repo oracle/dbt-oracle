@@ -13,5 +13,5 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 #}
-{{config(materialized='view')}}
+{{config(materialized='table')}}
 select * from {{ ref('seed') }}
