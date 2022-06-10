@@ -44,7 +44,7 @@
       on (temp.{{ unique_key }} = target.{{ unique_key }})
     when matched then
       update set
-      {% for col in dest_columns if col.name != unique_key %}
+      {% for col in dest_columns if col.name.upper() != unique_key.upper() %}
         target.{{ col.name }} = temp.{{ col.name }}
         {% if not loop.last %}, {% endif %}
       {% endfor %}

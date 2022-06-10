@@ -173,8 +173,8 @@
           from sys.all_tab_columns
       )
       select
-          lower(column_name) as "name",
-          lower(data_type) as "type",
+          column_name as "name",
+          data_type as "type",
           char_length as "character_maximum_length",
           numeric_precision as "numeric_precision",
           numeric_scale as "numeric_scale"
@@ -295,7 +295,7 @@
     {{ adapter.verify_database(database) }}
   {%- endif -%}
   {% call statement('list_schemas', fetch_result=True, auto_begin=False) -%}
-     	select lower(username) as "name"
+     	select username as "name"
       from sys.all_users
       order by username
   {% endcall %}
@@ -333,9 +333,9 @@
          'VIEW'
        from sys.all_views
   )
-  select lower(table_catalog) as "database_name"
-    ,lower(table_name) as "name"
-    ,lower(table_schema) as "schema_name"
+  select table_catalog as "database_name"
+    ,table_name as "name"
+    ,table_schema as "schema_name"
     ,case table_type
       when 'BASE TABLE' then 'table'
       when 'VIEW' then 'view'

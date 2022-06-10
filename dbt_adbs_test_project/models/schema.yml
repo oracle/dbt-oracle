@@ -22,12 +22,20 @@ models:
     columns:
       - name: id
         tests:
+          - dbt_constraints.primary_key
           - not_null
           - unique
       - name: gender
         tests:
           - accepted_values:
               values: ['Male', 'Female']
+  - name: countries
+    columns:
+      - name: country_id
+        tests:
+          - dbt_constraints.primary_key
+          - not_null
+          - unique
   - name: eu_direct_sales_channels_promo_costs
     columns:
       - name: country_id
@@ -35,5 +43,8 @@ models:
           - relationships:
               to: ref('countries')
               field: country_id
+          - dbt_constraints.foreign_key:
+              pk_table_name: ref('countries')
+              pk_column_name: country_id
 
 
