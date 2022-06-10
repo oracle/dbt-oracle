@@ -44,23 +44,23 @@
       on (temp.{{ unique_key }} = target.{{ unique_key }})
     when matched then
       update set
-      {% for col in dest_columns if col.name.upper() != unique_key.upper() %}
+      {% for col in dest_columns if col.name.upper() != unique_key.upper() -%}
         target.{{ col.name }} = temp.{{ col.name }}
         {% if not loop.last %}, {% endif %}
-      {% endfor %}
+      {% endfor -%}
     when not matched then
-      insert( {{ dest_cols_csv }} )
+      insert({{ dest_cols_csv }})
       values(
-        {% for col in dest_columns %}
+        {% for col in dest_columns -%}
           temp.{{ col.name }}
           {% if not loop.last %}, {% endif %}
-        {% endfor %}
+        {% endfor -%}
       )
-    {%- else %}
+    {%- else -%}
     insert into {{ target_relation }} ({{ dest_cols_csv }})
     (
        select {{ dest_cols_csv }}
        from {{ tmp_relation }}
     )
-    {% endif %}
+    {%- endif -%}
 {%- endmacro %}
