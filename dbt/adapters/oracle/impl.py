@@ -31,9 +31,6 @@ from dbt.contracts.graph.manifest import Manifest
 from dbt.exceptions import raise_compiler_error
 from dbt.utils import filter_null_values
 
-from dbt.events import AdapterLogger
-
-logger = AdapterLogger("oracle")
 
 import agate
 
