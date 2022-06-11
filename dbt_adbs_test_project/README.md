@@ -9,38 +9,14 @@ To test the integration with ADBS, you can use OCI's [Always Free Autonomous Dat
 
 The database also provides a read-only Sales History data set. Any user can start querying the tables in this Sales History `sh` schema. Models in this test project refer the `sh` schema. You do not need to load any other dataset.
 
-## Set the environment variables
+## Setup the oracle profile
 
-The following environment variables should be set to test integration with ADBS.
+To setup [profiles.yml](profiles.yml) read [setup & installation instructions][1] on dbt docs website
 
-```bash
-    # cx_oracle needs lib_dir parameter pointing to the folder
-    # containing the libraries from an unzipped Instant Client Basic or Basic Light package.
-    # If lib_dir is not passed client libraries are looked for in the Operating system search path
-    # or set in the following environment variables.
-    DYLD_LIBRARY_PATH # For MacOS
-    LD_LIBRARY_PATH # For Linux
+Install dbt-oracle in your project's virtual environment.
 
-    # For ADBS, cx_oracle will need the path to the folder
-    # containing client wallet, sqlnet.ora and tnsnames.ora
-    TNS_ADMIN
-
-    # Database connection config - dbt specific variables
-    DBT_ORACLE_USER
-    DBT_ORACLE_HOST
-    DBT_ORACLE_PORT
-    DBT_ORACLE_SERVICE
-    DBT_ORACLE_PASSWORD
-    DBT_ORACLE_DATABASE
-    DBT_ORACLE_SCHEMA
-```
-Check [profiles.yml](profiles.yml) to understand how these environment variables are used.
-
-Also read about [connecting to Oracle Database](https://cx-oracle.readthedocs.io/en/latest/user_guide/connection_handling.html) using cx_Oracle
 
 ## dbt project
-
-Install dbt-oracle in your local development environment.
 
 Next, run the `dbt compile` command in this project directory to compile the models and resolve dependencies.
 ```bash
@@ -124,3 +100,5 @@ Following directory structure shows the 10 models, seed, test, analysis and snap
 
 ## Tests [TODO]
 - Metrics - Experimental feature introduced in dbt-core==1.0.0
+
+[1]: https://docs.getdbt.com/reference/warehouse-profiles/oracle-profile
