@@ -139,3 +139,6 @@ doc/.docenv
 doc/build.gitbak
 .gitbak/
 .venvpy37
+.venv1.1.0
+.venv
+.bldenv
