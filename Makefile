@@ -36,5 +36,5 @@ adbs_pypi_test: clean_venv
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt run --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt snapshot --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt snapshot --profiles-dir ./
-
-
+	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt docs generate --profiles-dir ./
+	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt clean --profiles-dir ./
