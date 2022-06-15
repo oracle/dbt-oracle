@@ -13,9 +13,13 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 #}
-{{config(materialized='table',
-         schema=env_var('DBT_ORACLE_CUSTOM_SCHEMA')) }}
-SELECT * FROM {{ source('sh_database', 'countries')}}
-where country_iso_code in ('AT', 'BE', 'BG', 'DK', 'CZ', 'DE', 'IT',
-                           'FI', 'FR', 'GR', 'NL', 'IE', 'HU', 'ES', 'SE',
-                           'GE', 'IS', 'NO', 'CH', 'GB', 'VA')
+{% macro generate_schema_name(custom_schema_name, node) -%}
+
+    {%- set default_schema = target.schema -%}
+    {%- if custom_schema_name is none -%}
+        {{ default_schema }}
+    {%- else -%}
+        {{ custom_schema_name | trim }}
+    {%- endif -%}
+
+{%- endmacro %}
