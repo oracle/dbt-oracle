@@ -46,8 +46,8 @@ adbs_pypi_test: clean_venv
 	${VENV_DIR}/bin/pip install dbt-oracle==${VERSION}
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt --version
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt debug --profiles-dir ./
-	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt run-operation drop_schema --args 'relation: ${DBT_ORACLE_SCHEMA}' --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt deps --profiles-dir ./
+	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt run-operation drop_schema --args 'relation: ${DBT_ORACLE_SCHEMA}' --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt seed --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt run --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt test --profiles-dir ./
