@@ -5,3 +5,5 @@ setuptools>=40.6.0
 tox
 coverage
 twine
+pytest
+dbt-tests-adapter==1.1.1

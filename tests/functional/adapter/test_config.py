@@ -26,6 +26,7 @@ from dbt.context.base import generate_base_context
 from dbt.adapters.oracle import OracleAdapterCredentials
 from dbt.adapters.oracle.connections import OracleConnectionMethod
 
+
 def get_credentials(profile_yml):
     "Render a YAML string profiles.yml into credentials"
     dicty_thing = load_yaml_text(profile_yml)
@@ -34,6 +35,7 @@ def get_credentials(profile_yml):
         dicty_thing, 'default', renderer
     )
     return profile.credentials
+
 
 # Define data
 SCENARIOS = {
@@ -49,7 +51,6 @@ SCENARIOS = {
                         user: dbt_test
                         pass: dbt_test
                         protocol: tcps
-                        database: xe
                         service: xe
                         schema: dbt_test
                         port: 1522
@@ -68,7 +69,6 @@ SCENARIOS = {
                         host: localhost
                         user: dbt_test
                         pass: dbt_test
-                        database: xe
                         service: xe_ha.host.tld
                         schema: dbt_test
                         protocol: tcps
@@ -106,7 +106,6 @@ SCENARIOS = {
                         host: localhost
                         user: dbt_test
                         pass: dbt_test
-                        service: xe
                         connection_string: "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1522))(CONNECT_DATA=(SERVICE_NAME=xe)))"
                         schema: dbt_test
                         port: 1522
@@ -116,9 +115,11 @@ SCENARIOS = {
     },
 }
 
+
 @pytest.fixture(scope="module", params=SCENARIOS.keys())
 def scenario(request):
     return SCENARIOS[request.param]
+
 
 def test_oracle_credentials(scenario):
     for method, parameters in SCENARIOS.items():
