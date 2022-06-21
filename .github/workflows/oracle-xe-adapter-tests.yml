@@ -36,12 +36,12 @@ jobs:
 
       - name: Copy Create User script
         run: |
-        chmod +x ${{ github.workspace }}/.github/scripts/create_new_user.sh
-        docker cp ${{ github.workspace }}/.github/scripts/create_new_user.sh oracle_db_xe:/u01/app/oracle/scripts/create_new_user.sh
+          chmod +x ${{ github.workspace }}/.github/scripts/create_new_user.sh
+          docker cp ${{ github.workspace }}/.github/scripts/create_new_user.sh oracle_db_xe:/u01/app/oracle/scripts/create_new_user.sh
 
       - name: Create dbt test user
         run: |
-        docker exec oracle_db_xe /u01/app/oracle/scripts/create_new_user.sh dbt_test ${{ secrets.DBT_ORACLE_PASSWORD }}
+          docker exec oracle_db_xe /u01/app/oracle/scripts/create_new_user.sh dbt_test ${{ secrets.DBT_ORACLE_PASSWORD }}
 
       - name: Install dbt-oracle with core dependencies
         run: |
