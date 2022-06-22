@@ -36,8 +36,8 @@ def dbt_profile_target():
         'schema': os.getenv('DBT_ORACLE_SCHEMA'),
         'database': os.getenv('DBT_ORACLE_DATABASE'),
         'service': os.getenv('DBT_ORACLE_SERVICE'),
-        'protocol': 'tcps',
-        'port': 1522
+        'protocol': os.getenv('DBT_ORACLE_PROTOCOL'),
+        'port': os.getenv('DBT_ORACLE_PORT')
     }
 
 

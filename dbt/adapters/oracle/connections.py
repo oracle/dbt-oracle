@@ -14,7 +14,7 @@ Copyright (c) 2020, Vitor Avancini
   See the License for the specific language governing permissions and
   limitations under the License.
 """
-from typing import List, Optional, Tuple, Any, Dict
+from typing import List, Optional, Tuple, Any, Dict, Union
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 import enum
@@ -24,7 +24,6 @@ import cx_Oracle
 from cx_Oracle import Connection
 
 import dbt.exceptions
-from dbt.helper_types import Port
 
 from dbt.adapters.base import Credentials
 from dbt.adapters.sql import SQLConnectionManager
@@ -59,7 +58,7 @@ class OracleAdapterCredentials(Credentials):
     # OracleConnectionMethod.HOST
     protocol: Optional[str] = None
     host: Optional[str] = None
-    port: Optional[Port] = None
+    port: Optional[Union[str, int]] = None
     service: Optional[str] = None
 
     # OracleConnectionMethod.CONNECTION_STRING

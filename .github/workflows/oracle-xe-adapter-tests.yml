@@ -8,7 +8,7 @@ jobs:
       fail-fast: true
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ 3.7, 3.8, 3.9, 3.10 ]
+        python-version: [ '3.7', '3.8', '3.9', '3.10' ]
 
     services:
       oracle_db_xe:
@@ -18,7 +18,6 @@ jobs:
         options: --name oracle_db_xe
         ports:
           - 1521:1521
-          - 1522:1521
 
     steps:
       - name: Check out dbt-oracle repository code
@@ -41,7 +40,7 @@ jobs:
 
       - name: Create dbt test user
         run: |
-          docker exec oracle_db_xe /home/oracle/oracle/scripts/create_new_user.sh dbt_test ${{ secrets.DBT_ORACLE_PASSWORD }}
+          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test ${{ secrets.DBT_ORACLE_PASSWORD }}
 
       - name: Install dbt-oracle with core dependencies
         run: |
