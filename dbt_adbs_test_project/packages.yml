@@ -1,4 +1,4 @@
 packages:
   - git: https://github.com/fishtown-analytics/dbt-utils.git
-  - git: https://github.com/Snowflake-Labs/dbt_constraints.git
-    revision: dbt-oracle-support
+  - package: Snowflake-Labs/dbt_constraints
+    version: 0.3.2
