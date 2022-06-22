@@ -37,6 +37,8 @@ jobs:
       - name: Copy Create User script
         run: |
           chmod +x ${{ github.workspace }}/.github/scripts/create_new_user.sh
+          docker ps --filter "status=running"
+          docker ps --filter "name=oracle_db_xe"
           docker cp ${{ github.workspace }}/.github/scripts/create_new_user.sh oracle_db_xe:/u01/app/oracle/scripts/create_new_user.sh
 
       - name: Create dbt test user
