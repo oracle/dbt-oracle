@@ -4,8 +4,9 @@
 
 - [Environment Variables](#environment-variables)
 - [Adapter Plugin Tests](#adapter-plugin-tests)
-- [Jaffle Shop Test Project](#jaffle-shop-test-project)
 - [Testing for different Python versions](#different-python-versions)
+- [Jaffle Shop Test Project](#jaffle-shop-test-project)
+
 
 ## Environment variables <a name='environment-variables'></a>
 
@@ -27,6 +28,7 @@ The following environment variables should be set to test `dbt-oracle`
     DBT_ORACLE_USER
     DBT_ORACLE_HOST
     DBT_ORACLE_PORT
+    DBT_ORACLE_PROTOCOL
     DBT_ORACLE_SERVICE
     DBT_ORACLE_PASSWORD
     DBT_ORACLE_DATABASE
@@ -35,154 +37,77 @@ The following environment variables should be set to test `dbt-oracle`
 
 ## Adapter Plugin Tests <a name='adapter-plugin-tests'></a>
 
-dbt-labs has developed a package [dbt-adapter-tests](https://github.com/dbt-labs/dbt-adapter-tests) which defines a test suite for adapter plugins
+dbt-labs has developed a package [dbt-tests-adapter](https://pypi.org/project/dbt-tests-adapter/) which defines a test suite for adapter plugins
 
-It can be installed using
+### Setup
+
+Clone the project repository into a local directory.
+
 ```bash
-pip install pytest-dbt-adapter
+git clone git@github.com:oracle/dbt-oracle.git
 ```
-The spec file [oracle.dbtspec](oracle.dbtspec) lists all test sequences for Python 3.7+
 
-To run the test cases, type the following command depending on the Python version.
+Create a python3.7+ virtual environment
 ```bash
-pytest tests/oracle.dbtspec tests/test_config.py # For Python 3.7, 3.8 and 3.9
-
-# or
-
-pytest tests/oracle_py36.dbtspect tests/test_config.py # For Python 3.6
+cd dbt-oracle
+python3.8 -m venv .venv
+source .venv/bin/activate
+```
+Install `dbt-oracle` project in development mode
+```bash
+pip install -e .
 ```
 
-All test cases are passing for Python 3.7, 3.8 and 3.9
+Install `dbt-tests-adapter` and `pytest` in your project's virtual environment
+
+```bash
+pip install dbt-tests-adapter pytest
+```
+
+To run the test suite, just type the `pytest` command from the cloned `dbt-oracle` project directory
+
+```pytest
+pytest
+```
+
+```bash
+Run pytest
+============================= test session starts ==============================
+platform linux -- Python 3.9.13, pytest-7.1.2, pluggy-1.0.0
+rootdir: /home/runner/work/dbt-oracle/dbt-oracle, configfile: pytest.ini, testpaths: tests/functional
+collected 24 items
+tests/functional/adapter/test_basic.py ..........                        [ 41%]
+tests/functional/adapter/test_config.py ....                             [ 58%]
+tests/functional/adapter/test_incremental_unique_id.py ..........        [100%]
+============================= 24 passed in 55.85s ==============================
+```
+
+## Testing for different Python versions <a name='different-python-versions'></a>
+
+### Python 3.7, 3.8, 3.9 and 3.10
+
+`tox` is a command line tool to check if the package installs correctly for different python versions. It also runs all the tests in each of the environments. Check the configuration file [tox.ini](../tox.ini) for details.
+
+To run tox, from command line type
+```bash
+tox
+```
+If all tests succeed for all python environments, you will see the below output.
 
 ```text
-tests/oracle.dbtspec::test_dbt_empty
-tests/oracle.dbtspec::test_dbt_base
-tests/oracle.dbtspec::test_dbt_ephemeral
-tests/oracle.dbtspec::test_dbt_incremental
-tests/oracle.dbtspec::test_dbt_snapshot_strategy_timestamp
-tests/oracle.dbtspec::test_dbt_snapshot_strategy_check_cols
-tests/oracle.dbtspec::test_dbt_schema_test
-tests/oracle.dbtspec::test_dbt_data_test
-tests/oracle.dbtspec::test_dbt_ephemeral_data_tests
-```
+  py37: commands succeeded
+  py38: commands succeeded
+  py39: commands succeeded
+  py310: commands succeeded
+  congratulations :)
 
-Known failing test for Python 3.6
+```
+For each environment, you can also see the test runtime as summary
 ```text
-FAILED tests/oracle.dbtspec::test_dbt_empty
-
-Unknown error: assert False == True
- +  where True = <function exists at 0x101907dc0>('/var/folders/mj/j31vvz790kj3hg62qr465sj40000gn/T/tmpcfuj_knn/project/target/run_results.json')
- +    where <function exists at 0x101907dc0> = <module 'posixpath' from '/usr/local/Cellar/python@3.8/3.8.12_1/bin/../Frameworks/Python.framework/Versions/3.8/lib/python3.8/posixpath.py'>.exists
- +      where <module 'posixpath' from '/usr/local/Cellar/python@3.8/3.8.12_1/bin/../Frameworks/Python.framework/Versions/3.8/lib/python3.8/posixpath.py'> = os.path in test index 1 (item_type=run_results)
-```
-
-### Overriding defaults
-
-#### All test sequences
-
-Reason for override -> **ORA-00904: "ID": invalid identifier**
-
-As shown below, during seed table creation and insertion, column names are quoted. 
-
-```sql
-create table dbt_test.newcolumns 
-    ("id" number,"name" varchar2(16),"some_date" timestamp,"last_initial" varchar2(16))
-
-insert all
-            into dbt_test.newcolumns ("id", "name", "some_date", "last_initial") values(:p1,:p2,:p3,:p4)
-            into dbt_test.newcolumns ("id", "name", "some_date", "last_initial") values(:p1,:p2,:p3,:p4)
-            into dbt_test.newcolumns ("id", "name", "some_date", "last_initial") values(:p1,:p2,:p3,:p4)
-            into dbt_test.newcolumns ("id", "name", "some_date", "last_initial") values(:p1,:p2,:p3,:p4)
-```
-
-In subsequent select queries, seed table columns are not quoted and hence the following error
-
-```text
-22:29:38.841013 [debug] [Thread-1  ]: Database Error in snapshot cc_all_snapshot (snapshots/cc_all_snapshot.sql)
-  ORA-00904: "ID": invalid identifier
-  compiled SQL at target/run/dbt_test_project/snapshots/cc_all_snapshot.sql
-Traceback (most recent call last):
-  File "/Users/abhisoms/dbt-oracle/dbt/adapters/oracle/connections.py", line 205, in exception_handler
-    yield
-  File "/Users/abhisoms/dbt-oracle/dbt/adapters/oracle/connections.py", line 258, in add_query
-    cursor.execute(sql, bindings)
-cx_Oracle.DatabaseError: ORA-00904: "ID": invalid identifier
-
-```
-
-We override the seed configuration in `dbt_project.yml` in the following way
-
-```yaml
-projects:
-  - overrides:  data_test_ephemeral_models
-    dbt_project_yml: &override-dbt-project
-       seeds:
-          dbt_test_project:
-             quote_columns: false
-```
-
-#### tests/oracle.dbtspec::test_dbt_ephemeral_data_tests
-
-Reason for override -> **ORA-32034: unsupported use of WITH clause**
-
-```sql
--- models/ephemeral.sql
--- https://github.com/dbt-labs/dbt-adapter-tests/blob/main/pytest_dbt_adapter/builtin.py#L308-L313
-with my_cool_cte as (
-  select name, id from {{ ref('base') }}
-)
-select id, name from my_cool_cte where id is not null
-
-```
-Following is the compiled SQL by dbt. `ORA-32034: unsupported use of WITH clause` is a result of nested WITH clause
-
-```sql
--- models/passing_model.sql
--- ORA-32034: unsupported use of WITH clause
-create view dbt_test.passing_model as
-    with  dbt__cte__ephemeral__ as (
-
-
-with my_cool_cte as (
-  select name, id from dbt_test.base
-)
-select id, name from my_cool_cte where id is not null
-),my_other_cool_cte as (
-    select id, name from dbt__cte__ephemeral__
-    where id > 1000
-)
-select name, id from my_other_cool_cte
-```
-
-We can override `models/ephemeral.sql` in the following way
-
-```yaml
-# tests/oracle.dbtspec
-projects:
-  - overrides:  data_test_ephemeral_models
-    paths:
-      models/ephemeral.sql: |
-        {{ config(materialized='ephemeral') }}
-        select name, id from {{ ref('base') }} where id is not null
-```
-final SQL which is run.
-```sql
---Correct SQL after override
-create view dbt_test.passing_model as
-
-    with dbt__cte__ephemeral__ as (
-        select name, id
-        from dbt_test.base
-        where id is not null),
-
-         my_other_cool_cte as (
-            select id, name
-            from dbt__cte__ephemeral__
-            where id > 1000)
-
-select name, id from my_other_cool_cte
-
-
+  py37 - 24 passed in 771.74s (0:12:51)
+  py38 - 24 passed in 746.42s (0:12:26)
+  py39 - 24 passed in 755.18s (0:12:35)
+  py310 - 24 passed in 764.96s (0:12:44)
 ```
 
 ## Jaffle Shop Test Project <a name='jaffle-shop-test-project'></a>
@@ -208,19 +133,13 @@ jaffle_shop:
       service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
       database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
       schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
-      shardingkey:
-         - skey
-      supershardingkey:
-         - sskey
-      cclass: CONNECTIVITY_CLASS
-      purity: self
       threads: 4
 
 ```
 
 ### dbt debug
 
-To test connection, run the `dbt debug` command
+To test connection, run the `dbt debug` command from the `jaffle_shop` project directory
 
 ```text
 Connection:
@@ -232,10 +151,6 @@ Connection:
   port: 1522
   service: <...>
   connection_string: None
-  shardingkey: ['skey']
-  supershardingkey: ['sskey']
-  cclass: CONNECTIVITY_CLASS
-  purity: self
   Connection test: [OK connection ok]
 
 All checks passed!
@@ -371,60 +286,4 @@ seeds:
 21:23:37  
 21:23:37  Done. PASS=20 WARN=0 ERROR=0 SKIP=0 TOTAL=20
 
-```
-
-## Testing for different Python versions <a name='different-python-versions'></a>
-
-### Python 3.7, 3.8 and 3.9
-
-- dbt-core==1.0.1
-- pytest-dbt-adapter==0.6.0
-- All test cases PASS
-  - tests/oracle.dbtspec::test_dbt_empty
-  - tests/oracle.dbtspec::test_dbt_base
-  - tests/oracle.dbtspec::test_dbt_ephemeral
-  - tests/oracle.dbtspec::test_dbt_incremental
-  - tests/oracle.dbtspec::test_dbt_snapshot_strategy_timestamp
-  - tests/oracle.dbtspec::test_dbt_snapshot_strategy_check_cols
-  - tests/oracle.dbtspec::test_dbt_schema_test
-  - tests/oracle.dbtspec::test_dbt_data_test
-  - tests/oracle.dbtspec::test_dbt_ephemeral_data_tests
-
-### Python 3.6
-
-- dbt-core==0.21.1
-- pytest-dbt-adapter==0.4.0
-- 1 test case failing.
-  - tests/oracle.dbtspec::test_dbt_empty - **FAILING**
-  - tests/oracle.dbtspec::test_dbt_base
-  - tests/oracle.dbtspec::test_dbt_ephemeral
-  - tests/oracle.dbtspec::test_dbt_incremental
-  - tests/oracle.dbtspec::test_dbt_snapshot_strategy_timestamp
-  - tests/oracle.dbtspec::test_dbt_snapshot_strategy_check_cols
-  - tests/oracle.dbtspec::test_dbt_schema_test
-  - tests/oracle.dbtspec::test_dbt_data_test
-  - tests/oracle.dbtspec::test_dbt_ephemeral_data_tests
-
-
-`tox` is a command line tool to check if the package installs correctly for different python versions. It also runs all the tests in each of the environments. Check the configuration file [tox.ini](../tox.ini) for details.
-
-To run tox, from command line type
-```bash
-tox
-```
-If all tests succeed for all python environments, you will see the below output.
-
-```text
-  py36: commands succeeded
-  py37: commands succeeded
-  py38: commands succeeded
-  py39: commands succeeded
-  congratulations :)
-```
-For each environment, you can also see the test runtime as summary
-```text
-  py36 - 12 passed, 8 warnings in 693.73s (0:11:33)
-  py37 - 13 passed, 9 warnings in 673.23s (0:11:13)
-  py38 - 13 passed, 9 warnings in 745.82s (0:12:25)
-  py39 - 13 passed, 9 warnings in 693.90s (0:11:33)
 ```
