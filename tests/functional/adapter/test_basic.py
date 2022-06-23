@@ -150,3 +150,4 @@ class TestBaseAdapterMethod(BaseAdapterMethod):
             "expected.sql": models__expected_sql,
             "model.sql": models__model_sql,
         }
+
