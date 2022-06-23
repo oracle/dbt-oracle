@@ -234,7 +234,7 @@
   {%- set tmp_column = column_name + "__dbt_alter" -%}
 
   {% call statement('alter_column_type 1', fetch_result=False) %}
-    alter table {{ relation.include(False, True, True).quote(schema=False, identifier=False) }} add column {{ tmp_column }} {{ new_column_type }}
+    alter table {{ relation.include(False, True, True).quote(schema=False, identifier=False) }} add {{ tmp_column }} {{ new_column_type }}
   {% endcall %}
   {% call statement('alter_column_type 2', fetch_result=False) %}
     update {{ relation.include(False, True, True).quote(schema=False, identifier=False)  }} set {{ tmp_column }} = {{ column_name }}
