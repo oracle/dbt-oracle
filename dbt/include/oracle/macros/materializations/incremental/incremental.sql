@@ -22,6 +22,8 @@
   {% set target_relation = this.incorporate(type='table') %}
   {% set existing_relation = load_relation(this) %}
   {% set tmp_relation = make_temp_relation(this) %}
+  {% set on_schema_change = incremental_validate_on_schema_change(config.get('on_schema_change'), default='ignore') %}
+
 
   {{ run_hooks(pre_hooks, inside_transaction=False) }}
 
@@ -50,7 +52,11 @@
       {% do adapter.expand_target_column_types(
              from_relation=tmp_relation,
              to_relation=target_relation) %}
-      {% set build_sql = oracle_incremental_upsert(tmp_relation, target_relation, unique_key=unique_key) %}
+      {% set dest_columns = process_schema_changes(on_schema_change, tmp_relation, existing_relation) %}
+      {% if not dest_columns %}
+        {% set dest_columns = adapter.get_columns_in_relation(existing_relation) %}
+      {% endif %}
+      {% set build_sql = oracle_incremental_upsert(tmp_relation, target_relation, dest_columns, unique_key=unique_key) %}
   {% endif %}
 
   {% call statement("main") %}

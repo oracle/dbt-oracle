@@ -1,5 +1,5 @@
 # Configuration variables
-VERSION=1.0.4
+VERSION=1.1.0
 PROJ_DIR?=$(shell pwd)
 VENV_DIR?=${PROJ_DIR}/.bldenv
 BUILD_DIR=${PROJ_DIR}/build
@@ -26,6 +26,7 @@ adbs_local_env_test: wheel clean_venv
 	${VENV_DIR}/bin/pip install ${DIST_DIR}/dbt_oracle-${VERSION}-py3-none-any.whl
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt --version
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt debug --profiles-dir ./
+	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt deps --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt run-operation drop_schema --args 'relation: ${DBT_ORACLE_SCHEMA}' --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt deps --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt seed --profiles-dir ./

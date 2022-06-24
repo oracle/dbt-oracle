@@ -14,7 +14,7 @@ Copyright (c) 2020, Vitor Avancini
   See the License for the specific language governing permissions and
   limitations under the License.
 """
-from typing import List, Optional, Tuple, Any, Dict
+from typing import List, Optional, Tuple, Any, Dict, Union
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 import enum
@@ -24,20 +24,13 @@ import cx_Oracle
 from cx_Oracle import Connection
 
 import dbt.exceptions
-from dbt.helper_types import Port
 
 from dbt.adapters.base import Credentials
 from dbt.adapters.sql import SQLConnectionManager
 from dbt.contracts.connection import AdapterResponse
+from dbt.events import AdapterLogger
 
-# dbt.events was introduced in dbt-core==1.0.0 which only supports Python 3.7
-# For Python 3.6, we fallback to the old logger in dbt.logger.
-try:
-    from dbt.events import AdapterLogger
-    logger = AdapterLogger("oracle")
-except ImportError:
-    from dbt.logger import GLOBAL_LOGGER as logger
-
+logger = AdapterLogger("oracle")
 
 
 class OracleConnectionMethod(enum.Enum):
@@ -65,7 +58,7 @@ class OracleAdapterCredentials(Credentials):
     # OracleConnectionMethod.HOST
     protocol: Optional[str] = None
     host: Optional[str] = None
-    port: Optional[Port] = None
+    port: Optional[Union[str, int]] = None
     service: Optional[str] = None
 
     # OracleConnectionMethod.CONNECTION_STRING

@@ -1,20 +1,21 @@
-name: dbt-adapter-tests
+name: dbt-tests-adapter
 on: push
 
 jobs:
-  oracle-21_3_0-xe-test-suite:
+  oracle_xe_21_3:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
       matrix:
         os: [ ubuntu-latest ]
-        python-version: [ 3.7, 3.8, 3.9 ]
+        python-version: [ '3.7', '3.8', '3.9', '3.10' ]
 
     services:
       oracle_db_xe:
         image: container-registry.oracle.com/database/express:21.3.0-xe
         env:
           ORACLE_PWD: ${{ secrets.DBT_ORACLE_PASSWORD }}
+        options: --name oracle_db_xe
         ports:
           - 1521:1521
 
@@ -32,81 +33,34 @@ jobs:
           chmod +x ${{ github.workspace }}/.github/scripts/install_oracle_instantclient.sh
           ${{ github.workspace }}/.github/scripts/install_oracle_instantclient.sh
 
+      - name: Copy Create User script
+        run: |
+          chmod +x ${{ github.workspace }}/.github/scripts/create_new_user.sh
+          docker cp ${{ github.workspace }}/.github/scripts/create_new_user.sh oracle_db_xe:/home/oracle/create_new_user.sh
+
+      - name: Create dbt test user
+        run: |
+          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test ${{ secrets.DBT_ORACLE_PASSWORD }}
+
       - name: Install dbt-oracle with core dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-dbt-adapter==0.6.0
+          pip install pytest dbt-tests-adapter==1.1.1
           pip install -r requirements.txt
           pip install -e .
 
       - name: Run adapter tests
         run: |
-          pytest tests/oracle.dbtspec tests/test_config.py
+          pytest
         env:
-          DBT_ORACLE_USER: ${{ secrets.DBT_ORACLE_USER }}
+          DBT_ORACLE_USER: DBT_TEST
           DBT_ORACLE_HOST: localhost
           DBT_ORACLE_PORT: 1521
-          DBT_ORACLE_SCHEMA: ${{ secrets.DBT_ORACLE_USER }}
+          DBT_ORACLE_SCHEMA: DBT_TEST
           DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_PASSWORD }}
           DBT_ORACLE_DATABASE: XEPDB1
           DBT_ORACLE_SERVICE: XEPDB1
           DBT_ORACLE_PROTOCOL: tcp
           LD_LIBRARY_PATH: /opt/oracle/instantclient_21_6
           TNS_ADMIN: /opt/tns_admin
-
-  oracle-21_3_0-xe-py36-test-suite:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: true
-      matrix:
-        os: [ ubuntu-latest ]
-        python-version: [ 3.6 ]
-
-    services:
-      oracle_db_xe:
-        image: container-registry.oracle.com/database/express:21.3.0-xe
-        env:
-          ORACLE_PWD: ${{ secrets.DBT_ORACLE_PASSWORD }}
-        ports:
-          - 1521:1521
-
-    steps:
-      - name: Check out dbt-oracle repository code
-        uses: actions/checkout@v3
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Install Oracle Instantclient
-        run: |
-          chmod +x ${{ github.workspace }}/.github/scripts/install_oracle_instantclient.sh
-          ${{ github.workspace }}/.github/scripts/install_oracle_instantclient.sh
-
-      - name: Install dbt-oracle with core dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pytest pytest-dbt-adapter==0.4.0
-          pip install -r requirements.txt
-          pip install -e .
-
-      - name: Run adapter tests
-        run: |
-          pytest tests/oracle_py36.dbtspec tests/test_config.py
-        env:
-          DBT_ORACLE_USER: ${{ secrets.DBT_ORACLE_USER }}
-          DBT_ORACLE_HOST: localhost
-          DBT_ORACLE_PORT: 1521
-          DBT_ORACLE_SCHEMA: ${{ secrets.DBT_ORACLE_USER }}
-          DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_PASSWORD }}
-          DBT_ORACLE_DATABASE: XEPDB1
-          DBT_ORACLE_SERVICE: XEPDB1
-          DBT_ORACLE_PROTOCOL: tcp
-          LD_LIBRARY_PATH: /opt/oracle/instantclient_21_6
-          TNS_ADMIN: /opt/tns_admin
-
-
-
-
 
