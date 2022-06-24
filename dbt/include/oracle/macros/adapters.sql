@@ -240,7 +240,7 @@
     update {{ relation.include(False, True, True).quote(schema=False, identifier=False)  }} set {{ tmp_column }} = {{ column_name }}
   {% endcall %}
   {% call statement('alter_column_type 3', fetch_result=False) %}
-    alter table {{ relation.include(False, True, True).quote(schema=False, identifier=False) }} drop column {{ column_name }} cascade
+    alter table {{ relation.include(False, True, True).quote(schema=False, identifier=False) }} drop column {{ column_name }} cascade constraints
   {% endcall %}
   {% call statement('alter_column_type 4', fetch_result=False) %}
     alter table {{ relation.include(False, True, True).quote(schema=False, identifier=False) }} rename column {{ tmp_column }} to {{ column_name }}
