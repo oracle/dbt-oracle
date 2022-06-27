@@ -22,20 +22,29 @@
   {% if remove_columns is none %}
     {% set remove_columns = [] %}
   {% endif %}
+{# To avoid ORA-12987: cannot combine drop column with other operations, we execute 2 different SQL for add and drop respectively #}
 
-  {% set sql -%}
+{% if add_columns|length > 0 %}
+  {% set add_sql %}
+          ALTER {{ relation.type }} {{ relation }}
+              ADD (
+              {% for column in add_columns %}
+                {{ column.name }} {{ column.data_type }}{{ ',' if not loop.last }}
+              {% endfor %}
+              )
+  {% endset %}
+  {% do run_query(add_sql)%}
+{% endif %}
 
-     alter {{ relation.type }} {{ relation }}
-
-            {% for column in add_columns %}
-               add {{ column.name }} {{ column.data_type }}{{ ',' if not loop.last }}
-            {% endfor %}{{ ',' if add_columns and remove_columns }}
-
-            {% for column in remove_columns %}
-                drop column {{ column.name }}{{ ',' if not loop.last }}
-            {% endfor %}
-
-  {%- endset -%}
-
-  {% do run_query(sql) %}
+{% if remove_columns|length > 0 %}
+    {% set remove_sql %}
+          ALTER {{ relation.type }} {{ relation }}
+              DROP (
+                {% for column in remove_columns %}
+                  {{ column.name }}{{ ',' if not loop.last }}
+                {% endfor %}
+                ) CASCADE CONSTRAINTS
+   {% endset %}
+   {% do run_query(remove_sql)%}
+{% endif %}
 {% endmacro %}
