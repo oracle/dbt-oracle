@@ -65,11 +65,11 @@ jobs:
           LD_LIBRARY_PATH: /opt/oracle/instantclient_21_6
           TNS_ADMIN: /opt/tns_admin
 
-      - name: Run adapter tests - ORA_PYTHON_DRIVER_TYPE => THIN
+      - name: Run adapter tests - ORA_PYTHON_DRIVER_TYPE => THICK
         run: |
           pytest
         env:
-          ORA_PYTHON_DRIVER_TYPE: THIN
+          ORA_PYTHON_DRIVER_TYPE: THICK
           DBT_ORACLE_USER: DBT_TEST
           DBT_ORACLE_HOST: localhost
           DBT_ORACLE_PORT: 1521
@@ -80,11 +80,11 @@ jobs:
           DBT_ORACLE_PROTOCOL: tcp
           TNS_ADMIN: /opt/tns_admin
 
-      - name: Run adapter tests - ORA_PYTHON_DRIVER_TYPE => THICK
+      - name: Run adapter tests - ORA_PYTHON_DRIVER_TYPE => THIN
         run: |
           pytest
         env:
-          ORA_PYTHON_DRIVER_TYPE: THICK
+          ORA_PYTHON_DRIVER_TYPE: THIN
           DBT_ORACLE_USER: DBT_TEST
           DBT_ORACLE_HOST: localhost
           DBT_ORACLE_PORT: 1521

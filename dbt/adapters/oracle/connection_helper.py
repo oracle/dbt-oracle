@@ -61,4 +61,5 @@ elif ORA_PYTHON_DRIVER_TYPE == OracleDriverType.THIN:
     import oracledb
     SQLNET_ORA_CONFIG = OracleNetConfig.from_env()
 else:
-    raise dbt.exceptions.RuntimeException("Invalid value set for ORA_PYTHON_DRIVER_TYPE")
+    raise dbt.exceptions.RuntimeException("Invalid value set for ORA_PYTHON_DRIVER_TYPE\n"
+                                          "Use any one of 'cx', 'thin', or 'thick'")
