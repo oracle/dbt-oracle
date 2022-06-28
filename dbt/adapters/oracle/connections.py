@@ -20,15 +20,13 @@ from dataclasses import dataclass, field
 import enum
 import time
 
-import cx_Oracle
-from cx_Oracle import Connection
-
 import dbt.exceptions
-
 from dbt.adapters.base import Credentials
 from dbt.adapters.sql import SQLConnectionManager
 from dbt.contracts.connection import AdapterResponse
 from dbt.events import AdapterLogger
+
+from dbt.adapters.oracle.connection_helper import oracledb, SQLNET_ORA_CONFIG
 
 logger = AdapterLogger("oracle")
 
@@ -163,17 +161,20 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
         if credentials.purity:
             purity = credentials.purity.lower()
             if credentials.purity == 'new':
-                conn_config['purity'] = cx_Oracle.ATTR_PURITY_NEW
+                conn_config['purity'] = oracledb.ATTR_PURITY_NEW
             elif purity == 'self':
-                conn_config['purity'] = cx_Oracle.ATTR_PURITY_SELF
+                conn_config['purity'] = oracledb.ATTR_PURITY_SELF
             elif purity == 'default':
-                conn_config['purity'] = cx_Oracle.ATTR_PURITY_DEFAULT
+                conn_config['purity'] = oracledb.ATTR_PURITY_DEFAULT
+
+        if SQLNET_ORA_CONFIG is not None:
+            conn_config.update(SQLNET_ORA_CONFIG)
 
         try:
-            handle = cx_Oracle.connect(**conn_config)
+            handle = oracledb.connect(**conn_config)
             connection.handle = handle
             connection.state = 'open'
-        except cx_Oracle.DatabaseError as e:
+        except oracledb.DatabaseError as e:
             logger.info(f"Got an error when attempting to open an Oracle "
                         f"connection: '{e}'")
             connection.handle = None
@@ -191,7 +192,7 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
         logger.info("Cancelling query '{}' ".format(connection_name))
 
         try:
-            Connection.close(oracle_connection)
+            oracledb.Connection.close(oracle_connection)
         except Exception as e:
             logger.error('Error closing connection for cancel request')
             raise Exception(str(e))
@@ -215,13 +216,13 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
         try:
             yield
 
-        except cx_Oracle.DatabaseError as e:
+        except oracledb.DatabaseError as e:
             logger.info('Oracle error: {}'.format(str(e)))
 
             try:
                 # attempt to release the connection
                 self.release()
-            except cx_Oracle.Error:
+            except oracledb.Error:
                 logger.info("Failed to release connection!")
                 pass
 
@@ -248,7 +249,7 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
         auto_begin: bool = True,
         bindings: Optional[Any] = {},
         abridge_sql_log: bool = False
-    ) -> Tuple[Connection, Any]:
+    ) -> Tuple[oracledb.Connection, Any]:
         connection = self.get_thread_connection()
         if auto_begin and connection.transaction_open is False:
             self.begin()

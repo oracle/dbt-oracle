@@ -49,10 +49,11 @@ jobs:
           pip install -r requirements.txt
           pip install -e .
 
-      - name: Run adapter tests
+      - name: Run adapter tests - ORA_PYTHON_DRIVER_TYPE => CX
         run: |
           pytest
         env:
+          ORA_PYTHON_DRIVER_TYPE: CX
           DBT_ORACLE_USER: DBT_TEST
           DBT_ORACLE_HOST: localhost
           DBT_ORACLE_PORT: 1521
@@ -62,5 +63,35 @@ jobs:
           DBT_ORACLE_SERVICE: XEPDB1
           DBT_ORACLE_PROTOCOL: tcp
           LD_LIBRARY_PATH: /opt/oracle/instantclient_21_6
+          TNS_ADMIN: /opt/tns_admin
+
+      - name: Run adapter tests - ORA_PYTHON_DRIVER_TYPE => THIN
+        run: |
+          pytest
+        env:
+          ORA_PYTHON_DRIVER_TYPE: THIN
+          DBT_ORACLE_USER: DBT_TEST
+          DBT_ORACLE_HOST: localhost
+          DBT_ORACLE_PORT: 1521
+          DBT_ORACLE_SCHEMA: DBT_TEST
+          DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_PASSWORD }}
+          DBT_ORACLE_DATABASE: XEPDB1
+          DBT_ORACLE_SERVICE: XEPDB1
+          DBT_ORACLE_PROTOCOL: tcp
+          TNS_ADMIN: /opt/tns_admin
+
+      - name: Run adapter tests - ORA_PYTHON_DRIVER_TYPE => THICK
+        run: |
+          pytest
+        env:
+          ORA_PYTHON_DRIVER_TYPE: THICK
+          DBT_ORACLE_USER: DBT_TEST
+          DBT_ORACLE_HOST: localhost
+          DBT_ORACLE_PORT: 1521
+          DBT_ORACLE_SCHEMA: DBT_TEST
+          DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_PASSWORD }}
+          DBT_ORACLE_DATABASE: XEPDB1
+          DBT_ORACLE_SERVICE: XEPDB1
+          DBT_ORACLE_PROTOCOL: tcp
           TNS_ADMIN: /opt/tns_admin
 
