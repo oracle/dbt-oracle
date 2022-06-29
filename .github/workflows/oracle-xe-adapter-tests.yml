@@ -78,6 +78,7 @@ jobs:
           DBT_ORACLE_DATABASE: XEPDB1
           DBT_ORACLE_SERVICE: XEPDB1
           DBT_ORACLE_PROTOCOL: tcp
+          LD_LIBRARY_PATH: /opt/oracle/instantclient_21_6
           TNS_ADMIN: /opt/tns_admin
 
       - name: Run adapter tests - ORA_PYTHON_DRIVER_TYPE => THIN
