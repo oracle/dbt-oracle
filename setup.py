@@ -78,6 +78,7 @@ setup(
     packages=find_packages(),
     test_suite='tests',
     tests_require=test_requirements,
+    scripts=['bin/create-pem-from-p12'],
     url=url,
     project_urls=project_urls,
     version=VERSION,

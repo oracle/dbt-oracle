@@ -49,6 +49,10 @@ jobs:
           pip install -r requirements.txt
           pip install -e .
 
+      - name: Check create-pem-from-p12 script is installed in bin
+        run: |
+          create-pem-from-p12 --help
+
       - name: Run adapter tests - ORA_PYTHON_DRIVER_TYPE => CX
         run: |
           pytest
