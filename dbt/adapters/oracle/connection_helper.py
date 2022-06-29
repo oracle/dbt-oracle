@@ -50,10 +50,11 @@ SQLNET_ORA_CONFIG = None
 ORA_PYTHON_DRIVER_TYPE = os.getenv('ORA_PYTHON_DRIVER_TYPE', 'cx').upper()
 if ORA_PYTHON_DRIVER_TYPE == OracleDriverType.CX_ORACLE:
     logger.warning("cx_Oracle has a major new release under a new name python-oracledb: "
-                   "https://oracle.github.io/python-oracledb/ \n"
-                   "New projects should use python-oracledb instead of cx_Oracle\n"
-                   "To use python-oracledb in thin mode set the environment variable ORA_PYTHON_DRIVER_TYPE=thin\n"
-                   "For thick mode set ORA_PYTHON_DRIVER_TYPE=thick")
+                  "https://oracle.github.io/python-oracledb/ \n"
+                  "New projects should use python-oracledb instead of cx_Oracle\n"
+                  "To use python-oracledb in thin mode set the environment variable ORA_PYTHON_DRIVER_TYPE=thin\n"
+                  "For thick mode set ORA_PYTHON_DRIVER_TYPE=thick",
+                  DeprecationWarning)
     import cx_Oracle as oracledb
 elif ORA_PYTHON_DRIVER_TYPE == OracleDriverType.THICK:
     import oracledb
