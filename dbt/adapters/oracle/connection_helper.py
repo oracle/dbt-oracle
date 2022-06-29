@@ -23,7 +23,8 @@ class OracleNetConfig(dict):
         'https_proxy_port',
         'retry_count',
         'retry_delay',
-        'tcp_connect_timeout'
+        'tcp_connect_timeout',
+        'disable_oob'
     )
 
     @classmethod
