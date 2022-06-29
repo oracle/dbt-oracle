@@ -2,7 +2,7 @@ name: dbt-tests-adapter
 on: push
 
 jobs:
-  oracle_xe_21_3:
+  oracle_xe_21_3_windows:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
