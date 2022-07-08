@@ -25,6 +25,7 @@ from dbt.adapters.base.impl import GET_CATALOG_MACRO_NAME
 from dbt.adapters.sql import SQLAdapter
 from dbt.adapters.base.meta import available
 from dbt.adapters.oracle import OracleAdapterConnectionManager
+from dbt.adapters.oracle.column import OracleColumn
 from dbt.adapters.oracle.relation import OracleRelation
 from dbt.contracts.graph.manifest import Manifest
 
@@ -69,6 +70,7 @@ GET_DATABASE_MACRO_NAME = 'get_database_name'
 class OracleAdapter(SQLAdapter):
     ConnectionManager = OracleAdapterConnectionManager
     Relation = OracleRelation
+    Column = OracleColumn
 
     def debug_query(self) -> None:
         self.execute("select 1 as id from dual")
