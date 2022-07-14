@@ -38,6 +38,7 @@
     {%- set on_predicates = [] -%}
     {%- set unique_key_list = [] -%}
     {%- set dest_cols_csv = dest_columns | map(attribute='name') | join(', ') -%}
+    {%- set update_columns = config.get('merge_update_columns', default=dest_columns | map(attribute='name'))-%}
 
     {%- if unique_key -%}
         {% if unique_key is sequence and unique_key is not mapping and unique_key is not string %}
@@ -58,8 +59,8 @@
           on ({{ on_predicates | join(' AND ') }})
         when matched then
           update set
-          {% for col in dest_columns if col.name.upper() not in unique_key_list -%}
-            target.{{ col.name }} = temp.{{ col.name }}{% if not loop.last %}, {% endif %}
+          {% for col in update_columns if col.upper() not in unique_key_list -%}
+            target.{{ col }} = temp.{{ col }}{% if not loop.last %}, {% endif %}
           {% endfor -%}
         when not matched then
           insert({{ dest_cols_csv }})
