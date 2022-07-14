@@ -55,7 +55,7 @@ jobs:
 
       - name: Run adapter tests - ORA_PYTHON_DRIVER_TYPE => CX
         run: |
-          pytest
+          pytest -vv
         env:
           ORA_PYTHON_DRIVER_TYPE: CX
           DBT_ORACLE_USER: DBT_TEST
@@ -71,7 +71,7 @@ jobs:
 
       - name: Run adapter tests - ORA_PYTHON_DRIVER_TYPE => THICK
         run: |
-          pytest
+          pytest -vv
         env:
           ORA_PYTHON_DRIVER_TYPE: THICK
           DBT_ORACLE_USER: DBT_TEST
