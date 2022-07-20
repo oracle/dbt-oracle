@@ -19,6 +19,8 @@ from typing import (
 )
 from itertools import chain
 
+import agate
+
 import dbt.exceptions
 from dbt.adapters.base.relation import BaseRelation, InformationSchema
 from dbt.adapters.base.impl import GET_CATALOG_MACRO_NAME
@@ -32,8 +34,8 @@ from dbt.contracts.graph.manifest import Manifest
 from dbt.exceptions import raise_compiler_error
 from dbt.utils import filter_null_values
 
+from dbt.adapters.oracle.keyword_catalog import KEYWORDS
 
-import agate
 
 COLUMNS_EQUAL_SQL = '''
 with diff_count as (
@@ -233,12 +235,22 @@ class OracleAdapter(SQLAdapter):
         return relations
 
     @available
+    def should_identifier_be_quoted(self, identifier) -> bool:
+        if identifier.upper() in KEYWORDS:
+            return True
+        if not identifier[0].isalpha():
+            return True
+        return False
+
+    @available
     def quote_seed_column(
             self, column: str, quote_config: Optional[bool]
     ) -> str:
         quote_columns: bool = False
         if isinstance(quote_config, bool):
             quote_columns = quote_config
+        elif self.should_identifier_be_quoted(column):
+            quote_columns = True
         elif quote_config is None:
             pass
         else:
