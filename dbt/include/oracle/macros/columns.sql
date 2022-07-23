@@ -29,7 +29,7 @@
           ALTER {{ relation.type }} {{ relation }}
               ADD (
               {% for column in add_columns %}
-                {{ column.name }} {{ column.data_type }}{{ ',' if not loop.last }}
+                {{ adapter.check_and_quote_identifier(column.name, model.columns) }} {{ column.data_type }}{{ ',' if not loop.last }}
               {% endfor %}
               )
   {% endset %}
@@ -41,10 +41,19 @@
           ALTER {{ relation.type }} {{ relation }}
               DROP (
                 {% for column in remove_columns %}
-                  {{ column.name }}{{ ',' if not loop.last }}
+                  {{ adapter.check_and_quote_identifier(column.name, model.columns) }}{{ ',' if not loop.last }}
                 {% endfor %}
                 ) CASCADE CONSTRAINTS
    {% endset %}
    {% do run_query(remove_sql)%}
 {% endif %}
+{% endmacro %}
+
+{% macro get_quoted_column_csv(model, column_names) %}
+    {%- set quoted = [] -%}
+    {% for col in column_names %}
+        {%- do quoted.append(adapter.check_and_quote_identifier(col, model.columns)) -%}
+     {% endfor %}
+    {%- set cols_csv = quoted | join(', ') -%}
+    {{ return(cols_csv) }}
 {% endmacro %}

@@ -34,38 +34,29 @@
     )
 {%- endmacro %}
 
-{% macro oracle_conditional_quote_column_names_for_incremental_merge(dest_columns) %}
-    {%- set quote = "\"" -%}
-    {%- set final_update_columns = [] -%}
-    {%- set user_defined_merge_update_columns = config.get("merge_update_columns") -%}
-    {% if user_defined_merge_update_columns is none %}
-        {%- set final_update_columns = dest_columns | map(attribute='name') -%}
-    {% else %}
-        {% for col in user_defined_merge_update_columns %}
-            {% if adapter.should_identifier_be_quoted(col) == true %}
-                {% do final_update_columns.append(quote ~ col ~ quote) %}
-            {% else %}
-                {% do final_update_columns.append(col) %}
-            {% endif %}
-        {% endfor %}
-    {% endif %}
-    {{ return(final_update_columns)}}
+{% macro oracle_check_and_quote_column_names_for_incremental_merge(dest_column_names) %}
+    {%- set quoted_update_columns = [] -%}
+    {%- set update_columns = config.get("merge_update_columns", default=dest_column_names) -%}
+    {% for col in update_columns %}
+        {% do quoted_update_columns.append(adapter.check_and_quote_identifier(col, model.columns)) %}
+    {% endfor %}
+    {{ return(quoted_update_columns)}}
 {% endmacro %}
 
-{% macro oracle_conditional_quote_unique_key_for_incremental_merge(unique_key) %}
+{% macro oracle_check_and_quote_unique_key_for_incremental_merge(unique_key) %}
     {%- set quote = "\"" -%}
     {%- set unique_key_list = [] -%}
     {%- set unique_key_merge_predicates = [] -%}
     {% if unique_key is sequence and unique_key is not mapping and unique_key is not string %}
           {% for key in unique_key | unique %}
-                {% if adapter.should_identifier_be_quoted(key) == true %}
+                {% if adapter.should_identifier_be_quoted(key, model.columns) == true %}
                     {% do unique_key_list.append(quote ~ key ~ quote) %}
                 {% else %}
                     {% do unique_key_list.append(key.upper()) %}
                 {% endif %}
             {% endfor %}
         {% else %}
-            {% if adapter.should_identifier_be_quoted(unique_key) == true %}
+            {% if adapter.should_identifier_be_quoted(unique_key, model.columns) == true %}
                 {% do unique_key_list.append(quote ~ unique_key ~ quote) %}
             {% else %}
                 {% do unique_key_list.append(unique_key.upper()) %}
@@ -83,10 +74,11 @@
 
 
 {% macro oracle_incremental_upsert(tmp_relation, target_relation, dest_columns, unique_key=none, statement_name="main") %}
-    {%- set dest_cols_csv = dest_columns | map(attribute='name') | join(', ') -%}
-    {%- set update_columns = oracle_conditional_quote_column_names_for_incremental_merge(dest_columns) -%}
+    {%- set dest_column_names = dest_columns | map(attribute='name') | list -%}
+    {%- set dest_cols_csv = get_quoted_column_csv(model, dest_column_names)  -%}
+    {%- set update_columns = oracle_check_and_quote_column_names_for_incremental_merge(dest_column_names) -%}
     {%- if unique_key -%}
-        {%- set unique_key_result = oracle_conditional_quote_unique_key_for_incremental_merge(unique_key) -%}
+        {%- set unique_key_result = oracle_check_and_quote_unique_key_for_incremental_merge(unique_key) -%}
         {%- set unique_key_list = unique_key_result['unique_key_list'] -%}
         {%- set unique_key_merge_predicates = unique_key_result['unique_key_merge_predicates'] -%}
         merge into {{ target_relation }} target
@@ -94,14 +86,14 @@
           on ({{ unique_key_merge_predicates | join(' AND ') }})
         when matched then
           update set
-          {% for col in update_columns if col.upper() not in unique_key_list -%}
+          {% for col in update_columns if (col.upper() not in unique_key_list and col not in unique_key_list) -%}
             target.{{ col }} = temp.{{ col }}{% if not loop.last %}, {% endif %}
           {% endfor -%}
         when not matched then
           insert({{ dest_cols_csv }})
           values(
             {% for col in dest_columns -%}
-              temp.{{ col.name }}{% if not loop.last %}, {% endif %}
+              temp.{{ adapter.check_and_quote_identifier(col.name, model.columns) }}{% if not loop.last %}, {% endif %}
             {% endfor -%}
           )
     {%- else -%}

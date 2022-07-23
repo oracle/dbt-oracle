@@ -67,16 +67,3 @@ class OracleColumn(Column):
         if self.dtype.lower() in self.STRING_DATATYPES:
             return True
         return super().is_string()
-
-    def should_be_quoted(self) -> bool:
-        if self.column.upper() in KEYWORDS:
-            return True
-        if not self.column[0].isalpha():
-            return True
-        return False
-
-    @property
-    def name(self) -> str:
-        if self.should_be_quoted():
-            return self.quoted
-        return self.column

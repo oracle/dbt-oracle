@@ -30,11 +30,14 @@ from dbt.adapters.oracle import OracleAdapterConnectionManager
 from dbt.adapters.oracle.column import OracleColumn
 from dbt.adapters.oracle.relation import OracleRelation
 from dbt.contracts.graph.manifest import Manifest
+from dbt.events import AdapterLogger
 
 from dbt.exceptions import raise_compiler_error
 from dbt.utils import filter_null_values
 
 from dbt.adapters.oracle.keyword_catalog import KEYWORDS
+
+logger = AdapterLogger("oracle")
 
 
 COLUMNS_EQUAL_SQL = '''
@@ -234,13 +237,61 @@ class OracleAdapter(SQLAdapter):
             ))
         return relations
 
+    @staticmethod
+    def is_valid_identifier(identifier) -> bool:
+        """Returns True if an identifier is valid
+
+        An identifier is considered valid if the following conditions are True
+
+            1. First character is alphabetic
+            2. Rest of the characters is either alphanumeric or any one of the literals '#', '$', '_'
+
+        """
+        # The first character should be alphabetic
+        if not identifier[0].isalpha():
+            return False
+        # Rest of the characters is either alphanumeric or any one of the literals '#', '$', '_'
+        idx = 1
+        while idx < len(identifier):
+            identifier_chr = identifier[idx]
+            if not identifier_chr.isalnum() and identifier_chr not in ('#', '$', '_'):
+                return False
+            idx += 1
+        return True
+
     @available
-    def should_identifier_be_quoted(self, identifier) -> bool:
+    def should_identifier_be_quoted(self,
+                                    identifier,
+                                    models_column_dict=None) -> bool:
+        """Returns True if identifier should be quoted else False
+
+        An identifier should be quoted in the following 3 cases:
+
+            - 1. Identifier is an Oracle keyword
+
+            - 2. Identifier is not valid according to the following rules
+                - First character is alphabetic
+                - Rest of the characters is either alphanumeric or any one of the literals '#', '$', '_'
+
+            - 3. User has enabled quoting for the column in the model configuration
+
+        """
         if identifier.upper() in KEYWORDS:
             return True
-        if not identifier[0].isalpha():
+        elif not self.is_valid_identifier(identifier):
             return True
+        elif models_column_dict and identifier in models_column_dict:
+            return models_column_dict[identifier].get('quote', False)
+        elif models_column_dict and self.quote(identifier) in models_column_dict:
+            return models_column_dict[self.quote(identifier)].get('quote', False)
         return False
+
+    @available
+    def check_and_quote_identifier(self, identifier, models_column_dict=None) -> str:
+        if self.should_identifier_be_quoted(identifier, models_column_dict):
+            return self.quote(identifier)
+        else:
+            return identifier
 
     @available
     def quote_seed_column(
