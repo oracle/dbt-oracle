@@ -27,8 +27,8 @@
       {% do dest_cols_csv.append("d." + column) %}
     {% endfor %}
 
-    merge into {{ target.quote(schema=False, identifier=False) }} d
-    using {{ source.quote(schema=False, identifier=False) }} s
+    merge into {{ target }} d
+    using {{ source }} s
     on (s.dbt_scd_id = d.dbt_scd_id)
 
     when matched
