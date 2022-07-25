@@ -19,6 +19,7 @@ from typing import Dict, ClassVar
 
 
 from dbt.adapters.base.column import Column
+from dbt.adapters.oracle.keyword_catalog import KEYWORDS
 
 
 @dataclass

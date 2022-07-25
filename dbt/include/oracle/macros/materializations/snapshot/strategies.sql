@@ -84,7 +84,7 @@
     {%- set target_table = node.get('alias', node.get('name')) -%}
 
     {%- set target_relation = adapter.get_relation(database=node_database, schema=node.schema, identifier=target_table) -%}
-    {%- set existing_cols = get_columns_in_query('select * from ' ~ target_relation.quote(schema=False, identifier=False)) -%}
+    {%- set existing_cols = get_columns_in_query('select * from ' ~ target_relation) -%}
     {%- set ns = namespace() -%} {# handle for-loop scoping with a namespace #}
     {%- set ns.column_added = false -%}
 

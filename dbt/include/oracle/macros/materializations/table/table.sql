@@ -18,7 +18,6 @@
   {% set identifier = model['alias'] %}
   {% set tmp_identifier = model['name'] + '__dbt_tmp' %}
   {% set backup_identifier = model['name'] + '__dbt_backup' %}
-
   {% set old_relation = adapter.get_relation(database=database, schema=schema, identifier=identifier) %}
   {% set target_relation = api.Relation.create(identifier=identifier,
                                                 schema=schema,
