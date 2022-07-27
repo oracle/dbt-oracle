@@ -141,7 +141,7 @@
             snapshotted_data.dbt_scd_id
 
         from snapshotted_data
-        left join deletes_source_data as source_data on snapshotted_data.dbt_unique_key = source_data.dbt_unique_key
+        left join deletes_source_data source_data on snapshotted_data.dbt_unique_key = source_data.dbt_unique_key
         where source_data.dbt_unique_key is null
     )
     {%- endif %}
