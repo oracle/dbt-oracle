@@ -71,8 +71,8 @@
               from sys.all_tab_columns
           ),
           tables as
-                (select UPPER(SYS_CONTEXT('userenv', 'DB_NAME')) table_catalog,
-                   UPPER(owner) table_schema,
+                (select SYS_CONTEXT('userenv', 'DB_NAME') table_catalog,
+                   owner table_schema,
                    table_name,
                    case
                      when iot_type = 'Y'
@@ -117,7 +117,7 @@
               and all_col_comments.column_name = columns.column_name
           where (
               {%- for schema in schemas -%}
-                tables.table_schema = upper('{{ schema }}'){%- if not loop.last %} or {% endif -%}
+                upper(tables.table_schema) = upper('{{ schema }}'){%- if not loop.last %} or {% endif -%}
               {%- endfor -%}
             )
           order by
