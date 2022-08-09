@@ -58,7 +58,7 @@
                                 'SYNONYM',
                                 'MATERIALIZED VIEW'
                               )
-                      AND owner = '{{ schema | upper }}')
+                      AND upper(owner) = '{{ schema | upper }}')
     LOOP
         BEGIN
           IF cur_rec.object_type = 'TABLE'
@@ -130,8 +130,8 @@
   {% call statement('get_columns_in_relation', fetch_result=True) %}
       with columns as (
         select
-            UPPER(SYS_CONTEXT('userenv', 'DB_NAME')) table_catalog,
-            UPPER(owner) table_schema,
+            SYS_CONTEXT('userenv', 'DB_NAME') table_catalog,
+            owner table_schema,
             table_name,
             column_name,
             data_type,
@@ -178,9 +178,9 @@
           numeric_precision as "numeric_precision",
           numeric_scale as "numeric_scale"
       from columns
-      where table_name = upper('{{ relation.identifier }}')
+      where upper(table_name) = upper('{{ relation.identifier }}')
         {% if relation.schema %}
-        and table_schema = upper('{{ relation.schema }}')
+        and upper(table_schema) = upper('{{ relation.schema }}')
         {% endif %}
       order by ordinal_position
 
@@ -314,8 +314,8 @@
 {% macro oracle__list_relations_without_caching(schema_relation) %}
   {% call statement('list_relations_without_caching', fetch_result=True) -%}
     with tables as
-      (select UPPER(SYS_CONTEXT('userenv', 'DB_NAME')) table_catalog,
-         UPPER(owner) table_schema,
+      (select SYS_CONTEXT('userenv', 'DB_NAME') table_catalog,
+         owner table_schema,
          table_name,
          case
            when iot_type = 'Y'
@@ -326,8 +326,8 @@
          end table_type
        from sys.all_tables
        union all
-       select UPPER(SYS_CONTEXT('userenv', 'DB_NAME')),
-         UPPER(owner),
+       select SYS_CONTEXT('userenv', 'DB_NAME'),
+         owner,
          view_name,
          'VIEW'
        from sys.all_views
@@ -341,7 +341,7 @@
     end as "kind"
   from tables
   where table_type in ('BASE TABLE', 'VIEW')
-    and table_schema = upper('{{ schema_relation.schema }}')
+    and upper(table_schema) = upper('{{ schema_relation.schema }}')
   {% endcall %}
   {{ return(load_result('list_relations_without_caching').table) }}
 {% endmacro %}
