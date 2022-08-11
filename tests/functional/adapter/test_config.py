@@ -56,7 +56,7 @@ SCENARIOS = {
                         port: 1522
                         threads: 1
             """,
-                    "dsn": "tcps://localhost:1522/xe",
+                    "dsn": "tcps://localhost:1522/xe?retry_count=1&retry_delay=3",
                 },
     "host_service": {
         "method": OracleConnectionMethod.HOST,
@@ -75,7 +75,7 @@ SCENARIOS = {
                         port: 1522
                         threads: 1
             """,
-        "dsn": "tcps://localhost:1522/xe_ha.host.tld",
+        "dsn": "tcps://localhost:1522/xe_ha.host.tld?retry_count=1&retry_delay=3",
     },
     "tns": {
         "method": OracleConnectionMethod.TNS,
