@@ -11,6 +11,8 @@ dbt_test:
          service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
          #database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
          schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
+         retry_count: 1
+         retry_delay: 5
          shardingkey:
            - skey
          supershardingkey:

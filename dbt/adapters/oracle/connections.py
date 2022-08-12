@@ -70,6 +70,10 @@ class OracleAdapterCredentials(Credentials):
     cclass: Optional[str] = None
     purity: Optional[str] = None
 
+    # Connection retry params
+    retry_count: Optional[int] = 1
+    retry_delay: Optional[int] = 3
+
 
     _ALIASES = {
         'dbname': 'database',
@@ -93,7 +97,8 @@ class OracleAdapterCredentials(Credentials):
             'protocol', 'host', 'port', 'tns_name',
             'service', 'connection_string',
             'shardingkey', 'supershardingkey',
-            'cclass', 'purity'
+            'cclass', 'purity', 'retry_count',
+            'retry_delay'
         )
 
     @classmethod
@@ -125,7 +130,7 @@ class OracleAdapterCredentials(Credentials):
             return self.connection_string
 
         # Assume host connection method OracleConnectionMethod.HOST and necessary parameters are defined
-        return f'{self.protocol}://{self.host}:{self.port}/{self.service}'
+        return f'{self.protocol}://{self.host}:{self.port}/{self.service}?retry_count={self.retry_count}&retry_delay={self.retry_delay}'
 
 
 class OracleAdapterConnectionManager(SQLConnectionManager):
