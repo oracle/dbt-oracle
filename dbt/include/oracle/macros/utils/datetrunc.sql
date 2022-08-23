@@ -14,7 +14,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 #}
-
+{# Returns date with the 'datepart' portion truncated #}
 {% macro oracle__date_trunc(datepart, date) %}
     {% if datepart.upper() == 'QUARTER' %}
         {% set datepart = 'Q' %}

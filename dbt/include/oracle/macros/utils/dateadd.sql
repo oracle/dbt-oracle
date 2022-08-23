@@ -17,11 +17,11 @@
 
 {% macro oracle__dateadd(datepart, interval, from_date_or_timestamp) %}
     {%- set single_quote = "\'" -%}
-    {%- set DS_INTERVAL_UNITS = ['DAY', 'HOUR', 'MINUTE', 'SECOND'] -%}
-    {%- set MY_INTERVAL_UNITS = ['YEAR','MONTH'] -%}
-    {%- if datepart.upper() in DS_INTERVAL_UNITS -%}
+    {%- set D2S_INTERVAL_UNITS = ['DAY', 'HOUR', 'MINUTE', 'SECOND'] -%}
+    {%- set M2Y_INTERVAL_UNITS = ['YEAR','MONTH'] -%}
+    {%- if datepart.upper() in D2S_INTERVAL_UNITS -%}
         {{ from_date_or_timestamp }} + NUMTODSINTERVAL({{ interval }}, {{single_quote ~ datepart ~ single_quote}})
-    {%- elif datepart.upper() in MY_INTERVAL_UNITS -%}
+    {%- elif datepart.upper() in M2Y_INTERVAL_UNITS -%}
         {{ from_date_or_timestamp }} + NUMTOYMINTERVAL({{ interval }}, {{single_quote ~ datepart ~ single_quote}})
     {%- elif datepart.upper() == 'QUARTER' -%}
         ADD_MONTHS({{ from_date_or_timestamp }}, 3*{{ interval }})

@@ -27,10 +27,12 @@ from dbt.tests.adapter.utils.test_position import BasePosition
 from dbt.tests.adapter.utils.test_right import BaseRight
 from dbt.tests.adapter.utils.test_cast_bool_to_text import BaseCastBoolToText
 from dbt.tests.adapter.utils.test_replace import BaseReplace
+from dbt.tests.adapter.utils.test_length import BaseLength
 
 from dbt.tests.adapter.utils.fixture_cast_bool_to_text import models__test_cast_bool_to_text_yml
 from dbt.tests.adapter.utils.fixture_escape_single_quotes import models__test_escape_single_quotes_yml
 from dbt.tests.adapter.utils.fixture_string_literal import models__test_string_literal_yml
+from dbt.tests.adapter.utils.fixture_replace import models__test_replace_yml
 
 
 # Oracle requires FROM DUAL
@@ -67,6 +69,29 @@ select
     expected
 from data
 """
+
+models__test_replace_sql = """
+with data as (
+
+    select
+
+        string_text,
+        coalesce(search_chars, '') as old_chars,
+        coalesce(replace_chars, '') as new_chars,
+        result
+
+    from {{ ref('data_replace') }}
+
+)
+
+select
+
+    {{ replace('string_text', 'old_chars', 'new_chars') }} as actual,
+    result as expected
+
+from data
+"""
+
 
 class TestCastBoolToText(BaseCastBoolToText):
 
@@ -131,5 +156,18 @@ class TestStringRight(BaseRight):
     pass
 
 
-# class TestStringReplace(BaseReplace):
-#     pass
+class TestStringReplace(BaseReplace):
+
+    @pytest.fixture(scope="class")
+    def models(self):
+        return {
+            "test_replace.yml": models__test_replace_yml,
+            "test_replace.sql": self.interpolate_macro_namespace(
+                models__test_replace_sql, "replace"
+            ),
+        }
+
+
+class TestStringLength(BaseLength):
+    pass
+

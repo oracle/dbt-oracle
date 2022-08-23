@@ -14,7 +14,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 #}
-
+{# Returns last day of the quarter, year or month #}
 {% macro oracle__last_day(date, datepart) %}
     {{dbt.dateadd('day', '-1', dbt.dateadd(datepart, '1', dbt.date_trunc(datepart, date)))}}
 {% endmacro %}
