@@ -96,7 +96,45 @@ select
     result as expected
 
 from data
+-- Also test correct casting of literal values.
+union all 
+    select {{ datediff("TO_TIMESTAMP('1999-12-31 23:59:59.999999', 'YYYY-MM-DD HH24:MI:SS.FF')",
+                       "TO_TIMESTAMP('2000-01-01 00:00:00.000000', 'YYYY-MM-DD HH24:MI:SS.FF')", 
+                       "minute") }} as actual, 
+                       1 as expected FROM DUAL
 
+union all 
+    select {{ datediff("TO_TIMESTAMP('1999-12-31 23:59:59.999999', 'YYYY-MM-DD HH24:MI:SS.FF')",
+                       "TO_TIMESTAMP('2000-01-01 00:00:00.000000', 'YYYY-MM-DD HH24:MI:SS.FF')",
+                        "hour") }} as actual, 
+                        1 as expected FROM DUAL
+                        
+union all 
+    select {{ datediff("TO_TIMESTAMP('1999-12-31 23:59:59.999999', 'YYYY-MM-DD HH24:MI:SS.FF')",
+                       "TO_TIMESTAMP('2000-01-01 00:00:00.000000', 'YYYY-MM-DD HH24:MI:SS.FF')",
+                       "day") }} as actual, 
+                       1 as expected FROM DUAL
+                       
+union all 
+    select {{ datediff("TO_TIMESTAMP('1999-12-31 23:59:59.999999', 'YYYY-MM-DD HH24:MI:SS.FF')",
+                       "TO_TIMESTAMP('2000-01-03 00:00:00.000000', 'YYYY-MM-DD HH24:MI:SS.FF')",
+                       "week") }} as actual, 
+                       1 as expected FROM DUAL
+union all 
+    select {{ datediff("TO_TIMESTAMP('1999-12-31 23:59:59.999999', 'YYYY-MM-DD HH24:MI:SS.FF')",
+                       "TO_TIMESTAMP('2000-01-01 00:00:00.000000', 'YYYY-MM-DD HH24:MI:SS.FF')",
+                       "month") }} as actual, 
+                       1 as expected FROM DUAL
+union all 
+    select {{ datediff("TO_TIMESTAMP('1999-12-31 23:59:59.999999', 'YYYY-MM-DD HH24:MI:SS.FF')",
+                       "TO_TIMESTAMP('2000-01-01 00:00:00.000000', 'YYYY-MM-DD HH24:MI:SS.FF')",
+                       "quarter") }} as actual, 
+                       1 as expected FROM DUAL
+union all 
+    select {{ datediff("TO_TIMESTAMP('1999-12-31 23:59:59.999999', 'YYYY-MM-DD HH24:MI:SS.FF')",
+                       "TO_TIMESTAMP('2000-01-01 00:00:00.000000', 'YYYY-MM-DD HH24:MI:SS.FF')",
+                       "year") }} as actual, 
+                       1 as expected FROM DUAL
 """
 
 

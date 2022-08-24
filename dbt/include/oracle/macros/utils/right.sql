@@ -14,7 +14,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 #}
-
+{# Returns N rightmost characters from a string #}
 {% macro oracle__right(string_text, length_expression) %}
 
     case when {{ length_expression }} = 0

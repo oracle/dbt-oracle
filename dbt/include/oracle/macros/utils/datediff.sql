@@ -14,24 +14,26 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 #}
-{# Returns difference (in integer) between 2 dates #}
+{# Returns difference (as an integer) in between 2 dates #}
 {% macro oracle__datediff(first_date, second_date, datepart) %}
-    {%- set single_quote = "\'" -%}
-    {%- set D2S_INTERVAL_UNITS = ['DAY', 'HOUR', 'MINUTE', 'SECOND'] -%}
-    {% if datepart.upper() in D2S_INTERVAL_UNITS %}
-        ROUND((CAST({{ second_date }} AS DATE) - CAST({{ first_date }} AS DATE)) *
-               decode(upper({{single_quote ~ datepart ~ single_quote}}),
-                      'HOUR', 24,
-                      'MINUTE', 24*60,
-                      'SECOND', 24*60*60,
-                      1))
-    {% elif datepart.upper() == 'WEEK' %}
-        ROUND((CAST({{ second_date }} AS DATE) - CAST({{ first_date }} AS DATE))/7)
-    {% elif datepart.upper() == 'MONTH' %}
-        ROUND((MONTHS_BETWEEN(CAST({{second_date}} AS DATE), CAST({{first_date}} AS DATE))))
+    {% if datepart.upper() == 'YEAR' %}
+        ROUND(MONTHS_BETWEEN(TRUNC(CAST({{second_date}} AS DATE), 'YEAR'), TRUNC(CAST({{first_date}} AS DATE), 'YEAR'))/12)
     {% elif datepart.upper() == 'QUARTER' %}
-        ROUND((MONTHS_BETWEEN(CAST({{second_date}} AS DATE), CAST({{first_date}} AS DATE))/3))
-    {% elif datepart.upper() == 'YEAR' %}
-        ROUND((MONTHS_BETWEEN(CAST({{second_date}} AS DATE), CAST({{first_date}} AS DATE))/12))
+        ROUND(MONTHS_BETWEEN(TRUNC(CAST({{second_date}} AS DATE), 'Q'), TRUNC(CAST({{first_date}} AS DATE), 'Q'))/3)
+    {% elif datepart.upper() == 'MONTH'%}
+        ROUND(MONTHS_BETWEEN(TRUNC(CAST({{second_date}} AS DATE), 'MONTH'), TRUNC(CAST({{first_date}} AS DATE), 'MONTH')))
+    {% elif datepart.upper() == 'WEEK' %}
+        ROUND((TRUNC(CAST({{ second_date }} AS DATE), 'DAY') - TRUNC(CAST({{ first_date }} AS DATE), 'DAY'))/7)
+    {% elif datepart.upper() == 'DAY' %}
+        ROUND(TRUNC(CAST({{ second_date }} AS DATE), 'DD') - TRUNC(CAST({{ first_date }} AS DATE), 'DD'))
+    {% elif datepart.upper() == 'HOUR' %}
+        ROUND((TRUNC(CAST({{ second_date }} AS DATE), 'HH') - TRUNC(CAST({{ first_date }} AS DATE), 'HH'))*24)
+    {% elif datepart.upper() == 'MINUTE' %}
+        ROUND((TRUNC(CAST({{ second_date }} AS DATE), 'MI') - TRUNC(CAST({{ first_date }} AS DATE), 'MI'))*24*60)
+    {% elif datepart.upper() == 'SECOND' %}
+        EXTRACT(DAY FROM (CAST({{ second_date }} AS TIMESTAMP) - CAST({{ first_date }} AS TIMESTAMP)))*24*60*60
+        +EXTRACT(HOUR FROM (CAST({{ second_date }} AS TIMESTAMP) - CAST({{ first_date }} AS TIMESTAMP)))*60*60
+        +EXTRACT(MINUTE FROM (CAST({{ second_date }} AS TIMESTAMP) - CAST({{ first_date }} AS TIMESTAMP)))*60
+        +EXTRACT(SECOND FROM (CAST({{ second_date }} AS TIMESTAMP) - CAST({{ first_date }} AS TIMESTAMP)))
     {% endif %}
 {% endmacro %}
