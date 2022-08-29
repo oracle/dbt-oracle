@@ -16,6 +16,7 @@
 #}
 {% materialization table, adapter='oracle' %}
   {% set identifier = model['alias'] %}
+  {% set grant_config = config.get('grants') %}
   {% set tmp_identifier = model['name'] + '__dbt_tmp' %}
   {% set backup_identifier = model['name'] + '__dbt_backup' %}
   {% set old_relation = adapter.get_relation(database=database, schema=schema, identifier=identifier) %}
@@ -89,6 +90,9 @@
   {{ drop_relation_if_exists(backup_relation) }}
 
   {{ run_hooks(post_hooks, inside_transaction=False) }}
+
+  {% set should_revoke = should_revoke(old_relation, full_refresh_mode=True) %}
+  {% do apply_grants(target_relation, grant_config, should_revoke=should_revoke) %}
 
   {{ return({'relations': [target_relation]}) }}
 {% endmaterialization %}
