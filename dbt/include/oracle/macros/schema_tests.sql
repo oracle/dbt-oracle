@@ -21,7 +21,7 @@ with all_values as (
     select distinct
         {{ column_name }} as value_field
 
-    from {{ model.include(False, True, True) }}
+    from {{ model }}
 
 ),
 
@@ -53,7 +53,7 @@ select * from(
 
 select * from (
 select count(*) as null_count
-from {{ model.include(False, True, True) }}
+from {{ model }}
 where {{ column_name }} is null) c where c.null_count != 0
 
 {% endmacro %}
