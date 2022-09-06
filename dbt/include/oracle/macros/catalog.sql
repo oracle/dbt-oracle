@@ -105,16 +105,16 @@
               all_col_comments.comments as "column_comment",
               tables.table_schema as "table_owner"
           from tables
-          inner join columns on columns.table_catalog = tables.table_catalog
-            and columns.table_schema = tables.table_schema
-            and columns.table_name = tables.table_name
+          inner join columns on upper(columns.table_catalog) = upper(tables.table_catalog)
+            and upper(columns.table_schema) = upper(tables.table_schema)
+            and upper(columns.table_name) = upper(tables.table_name)
           left join all_tab_comments
-            on all_tab_comments.owner = tables.table_schema
-              and all_tab_comments.table_name = tables.table_name
+            on upper(all_tab_comments.owner) = upper(tables.table_schema)
+              and upper(all_tab_comments.table_name) = upper(tables.table_name)
           left join all_col_comments
-            on all_col_comments.owner = columns.table_schema
-              and all_col_comments.table_name = columns.table_name
-              and all_col_comments.column_name = columns.column_name
+            on upper(all_col_comments.owner) = upper(columns.table_schema)
+              and upper(all_col_comments.table_name) = upper(columns.table_name)
+              and upper(all_col_comments.column_name) = upper(columns.column_name)
           where (
               {%- for schema in schemas -%}
                 upper(tables.table_schema) = upper('{{ schema }}'){%- if not loop.last %} or {% endif -%}
