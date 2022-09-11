@@ -223,6 +223,11 @@ class OracleAdapter(SQLAdapter):
             kwargs=kwargs
         )
         relations = []
+
+        # As we do not change the casing of identifiers returned from
+        # the database, we can safely quote the identifiers returned. This
+        # will make dbt to perform an exact match which will always work.
+        quote_policy = {"database": True, "schema": True, "identifier": True}
         for _database, name, _schema, _type in results:
             try:
                 _type = self.Relation.get_relation_type(_type)
@@ -232,7 +237,7 @@ class OracleAdapter(SQLAdapter):
                 database=_database,
                 schema=_schema,
                 identifier=name,
-                quote_policy=self.config.quoting,
+                quote_policy=quote_policy,
                 type=_type
             ))
         return relations
