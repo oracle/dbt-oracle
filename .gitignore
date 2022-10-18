@@ -143,3 +143,4 @@ doc/build.gitbak
 .venv
 .bldenv
 .venv1.2/
+.venv1.3/
