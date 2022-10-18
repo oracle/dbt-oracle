@@ -2,11 +2,28 @@ import pytest
 
 from dbt.tests.adapter.basic.test_docs_generate import (BaseDocsGenReferences,
                                                         ref_models__schema_yml,
-                                                        ref_sources__schema_yml,
                                                         ref_models__ephemeral_copy_sql,
                                                         ref_models__docs_md)
 
 from dbt.tests.adapter.basic.expected_catalog import no_stats
+
+ref_sources__schema_yml = """
+version: 2
+sources:
+  - name: my_source
+    description: "{{ doc('source_info') }}"
+    loader: a_loader
+    schema: "{{ var('test_schema') }}"
+    tables:
+      - name: my_table
+        description: "{{ doc('table_info') }}"
+        identifier: seed
+        quoting:
+          identifier: true
+        columns:
+          - name: id
+            description: "{{ doc('column_info') }}"
+"""
 
 ref_models__ephemeral_summary_sql = """
 {{
