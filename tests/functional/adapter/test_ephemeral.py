@@ -17,10 +17,10 @@ Copyright (c) 2020, Vitor Avancini
 import pytest
 
 from dbt.tests.util import run_dbt, check_relations_equal
-from dbt.tests.adapter.ephemeral.test_ephemeral import TestEphemeralMulti
+from dbt.tests.adapter.ephemeral.test_ephemeral import BaseEphemeralMulti
 
 
-class TestEphemeralMultiOracle(TestEphemeralMulti):
+class TestEphemeralMultiOracle(BaseEphemeralMulti):
 
     def test_ephemeral_multi(self, project):
         run_dbt(["seed"])
