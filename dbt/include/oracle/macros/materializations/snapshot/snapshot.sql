@@ -311,7 +311,3 @@
     {%- endfor -%})
 {%- endmacro %}
 
-{% macro oracle__snapshot_string_as_time(timestamp) -%}
-    {%- set result = "TO_TIMESTAMP('"~ timestamp ~ "','yyyy/mm/dd hh24:mi:ss.FF')" -%}
-    {{ return(result) }}
-{%- endmacro %}
