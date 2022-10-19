@@ -9,70 +9,44 @@ To test the integration with ADBS, you can use OCI's [Always Free Autonomous Dat
 
 The database also provides a read-only Sales History data set. Any user can start querying the tables in this Sales History `sh` schema. Models in this test project refer the `sh` schema. You do not need to load any other dataset.
 
-## Setup the oracle profile
+## Setup
 
-To setup [profiles.yml](profiles.yml) read [setup & installation instructions][1] on dbt docs website
+[Install][1] dbt-oracle and setup [profiles.yml](profiles.yml) for ADBS
 
-Install dbt-oracle in your project's virtual environment.
+### Verify the installation
 
-
-## dbt project
-
-Next, run the `dbt compile` command in this project directory to compile the models and resolve dependencies.
 ```bash
-dbt compile --profiles-dir ./
+dbt --version
 ```
-```text
-20:14:29  Running with dbt=1.0.1
-20:14:29  Found 10 models, 5 tests, 1 snapshot, 1 analysis, 382 macros, 2 operations, 1 seed file, 8 sources, 2 exposures, 0 metrics
-20:14:29  
-20:14:32  Concurrency: 4 threads (target='dev')
-20:14:32  
-20:14:33  Done.
-```
-All dbt models in this test project refer the sales history (`sh`) sample schema.
-Following directory structure shows the 10 models, seed, test, analysis and snaphots.
-
 
 ```text
-.
-├── README.md
-├── analysis
-│   └── eu_customers.sql
-├── data
-│   └── seed.csv
-├── dbt_packages
-│   └── dbt_utils
-├── dbt_project.yml
-├── macros
-│   ├── demo_multiple_statements.sql
-│   ├── execute_statements.sql
-│   └── readme.md
-├── models
-│   ├── direct_sales_channel_promo_cost.sql
-│   ├── eu
-│       ├── countries.sql
-│       └── eu_direct_sales_channels_promo_costs.sql
-│   ├── income_levels.sql
-│   ├── internet_sales_channel_customers.sql
-│   ├── people.sql
-│   ├── promotion_costs.sql
-│   ├── sales_internet_channel.sql
-│   ├── schema.yml
-│   ├── us_product_sales_channel_ranking.sql
-│   └── us_seed_customers.sql
-├── packages.yml
-├── profiles.yml
-├── seeds
-│   └── seed.csv
-├── snapshots
-│   ├── README.md
-│   └── promotion_costs.sql
-└── test
-    └── test_count_employees.sql
+Core:
+  - installed: 1.3.0
+  - latest:    1.3.0 - Up to date!
+```
 
+### Check database connectivity
+
+```bash
+dbt debug --profiles-dir ./
+```
+
+```text
+dbt version: 1.3.0
+python version: 3.8.13
+..
+..
+Connection:
+  user: 
+  database:
+  schema:
+  ...
+  Connection test: [OK connection ok]
+
+All checks passed!
 
 ```
+After this, you can test various dbt features included in this project
 
 ## Features tested in this project
 

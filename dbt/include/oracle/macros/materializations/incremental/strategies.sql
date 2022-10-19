@@ -34,15 +34,6 @@
     )
 {%- endmacro %}
 
-{% macro oracle_check_and_quote_column_names_for_incremental_merge(dest_column_names) %}
-    {%- set quoted_update_columns = [] -%}
-    {%- set update_columns = config.get("merge_update_columns", default=dest_column_names) -%}
-    {% for col in update_columns %}
-        {% do quoted_update_columns.append(adapter.check_and_quote_identifier(col, model.columns)) %}
-    {% endfor %}
-    {{ return(quoted_update_columns)}}
-{% endmacro %}
-
 {% macro oracle_check_and_quote_unique_key_for_incremental_merge(unique_key) %}
     {%- set quote = "\"" -%}
     {%- set unique_key_list = [] -%}
@@ -54,20 +45,20 @@
                 {% else %}
                     {% do unique_key_list.append(key.upper()) %}
                 {% endif %}
-            {% endfor %}
+          {% endfor %}
+    {% else %}
+        {% if adapter.should_identifier_be_quoted(unique_key, model.columns) == true %}
+            {% do unique_key_list.append(quote ~ unique_key ~ quote) %}
         {% else %}
-            {% if adapter.should_identifier_be_quoted(unique_key, model.columns) == true %}
-                {% do unique_key_list.append(quote ~ unique_key ~ quote) %}
-            {% else %}
-                {% do unique_key_list.append(unique_key.upper()) %}
-            {% endif %}
+            {% do unique_key_list.append(unique_key.upper()) %}
         {% endif %}
-        {% for key in unique_key_list %}
-            {% set this_key_match %}
-                    temp.{{ key }} = target.{{ key }}
-            {% endset %}
-            {% do unique_key_merge_predicates.append(this_key_match) %}
-        {% endfor %}
+    {% endif %}
+    {% for key in unique_key_list %}
+        {% set this_key_match %}
+                temp.{{ key }} = target.{{ key }}
+        {% endset %}
+        {% do unique_key_merge_predicates.append(this_key_match) %}
+    {% endfor %}
     {%- set unique_key_result = {'unique_key_list': unique_key_list, 'unique_key_merge_predicates': unique_key_merge_predicates} -%}
     {{ return(unique_key_result)}}
 {% endmacro %}
@@ -155,4 +146,3 @@
 {% macro oracle__get_incremental_default_sql(arg_dict) %}
   {% do return(get_incremental_merge_sql(arg_dict)) %}
 {% endmacro %}
-

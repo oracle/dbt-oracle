@@ -3,13 +3,11 @@
 [![PyPI version](https://badge.fury.io/py/dbt-oracle.svg)](https://pypi.python.org/pypi/dbt-oracle)
 [![dbt-tests-adapter](https://github.com/oracle/dbt-oracle/actions/workflows/oracle-xe-adapter-tests.yml/badge.svg)](https://github.com/oracle/dbt-oracle/actions/workflows/oracle-xe-adapter-tests.yml)
 
-dbt "adapters" are responsible for adapting dbt's functionality to a given database. `dbt-oracle` implements dbt functionalities for the Oracle database. 
+`dbt-oracle` implements [dbt (data build tool)](https://docs.getdbt.com/docs/introduction) functionalities for the Oracle database. 
 
 > Prior to version 1.0.0, dbt-oracle was created and maintained by [Indicium](https://indicium.tech/) on [their GitHub repo](https://github.com/techindicium/dbt-oracle). Contributors in this repo are credited for laying the groundwork and maintaining the adapter till version 0.4.3.
 From version 1.0.0, dbt-oracle is maintained and distributed by Oracle.
 
-
-For dbt documentation, refer https://docs.getdbt.com/docs/introduction
 
 ## Installation
 
