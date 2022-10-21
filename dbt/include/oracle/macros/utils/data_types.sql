@@ -1,6 +1,6 @@
-"""
-Copyright (c) 2022, Oracle and/or its affiliates.
-Copyright (c) 2020, Vitor Avancini
+{#
+ Copyright (c) 2022, Oracle and/or its affiliates.
+ Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -13,5 +13,19 @@ Copyright (c) 2020, Vitor Avancini
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-"""
-version = "1.3.0"
+#}
+
+{# bigint = int64 #}
+{%- macro oracle__type_bigint() -%}
+    NUMBER(19)
+{%- endmacro -%}
+
+{# int = int32 #}
+{%- macro oracle__type_int() -%}
+    NUMBER(10, 0)
+{%- endmacro -%}
+
+
+{% macro oracle__type_boolean() -%}
+    NUMBER(1)
+{%- endmacro %}

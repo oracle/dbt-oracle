@@ -28,6 +28,7 @@ from dbt.tests.adapter.utils.test_right import BaseRight
 from dbt.tests.adapter.utils.test_cast_bool_to_text import BaseCastBoolToText
 from dbt.tests.adapter.utils.test_replace import BaseReplace
 from dbt.tests.adapter.utils.test_length import BaseLength
+from dbt.tests.adapter.utils.test_current_timestamp import BaseCurrentTimestampNaive
 
 from dbt.tests.adapter.utils.fixture_cast_bool_to_text import models__test_cast_bool_to_text_yml
 from dbt.tests.adapter.utils.fixture_escape_single_quotes import models__test_escape_single_quotes_yml
@@ -90,6 +91,10 @@ select
     result as expected
 
 from data
+"""
+
+models__current_ts_sql = """
+select {{ dbt.current_timestamp() }} as current_ts_column from dual
 """
 
 
@@ -170,4 +175,13 @@ class TestStringReplace(BaseReplace):
 
 class TestStringLength(BaseLength):
     pass
+
+
+class TestCurrentTimestampNaiveOracle(BaseCurrentTimestampNaive):
+
+    @pytest.fixture(scope="class")
+    def models(self):
+        return {
+            "current_ts.sql": models__current_ts_sql,
+        }
 

@@ -30,7 +30,7 @@ from dbt.tests.adapter.basic.test_singular_tests import BaseSingularTests
 from dbt.tests.adapter.basic.test_singular_tests_ephemeral import BaseSingularTestsEphemeral
 from dbt.tests.adapter.basic.test_empty import BaseEmpty
 from dbt.tests.adapter.basic.test_ephemeral import BaseEphemeral
-from dbt.tests.adapter.basic.test_incremental import BaseIncremental
+from dbt.tests.adapter.basic.test_incremental import BaseIncremental, BaseIncrementalNotSchemaChange
 from dbt.tests.adapter.basic.test_generic_tests import BaseGenericTests
 from dbt.tests.adapter.basic.test_snapshot_check_cols import BaseSnapshotCheckCols
 from dbt.tests.adapter.basic.test_snapshot_timestamp import BaseSnapshotTimestamp
@@ -67,6 +67,18 @@ models__expected_sql = """
 SELECT 2 as id FROM DUAL
 """
 
+incremental_not_schema_change_sql = """
+{{ config(materialized="incremental", unique_key="user_id_current_time",on_schema_change="sync_all_columns") }}
+select
+    1 || '-' || current_timestamp as user_id_current_time,
+    {% if is_incremental() %}
+        'thisis18characters' as platform
+    {% else %}
+        'okthisis20characters' as platform
+    {% endif %}
+    FROM DUAL
+"""
+
 models__model_sql = """
 
 {% set upstream = ref('upstream') %}
@@ -91,11 +103,11 @@ select * from {{ upstream }}
 """
 
 
-class TestSimpleMaterializationsMyAdapter(BaseSimpleMaterializations):
+class TestSimpleMaterializationsOracle(BaseSimpleMaterializations):
     pass
 
 
-class TestSingularTestsMyAdapter(BaseSingularTests):
+class TestSingularTestsOracle(BaseSingularTests):
 
     @pytest.fixture(scope="class")
     def tests(self):
@@ -105,7 +117,7 @@ class TestSingularTestsMyAdapter(BaseSingularTests):
         }
 
 
-class TestSingularTestsEphemeralMyAdapter(BaseSingularTestsEphemeral):
+class TestSingularTestsEphemeralOracle(BaseSingularTestsEphemeral):
 
     @pytest.fixture(scope="class")
     def models(self):
@@ -117,31 +129,31 @@ class TestSingularTestsEphemeralMyAdapter(BaseSingularTestsEphemeral):
         }
 
 
-class TestEmptyMyAdapter(BaseEmpty):
+class TestEmptyOracle(BaseEmpty):
     pass
 
 
-class TestEphemeralMyAdapter(BaseEphemeral):
+class TestEphemeralOracle(BaseEphemeral):
     pass
 
 
-class TestIncrementalMyAdapter(BaseIncremental):
+class TestIncrementalOracle(BaseIncremental):
     pass
 
 
-class TestGenericTestsMyAdapter(BaseGenericTests):
+class TestGenericTestsOracle(BaseGenericTests):
     pass
 
 
-class TestSnapshotCheckColsMyAdapter(BaseSnapshotCheckCols):
+class TestSnapshotCheckColsOracle(BaseSnapshotCheckCols):
     pass
 
 
-class TestSnapshotTimestampMyAdapter(BaseSnapshotTimestamp):
+class TestSnapshotTimestampOracle(BaseSnapshotTimestamp):
     pass
 
 
-class TestBaseAdapterMethod(BaseAdapterMethod):
+class TestBaseAdapterMethodOracle(BaseAdapterMethod):
 
     @pytest.fixture(scope="class")
     def models(self):
@@ -151,3 +163,9 @@ class TestBaseAdapterMethod(BaseAdapterMethod):
             "model.sql": models__model_sql,
         }
 
+
+class TestIncrementalNotSchemaChangeOracle(BaseIncrementalNotSchemaChange):
+
+    @pytest.fixture(scope="class")
+    def models(self):
+        return {"incremental_not_schema_change.sql": incremental_not_schema_change_sql}

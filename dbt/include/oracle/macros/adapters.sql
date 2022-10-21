@@ -346,10 +346,6 @@
   {{ return(load_result('list_relations_without_caching').table) }}
 {% endmacro %}
 
-{% macro oracle__current_timestamp() -%}
-  CURRENT_TIMESTAMP
-{%- endmacro %}
-
 {% macro oracle__make_temp_relation(base_relation, suffix) %}
     {% set dt = modules.datetime.datetime.now() %}
     {% set dtstring = dt.strftime("%H%M%S") %}

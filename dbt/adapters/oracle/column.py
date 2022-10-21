@@ -29,7 +29,7 @@ class OracleColumn(Column):
     TYPE_LABELS: ClassVar[Dict[str, str]] = {
         "STRING": "VARCHAR2(4000)",
         "TIMESTAMP": "TIMESTAMP",
-        "FLOAT": "FLOAT",
+        "FLOAT": "NUMBER",
         "INTEGER": "INTEGER",
     }
 

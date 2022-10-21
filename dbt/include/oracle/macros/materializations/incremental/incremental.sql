@@ -56,7 +56,13 @@
       {% if not dest_columns %}
         {% set dest_columns = adapter.get_columns_in_relation(existing_relation) %}
       {% endif %}
-      {% set build_sql = oracle_incremental_upsert(tmp_relation, target_relation, dest_columns, unique_key=unique_key) %}
+
+      {#-- Get the incremental_strategy, the macro to use for the strategy, and build the sql --#}
+      {% set incremental_strategy = config.get('incremental_strategy') or 'default' %}
+      {% set strategy_sql_macro_func = adapter.get_incremental_strategy_macro(context, incremental_strategy) %}
+      {% set strategy_arg_dict = ({'target_relation': target_relation, 'temp_relation': tmp_relation, 'unique_key': unique_key, 'dest_columns': dest_columns }) %}
+      {% set build_sql = strategy_sql_macro_func(strategy_arg_dict) %}
+
   {% endif %}
 
   {% call statement("main") %}

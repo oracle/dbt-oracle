@@ -39,7 +39,9 @@ from dbt.adapters.oracle.keyword_catalog import KEYWORDS
 
 logger = AdapterLogger("oracle")
 
-
+# Added 6 random hex letters (56c36b) to table_a and table_b to avoid ORA-32031.
+# Some dbt test cases use relation names table_a and table_b
+# Oracle error: ORA-32031: illegal reference of a query name in WITH clause
 COLUMNS_EQUAL_SQL = '''
 with diff_count as (
     SELECT
@@ -51,15 +53,15 @@ with diff_count as (
             (SELECT {columns} FROM {relation_b} {except_op}
              SELECT {columns} FROM {relation_a})
         ) a
-), table_a as (
+), table_a_56c36b as (
     SELECT COUNT(*) as num_rows FROM {relation_a}
-), table_b as (
+), table_b_56c36b as (
     SELECT COUNT(*) as num_rows FROM {relation_b}
 ), row_count_diff as (
     select
         1 as id,
-        table_a.num_rows - table_b.num_rows as difference
-    from table_a, table_b
+        table_a_56c36b.num_rows - table_b_56c36b.num_rows as difference
+    from table_a_56c36b, table_b_56c36b
 )
 select
     row_count_diff.difference as row_count_difference,
@@ -314,3 +316,6 @@ class OracleAdapter(SQLAdapter):
             return self.quote(column)
         else:
             return column
+
+    def valid_incremental_strategies(self):
+        return ["append", "merge"]

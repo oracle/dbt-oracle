@@ -14,4 +14,19 @@ Copyright (c) 2020, Vitor Avancini
   See the License for the specific language governing permissions and
   limitations under the License.
 """
-version = "1.3.0"
+import pytest
+
+from dbt.tests.util import run_dbt, check_relations_equal
+from dbt.tests.adapter.ephemeral.test_ephemeral import BaseEphemeralMulti
+
+
+class TestEphemeralMultiOracle(BaseEphemeralMulti):
+
+    def test_ephemeral_multi(self, project):
+        run_dbt(["seed"])
+        results = run_dbt(["run"])
+        assert len(results) == 3
+
+        check_relations_equal(project.adapter, ["seed", "dependent"])
+        check_relations_equal(project.adapter, ["seed", "double_dependent"])
+        check_relations_equal(project.adapter, ["seed", "super_dependent"])
