@@ -19,6 +19,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 import enum
 import time
+import uuid
 
 import dbt.exceptions
 from dbt.adapters.base import Credentials
@@ -26,6 +27,7 @@ from dbt.adapters.sql import SQLConnectionManager
 from dbt.contracts.connection import AdapterResponse
 from dbt.events import AdapterLogger
 
+from dbt.version import __version__ as dbt_version
 from dbt.adapters.oracle.connection_helper import oracledb, SQLNET_ORA_CONFIG
 
 logger = AdapterLogger("oracle")
@@ -177,6 +179,9 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
 
         try:
             handle = oracledb.connect(**conn_config)
+            # client_identifier and module are saved in corresponding columns in v$session
+            handle.module = f'dbt-{dbt_version}'
+            handle.client_identifier = f'dbt-oracle-client-{uuid.uuid4()}'
             connection.handle = handle
             connection.state = 'open'
         except oracledb.DatabaseError as e:
@@ -270,7 +275,6 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
 
             logger.debug(f'On {connection.name}: f{log_sql}')
             pre = time.time()
-
             cursor = connection.handle.cursor()
             cursor.execute(sql, bindings)
             connection.handle.commit()

@@ -348,7 +348,7 @@
 
 {% macro oracle__make_temp_relation(base_relation, suffix) %}
     {% set dt = modules.datetime.datetime.now() %}
-    {% set dtstring = dt.strftime("%H%M%S") %}
+    {% set dtstring = dt.strftime("%H%M%S%f") %}
     {% set tmp_identifier = 'o$pt_' ~ base_relation.identifier ~ dtstring %}
     {% set tmp_relation = base_relation.incorporate(
                                 path={"identifier": tmp_identifier, "schema": None}) -%}
