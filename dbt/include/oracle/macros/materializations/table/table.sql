@@ -14,9 +14,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 #}
-{% materialization table, adapter='oracle' %}
+{% materialization table, adapter='oracle', supported_languages=['sql', 'python'] %}
   {% set identifier = model['alias'] %}
   {% set grant_config = config.get('grants') %}
+  {% set language = model['language'] %}
   {% set tmp_identifier = model['name'] + '__dbt_tmp' %}
   {% set backup_identifier = model['name'] + '__dbt_backup' %}
   {% set old_relation = adapter.get_relation(database=database, schema=schema, identifier=identifier) %}
@@ -62,8 +63,8 @@
   {{ run_hooks(pre_hooks, inside_transaction=True) }}
 
   -- build model
-  {% call statement('main') %}
-    {{ create_table_as(False, intermediate_relation, sql) }}
+  {% call statement('main', language=language) %}
+    {{ create_table_as(False, intermediate_relation, sql, language) }}
   {%- endcall %}
 
   -- cleanup
@@ -96,3 +97,7 @@
 
   {{ return({'relations': [target_relation]}) }}
 {% endmaterialization %}
+
+{% macro py_write_table(compiled_code, target_relation, temporary=False) %}
+{{ compiled_code.replace(model.raw_code, "", 1) }}
+{% endmacro %}

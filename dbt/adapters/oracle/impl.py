@@ -14,6 +14,7 @@ Copyright (c) 2020, Vitor Avancini
   See the License for the specific language governing permissions and
   limitations under the License.
 """
+import datetime
 from typing import (
     Optional, List, Set
 )
@@ -319,3 +320,18 @@ class OracleAdapter(SQLAdapter):
 
     def valid_incremental_strategies(self):
         return ["append", "merge"]
+
+    def submit_python_job(self, parsed_model: dict, compiled_code: str):
+        identifier = parsed_model["alias"]
+        sql = f"BEGIN sys.pyqScriptCreate('{identifier}_dbt_py', '{compiled_code.strip()}', FALSE, TRUE); END;"
+        response, _ = self.execute(sql=sql)
+        logger.info(response)
+        exec_cols = '{"result":"number"}'
+        exec_tmp_result_name = f"o$pt_dbt_pyqeval_{identifier}_tmp_{datetime.datetime.utcnow().strftime('%H%M%S%f')}"
+        script_exec_sql = f"CREATE GLOBAL temporary table {exec_tmp_result_name} " \
+                          f"as SELECT * FROM table(pyqEval(NULL, '{exec_cols}','{identifier}_dbt_py'))"
+        response, _ = self.execute(sql=script_exec_sql)
+        logger.info(response)
+        self.execute(f"DROP TABLE {exec_tmp_result_name}")
+        return response
+
