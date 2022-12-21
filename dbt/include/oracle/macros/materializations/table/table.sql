@@ -100,4 +100,21 @@
 
 {% macro py_write_table(compiled_code, target_relation, temporary=False) %}
 {{ compiled_code.replace(model.raw_code, "", 1) }}
+
+    def materialize(df, table, session):
+        if isinstance(df, pd.core.frame.DataFrame):
+           oml.create(df, table=table)
+        elif isinstance(df, oml.core.frame.DataFrame):
+           df.materialize(table=table)
+
+    dbt = dbtObj(load_df_function=oml.sync)
+    final_df = model(dbt, session=oml)
+
+    {% if temporary %}
+    materialize(final_df, table=f"{dbt.this.identifier}".upper(), session=oml)
+    {% else %}
+    materialize(final_df, table=f"{dbt.this.identifier}__dbt_tmp".upper(), session=oml)
+    {% endif %}
+
+    return pd.DataFrame.from_dict({"result": [1]})
 {% endmacro %}

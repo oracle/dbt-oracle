@@ -76,6 +76,8 @@ class OracleAdapterCredentials(Credentials):
     retry_count: Optional[int] = 1
     retry_delay: Optional[int] = 3
 
+    # OML OAuth Token API for Python UDF
+    oml_auth_token_api: Optional[str] = None
 
     _ALIASES = {
         'dbname': 'database',
@@ -100,7 +102,7 @@ class OracleAdapterCredentials(Credentials):
             'service', 'connection_string',
             'shardingkey', 'supershardingkey',
             'cclass', 'purity', 'retry_count',
-            'retry_delay'
+            'retry_delay', 'oml_auth_token_api',
         )
 
     @classmethod

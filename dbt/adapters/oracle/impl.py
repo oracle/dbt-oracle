@@ -21,6 +21,7 @@ from typing import (
 from itertools import chain
 
 import agate
+import requests
 
 import dbt.exceptions
 from dbt.adapters.base.relation import BaseRelation, InformationSchema
@@ -321,17 +322,35 @@ class OracleAdapter(SQLAdapter):
     def valid_incremental_strategies(self):
         return ["append", "merge"]
 
+    def get_oml_oauth_token(self):
+        data = {
+            "grant_type": "password",
+            "username": self.config.credentials.user,
+            "password": self.config.credentials.password
+        }
+        r = requests.post(url=self.config.credentials.oml_auth_token_api,
+                          json=data)
+        r.raise_for_status()
+        return r.json()["accessToken"]
+
     def submit_python_job(self, parsed_model: dict, compiled_code: str):
         identifier = parsed_model["alias"]
-        sql = f"BEGIN sys.pyqScriptCreate('{identifier}_dbt_py', '{compiled_code.strip()}', FALSE, TRUE); END;"
-        response, _ = self.execute(sql=sql)
-        logger.info(response)
-        exec_cols = '{"result":"number"}'
-        exec_tmp_result_name = f"o$pt_dbt_pyqeval_{identifier}_tmp_{datetime.datetime.utcnow().strftime('%H%M%S%f')}"
-        script_exec_sql = f"CREATE GLOBAL temporary table {exec_tmp_result_name} " \
-                          f"as SELECT * FROM table(pyqEval(NULL, '{exec_cols}','{identifier}_dbt_py'))"
-        response, _ = self.execute(sql=script_exec_sql)
-        logger.info(response)
-        self.execute(f"DROP TABLE {exec_tmp_result_name}")
-        return response
+        oml_oauth_access_token = self.get_oml_oauth_token()
+        py_q_script_name = f"{identifier}_dbt_py_script"
+        py_q_eval_result_cols = '{"result":"number"}'
+        py_q_eval_result_tmp_table = f"o$pt_dbt_pyqeval_{identifier}_tmp_{datetime.datetime.utcnow().strftime('%H%M%S%f')}"
 
+        py_q_eval_sql = f"""CREATE GLOBAL TEMPORARY TABLE {py_q_eval_result_tmp_table} AS SELECT * FROM TABLE(pyqEval(NULL, ''{py_q_eval_result_cols}'',''{py_q_script_name}''))"""
+
+        py_exec_main_sql = f"""
+                BEGIN
+                   sys.pyqScriptCreate('{py_q_script_name}', '{compiled_code.strip()}', FALSE, TRUE);
+                   sys.pyqSetAuthToken('{oml_oauth_access_token}');
+                   EXECUTE IMMEDIATE '{py_q_eval_sql}';
+                   EXECUTE IMMEDIATE 'DROP TABLE {py_q_eval_result_tmp_table}';
+                   sys.pyqScriptDrop('{py_q_script_name}');
+                END;
+        """
+        response, _ = self.execute(sql=py_exec_main_sql)
+        logger.info(response)
+        return response

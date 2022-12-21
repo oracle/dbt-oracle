@@ -13,7 +13,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 #}
-{{config(materialized='view')}}
+{{config(materialized='table')}}
 with direct_sales_promo_cost as(
     SELECT s.prod_id, s.quantity_sold, c.channel_desc, s.amount_sold, p.promo_name, p.promo_cost
     FROM {{ source('sh_database', 'sales') }} s, {{ source('sh_database', 'promotions') }} p, {{ source('sh_database', 'channels') }} c

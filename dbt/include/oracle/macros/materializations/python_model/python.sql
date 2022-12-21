@@ -79,12 +79,7 @@ def main():
             self.this = this()
             self.is_incremental = {{ is_incremental() }}
 
-    {{ model.raw_code }}
-
-    dbt = dbtObj(load_df_function=oml.sync)
-    final_df = model(dbt, session=None)
-    oml.create(final_df, table=f"{dbt.this.identifier}__dbt_tmp".upper())
-    return pd.DataFrame.from_dict({"result": [1]})
+    {{ model.raw_code | indent(width=4, first=False, blank=True)}}
 
 
 {{py_script_comment()}}
