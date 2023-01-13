@@ -92,7 +92,7 @@
 {% endmacro %}
 
 
-{% macro oracle__get_incremental_append_sql(arg_dict) %}
+{% macro oracle__get_incremental_append_sql(args_dict) %}
     {%- set dest_columns = args_dict["dest_columns"] -%}
     {%- set temp_relation = args_dict["temp_relation"] -%}
     {%- set target_relation = args_dict["target_relation"] -%}
