@@ -218,6 +218,7 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
     def get_response(cls, cursor):
         # number of rows fetched for a SELECT statement or
         # have been affected by INSERT, UPDATE, DELETE and MERGE statements
+        logger.info("Affected row count {}".format(cursor.rowcount))
         return AdapterResponse(rows_affected=cursor.rowcount,
                                _message='OK')
 
