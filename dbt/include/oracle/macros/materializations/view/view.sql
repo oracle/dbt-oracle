@@ -18,7 +18,7 @@
 
   {%- set identifier = model['alias'] -%}
   {%- set grant_config = config.get('grants') -%}
-  {%- set backup_identifier = model['name'] + '__dbt_backup' -%}
+  {%- set backup_identifier = model['alias'] + '__dbt_backup' -%}
 
   {%- set old_relation = adapter.get_relation(database=database, schema=schema, identifier=identifier) -%}
   {%- set target_relation = api.Relation.create(identifier=identifier, schema=schema, database=database,

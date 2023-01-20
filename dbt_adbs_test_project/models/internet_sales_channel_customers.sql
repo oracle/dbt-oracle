@@ -13,6 +13,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 #}
+{{config(materialized='table', parallel=4, table_compression_clause='COLUMN STORE COMPRESS FOR QUERY')}}
 select c.cust_id, c.cust_first_name, c.cust_last_name, t.country_iso_code, t.country_name, t.country_region
 from {{ ref('sales_internet_channel') }} s, {{ source('sh_database', 'countries') }} t, {{ source('sh_database', 'customers') }} c
 WHERE s.cust_id = c.cust_id

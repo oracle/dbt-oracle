@@ -100,12 +100,13 @@
   {% if temporary -%} on commit preserve rows {%- endif %}
   as
     {{ sql }}
-
 {%- endmacro %}
 
 
 {% macro oracle__create_table_as(temporary, relation, sql) -%}
   {%- set sql_header = config.get('sql_header', none) -%}
+  {%- set parallel = config.get('parallel', none) -%}
+  {%- set compression_clause = config.get('table_compression_clause', none) -%}
 
   {{ sql_header if sql_header is not none }}
 
@@ -113,6 +114,8 @@
     global temporary
   {%- endif %} table {{ relation.include(schema=(not temporary)) }}
   {% if temporary -%} on commit preserve rows {%- endif %}
+  {% if parallel %} parallel {{ parallel }}{% endif %}
+  {% if compression_clause %} {{ compression_clause }} {% endif %}
   as
     {{ sql }}
 
