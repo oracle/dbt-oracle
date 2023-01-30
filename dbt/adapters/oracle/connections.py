@@ -278,7 +278,6 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
             pre = time.time()
             cursor = connection.handle.cursor()
             cursor.execute(sql, bindings)
-            connection.handle.commit()
             logger.debug(f"SQL status: {self.get_status(cursor)} in {(time.time() - pre)} seconds")
             return connection, cursor
 
