@@ -37,10 +37,25 @@ from dbt.tests.adapter.utils.fixture_replace import models__test_replace_yml
 
 
 # Oracle requires FROM DUAL
+
 models__test_escape_single_quotes_quote_sql = """
-select '{{ escape_single_quotes("they're") }}' as actual, 'they''re' as expected from dual union all
-select '{{ escape_single_quotes("they are") }}' as actual, 'they are' as expected from dual
+select
+  '{{ escape_single_quotes("they're") }}' as actual,
+  'they''re' as expected,
+  {{ length(string_literal(escape_single_quotes("they're"))) }} as actual_length,
+  7 as expected_length
+  from dual
+union all
+
+select
+  '{{ escape_single_quotes("they are") }}' as actual,
+  'they are' as expected,
+  {{ length(string_literal(escape_single_quotes("they are"))) }} as actual_length,
+  8 as expected_length 
+  from dual
 """
+
+
 
 models__test_string_literal_sql = """
 select {{ string_literal("abc") }} as actual, 'abc' as expected from dual union all
