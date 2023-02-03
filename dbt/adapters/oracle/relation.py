@@ -14,10 +14,9 @@ Copyright (c) 2020, Vitor Avancini
   See the License for the specific language governing permissions and
   limitations under the License.
 """
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from dbt.adapters.base.relation import BaseRelation, Policy
-
 
 
 @dataclass
@@ -36,8 +35,8 @@ class OracleIncludePolicy(Policy):
 
 @dataclass(frozen=True, eq=False, repr=False)
 class OracleRelation(BaseRelation):
-    quote_policy: OracleQuotePolicy = OracleQuotePolicy()
-    include_policy: OracleIncludePolicy = OracleIncludePolicy()
+    quote_policy: OracleQuotePolicy = field(default_factory=lambda: OracleQuotePolicy())
+    include_policy: OracleIncludePolicy = field(default_factory=lambda: OracleIncludePolicy())
 
     @staticmethod
     def add_ephemeral_prefix(name):

@@ -190,7 +190,7 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
             connection.handle = None
             connection.state = 'fail'
 
-            raise dbt.exceptions.FailedToConnectException(str(e))
+            raise dbt.exceptions.FailedToConnectError(str(e))
 
         return connection
 
@@ -236,18 +236,18 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
                 logger.info("Failed to release connection!")
                 pass
 
-            raise dbt.exceptions.DatabaseException(str(e).strip()) from e
+            raise dbt.exceptions.DbtDatabaseError(str(e).strip()) from e
 
         except Exception as e:
             logger.info("Rolling back transaction.")
             self.release()
-            if isinstance(e, dbt.exceptions.RuntimeException):
+            if isinstance(e, dbt.exceptions.DbtRuntimeError):
                 # during a sql query, an internal to dbt exception was raised.
                 # this sounds a lot like a signal handler and probably has
                 # useful information, so raise it without modification.
                 raise e
 
-            raise dbt.exceptions.RuntimeException(e) from e
+            raise dbt.exceptions.DbtRuntimeError(str(e)) from e
 
     @classmethod
     def get_credentials(cls, credentials):
