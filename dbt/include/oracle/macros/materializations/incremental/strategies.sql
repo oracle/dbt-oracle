@@ -34,10 +34,10 @@
     )
 {%- endmacro %}
 
-{% macro oracle_check_and_quote_unique_key_for_incremental_merge(unique_key) %}
+{% macro oracle_check_and_quote_unique_key_for_incremental_merge(unique_key, incremental_predicates=none) %}
     {%- set quote = "\"" -%}
     {%- set unique_key_list = [] -%}
-    {%- set unique_key_merge_predicates = [] -%}
+    {%- set unique_key_merge_predicates = [] if incremental_predicates is none else [] + incremental_predicates -%}
     {% if unique_key is sequence and unique_key is not mapping and unique_key is not string %}
           {% for key in unique_key | unique %}
                 {% if adapter.should_identifier_be_quoted(key, model.columns) == true %}
@@ -55,7 +55,7 @@
     {% endif %}
     {% for key in unique_key_list %}
         {% set this_key_match %}
-                temp.{{ key }} = target.{{ key }}
+            DBT_INTERNAL_SOURCE.{{ key }} = DBT_INTERNAL_DEST.{{ key }}
         {% endset %}
         {% do unique_key_merge_predicates.append(this_key_match) %}
     {% endfor %}
@@ -114,24 +114,25 @@
     {%- set dest_cols_csv = get_quoted_column_csv(model, dest_column_names)  -%}
     {%- set merge_update_columns = config.get('merge_update_columns') -%}
     {%- set merge_exclude_columns = config.get('merge_exclude_columns') -%}
+    {%- set incremental_predicates = args_dict["incremental_predicates"] -%}
     {%- set update_columns = get_merge_update_columns(merge_update_columns, merge_exclude_columns, dest_columns) -%}
     {%- if unique_key -%}
-        {%- set unique_key_result = oracle_check_and_quote_unique_key_for_incremental_merge(unique_key) -%}
+        {%- set unique_key_result = oracle_check_and_quote_unique_key_for_incremental_merge(unique_key, incremental_predicates) -%}
         {%- set unique_key_list = unique_key_result['unique_key_list'] -%}
         {%- set unique_key_merge_predicates = unique_key_result['unique_key_merge_predicates'] -%}
-        merge into {{ target_relation }} target
-          using {{ temp_relation }} temp
+        merge into {{ target_relation }} DBT_INTERNAL_DEST
+          using {{ temp_relation }} DBT_INTERNAL_SOURCE
           on ({{ unique_key_merge_predicates | join(' AND ') }})
         when matched then
           update set
           {% for col in update_columns if (col.upper() not in unique_key_list and col not in unique_key_list) -%}
-            target.{{ col }} = temp.{{ col }}{% if not loop.last %}, {% endif %}
+            DBT_INTERNAL_DEST.{{ col }} = DBT_INTERNAL_SOURCE.{{ col }}{% if not loop.last %}, {% endif %}
           {% endfor -%}
         when not matched then
           insert({{ dest_cols_csv }})
           values(
             {% for col in dest_columns -%}
-              temp.{{ adapter.check_and_quote_identifier(col.name, model.columns) }}{% if not loop.last %}, {% endif %}
+              DBT_INTERNAL_SOURCE.{{ adapter.check_and_quote_identifier(col.name, model.columns) }}{% if not loop.last %}, {% endif %}
             {% endfor -%}
           )
     {%- else -%}
