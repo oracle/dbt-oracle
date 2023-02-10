@@ -32,13 +32,13 @@ with open('README.md') as readme_file:
 
 
 requirements = [
-        "dbt-core==1.3.2",
+        "dbt-core==1.4.1",
         "cx_Oracle==8.3.0",
         "oracledb==1.2.2"
 ]
 
 test_requirements = [
-    "dbt-tests-adapter==1.3.2",
+    "dbt-tests-adapter==1.4.1",
     "pytest"
 ]
 
@@ -52,7 +52,7 @@ project_urls = {
 
 url = 'https://github.com/oracle/dbt-oracle'
 
-VERSION = '1.3.2'
+VERSION = '1.4.0'
 setup(
     author="Oracle",
     python_requires='>=3.7.2',
@@ -65,7 +65,8 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10'
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11'
     ],
     description="dbt (data build tool) adapter for the Oracle database",
     install_requires=requirements,

@@ -121,7 +121,7 @@ class OracleAdapter(SQLAdapter):
             database = database.strip('"')
         expected = self.config.credentials.database
         if expected and database.lower() != expected.lower():
-            raise dbt.exceptions.NotImplementedException(
+            raise dbt.exceptions.DbtRuntimeError(
                 'Cross-db references not allowed in {} ({} vs {})'
                 .format(self.type(), database, expected)
             )
@@ -307,10 +307,8 @@ class OracleAdapter(SQLAdapter):
         elif quote_config is None:
             pass
         else:
-            raise_compiler_error(
-                f'The seed configuration value of "quote_columns" has an '
-                f'invalid type {type(quote_config)}'
-            )
+            raise dbt.exceptions.CompilationError(f'The seed configuration value of "quote_columns" '
+                                                  f'has an invalid type {type(quote_config)}')
 
         if quote_columns:
             return self.quote(column)

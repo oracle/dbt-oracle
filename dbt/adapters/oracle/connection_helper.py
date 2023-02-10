@@ -1,8 +1,26 @@
+"""
+Copyright (c) 2023, Oracle and/or its affiliates.
+Copyright (c) 2020, Vitor Avancini
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+"""
 import enum
 import os
 
 import dbt.exceptions
 from dbt.events import AdapterLogger
+
+from dbt.ui import warning_tag, yellow
 
 logger = AdapterLogger("oracle")
 
@@ -85,6 +103,16 @@ SQLNET_ORA_CONFIG = None
 ORA_PYTHON_DRIVER_TYPE = os.getenv('ORA_PYTHON_DRIVER_TYPE', 'cx').upper()
 if ORA_PYTHON_DRIVER_TYPE == OracleDriverType.CX_ORACLE:
     logger.info("Running in cx mode")
+    description = (
+        f"cx_oracle will soon be deprecated, use python-oracledb"
+        f"\n\nTo switch to python-oracledb set the environment variable ORA_PYTHON_DRIVER_TYPE=thin "
+        f"or ORA_PYTHON_DRIVER_TYPE=thick"
+        f"\n\nRead the guideline here: "
+        f"https://docs.getdbt.com/reference/warehouse-setups/oracle-setup#configure-the-python-driver-mode"
+        f"\n\nDocumentation for python-oracledb can be found here: "
+        f"https://oracle.github.io/python-oracledb/"
+    )
+    logger.warning(warning_tag(yellow(description)))
     import cx_Oracle as oracledb
 elif ORA_PYTHON_DRIVER_TYPE == OracleDriverType.THICK:
     import oracledb
@@ -95,5 +123,5 @@ elif ORA_PYTHON_DRIVER_TYPE == OracleDriverType.THIN:
     SQLNET_ORA_CONFIG = OracleNetConfig.from_env()
     logger.info("Running in thin mode")
 else:
-    raise dbt.exceptions.RuntimeException("Invalid value set for ORA_PYTHON_DRIVER_TYPE\n"
-                                          "Use any one of 'cx', 'thin', or 'thick'")
+    raise dbt.exceptions.DbtRuntimeError("Invalid value set for ORA_PYTHON_DRIVER_TYPE\n"
+                                         "Use any one of 'cx', 'thin', or 'thick'")
