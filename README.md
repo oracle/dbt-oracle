@@ -17,13 +17,17 @@ For installation, read how you can set up [Oracle profile][1] for dbt
 
 To get started, a sample dbt project can be found in the directory [/dbt_adbs_test_project][5]
 
-## Contributing <a name='contributing'></a>
-This project welcomes contributions from the community. Before submitting a pull request, please review our [contribution guide][2].
+## Contributing
 
-## Security <a name='security'></a>
-Please consult the [security guide][3] for our responsible security vulnerability disclosure process.
+*If your project has specific contribution requirements, update the CONTRIBUTING.md file to ensure those requirements are clearly explained*
 
-## License <a name='license'></a>
+This project welcomes contributions from the community. Before submitting a pull request, please [review our contribution guide](./CONTRIBUTING.md)
+
+## Security
+
+Please consult the [security guide](./SECURITY.md) for our responsible security vulnerability disclosure process
+
+## License
 dbt-oracle is licensed under Apache 2.0 License which you can find [here][4]
 
 [1]: https://docs.getdbt.com/reference/warehouse-profiles/oracle-profile
