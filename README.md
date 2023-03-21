@@ -11,24 +11,22 @@ From version 1.0.0, dbt-oracle is maintained and distributed by Oracle.
 
 ## Installation
 
-For installation, read how you can set up [Oracle profile][1] for dbt
+For installation, read how you can set up [Oracle profile][1] for dbt.
 
 ## Sample project
 
-To get started, a sample dbt project can be found in the directory [/dbt_adbs_test_project][5]
+To get started, a sample dbt project can be found in the directory [/dbt_adbs_test_project][5].
 
 ## Contributing
 
-*If your project has specific contribution requirements, update the CONTRIBUTING.md file to ensure those requirements are clearly explained*
-
-This project welcomes contributions from the community. Before submitting a pull request, please [review our contribution guide](./CONTRIBUTING.md)
+This project welcomes contributions from the community. Before submitting a pull request, please [review our contribution guide](./CONTRIBUTING.md).
 
 ## Security
 
-Please consult the [security guide](./SECURITY.md) for our responsible security vulnerability disclosure process
+Please consult the [security guide](./SECURITY.md) for our responsible security vulnerability disclosure process.
 
 ## License
-dbt-oracle is licensed under Apache 2.0 License which you can find [here][4]
+dbt-oracle is licensed under Apache 2.0 License which you can find [here][4].
 
 [1]: https://docs.getdbt.com/reference/warehouse-profiles/oracle-profile
 [2]: https://github.com/oracle/dbt-oracle/blob/main/CONTRIBUTING.md
