@@ -93,12 +93,13 @@
 
 
 {% macro oracle__get_incremental_append_sql(args_dict) %}
+    {%- set parallel = config.get('parallel', none) -%}
     {%- set dest_columns = args_dict["dest_columns"] -%}
     {%- set temp_relation = args_dict["temp_relation"] -%}
     {%- set target_relation = args_dict["target_relation"] -%}
     {%- set dest_column_names = dest_columns | map(attribute='name') | list -%}
     {%- set dest_cols_csv = get_quoted_column_csv(model, dest_column_names)  -%}
-    INSERT INTO {{ target_relation }} ({{ dest_cols_csv }})
+    INSERT INTO {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %} {{ target_relation }} ({{ dest_cols_csv }})
     (
        SELECT {{ dest_cols_csv }}
        FROM {{ temp_relation }}
