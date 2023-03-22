@@ -106,7 +106,6 @@ if ORA_PYTHON_DRIVER_TYPE == OracleDriverType.CX_ORACLE:
     description = (
         f"cx_oracle will soon be deprecated, use python-oracledb"
         f"\n\nTo switch to python-oracledb set the environment variable ORA_PYTHON_DRIVER_TYPE=thin "
-        f"or ORA_PYTHON_DRIVER_TYPE=thick"
         f"\n\nRead the guideline here: "
         f"https://docs.getdbt.com/reference/warehouse-setups/oracle-setup#configure-the-python-driver-mode"
         f"\n\nDocumentation for python-oracledb can be found here: "

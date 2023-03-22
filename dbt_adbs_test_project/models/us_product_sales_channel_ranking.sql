@@ -16,7 +16,9 @@
 {{
     config(
         materialized='incremental',
-        unique_key='group_id')
+        unique_key='group_id',
+        parallel=4,
+        table_compression_clause='COLUMN STORE COMPRESS FOR QUERY LOW')
 }}
 
 SELECT prod_name, channel_desc, calendar_month_desc,
