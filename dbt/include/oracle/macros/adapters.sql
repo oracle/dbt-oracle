@@ -114,8 +114,10 @@
     global temporary
   {%- endif %} table {{ relation.include(schema=(not temporary)) }}
   {% if temporary -%} on commit preserve rows {%- endif %}
-  {% if parallel %} parallel {{ parallel }}{% endif %}
-  {% if compression_clause %} {{ compression_clause }} {% endif %}
+  {% if not temporary -%}
+    {% if parallel %} parallel {{ parallel }}{% endif %}
+    {% if compression_clause %} {{ compression_clause }} {% endif %}
+  {%- endif %}
   as
     {{ sql }}
 

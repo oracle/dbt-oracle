@@ -16,7 +16,7 @@
 {{
     config(
         materialized='incremental',
-        unique_key='group_id',
+        incremental_strategy='append',
         parallel=4,
         table_compression_clause='COLUMN STORE COMPRESS FOR QUERY LOW')
 }}

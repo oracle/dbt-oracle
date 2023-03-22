@@ -2,6 +2,8 @@
 
 [![PyPI version](https://badge.fury.io/py/dbt-oracle.svg)](https://pypi.python.org/pypi/dbt-oracle)
 [![dbt-tests-adapter](https://github.com/oracle/dbt-oracle/actions/workflows/oracle-xe-adapter-tests.yml/badge.svg)](https://github.com/oracle/dbt-oracle/actions/workflows/oracle-xe-adapter-tests.yml)
+[![dbt-oracle docs](https://img.shields.io/badge/docs-read-blue)](https://docs.getdbt.com/reference/warehouse-setups/oracle-setup)
+[![dbt-oracle license](https://img.shields.io/badge/license-Apache%202.0-blue)][4]
 
 `dbt-oracle` implements [dbt (data build tool)](https://docs.getdbt.com/docs/introduction) functionalities for the Oracle database. 
 
@@ -11,7 +13,14 @@ From version 1.0.0, dbt-oracle is maintained and distributed by Oracle.
 
 ## Installation
 
-For installation, read how you can set up [Oracle profile][1] for dbt.
+```bash
+pip install dbt-oracle
+```
+
+
+## Documentation
+
+Please refer to the [Oracle setup on dbt docs website][1] for documentation.
 
 ## Sample project
 

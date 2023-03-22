@@ -93,12 +93,13 @@
 
 
 {% macro oracle__get_incremental_append_sql(args_dict) %}
+    {%- set parallel = config.get('parallel', none) -%}
     {%- set dest_columns = args_dict["dest_columns"] -%}
     {%- set temp_relation = args_dict["temp_relation"] -%}
     {%- set target_relation = args_dict["target_relation"] -%}
     {%- set dest_column_names = dest_columns | map(attribute='name') | list -%}
     {%- set dest_cols_csv = get_quoted_column_csv(model, dest_column_names)  -%}
-    INSERT INTO {{ target_relation }} ({{ dest_cols_csv }})
+    INSERT INTO {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %} {{ target_relation }} ({{ dest_cols_csv }})
     (
        SELECT {{ dest_cols_csv }}
        FROM {{ temp_relation }}
@@ -106,6 +107,7 @@
 {% endmacro %}
 
 {% macro oracle__get_incremental_merge_sql(args_dict) %}
+    {%- set parallel = config.get('parallel', none) -%}
     {%- set dest_columns = args_dict["dest_columns"] -%}
     {%- set temp_relation = args_dict["temp_relation"] -%}
     {%- set target_relation = args_dict["target_relation"] -%}
@@ -120,7 +122,7 @@
         {%- set unique_key_result = oracle_check_and_quote_unique_key_for_incremental_merge(unique_key, incremental_predicates) -%}
         {%- set unique_key_list = unique_key_result['unique_key_list'] -%}
         {%- set unique_key_merge_predicates = unique_key_result['unique_key_merge_predicates'] -%}
-        merge into {{ target_relation }} DBT_INTERNAL_DEST
+        merge into {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %} {{ target_relation }} DBT_INTERNAL_DEST
           using {{ temp_relation }} DBT_INTERNAL_SOURCE
           on ({{ unique_key_merge_predicates | join(' AND ') }})
         when matched then
@@ -136,7 +138,7 @@
             {% endfor -%}
           )
     {%- else -%}
-    insert into {{ target_relation }} ({{ dest_cols_csv }})
+    insert into {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %} {{ target_relation }} ({{ dest_cols_csv }})
     (
        select {{ dest_cols_csv }}
        from {{ temp_relation }}
