@@ -13,7 +13,14 @@ From version 1.0.0, dbt-oracle is maintained and distributed by Oracle.
 
 ## Installation
 
-For installation, read how you can set up [Oracle profile][1] for dbt.
+```bash
+pip install dbt-oracle
+```
+
+
+## Documentation
+
+Please refer to the [Oracle setup on dbt docs website][1] for documentation.
 
 ## Sample project
 
