@@ -40,10 +40,10 @@ jobs:
 
       - name: Create dbt test users
         run: |
-          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test ${{ secrets.DBT_ORACLE_PASSWORD }}
-          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test_user_1 ${{ secrets.DBT_ORACLE_PASSWORD }}
-          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test_user_2 ${{ secrets.DBT_ORACLE_PASSWORD }}
-          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test_user_3 ${{ secrets.DBT_ORACLE_PASSWORD }}
+          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test ${{ secrets.DBT_ORACLE_PASSWORD }} FREEPDB1
+          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test_user_1 ${{ secrets.DBT_ORACLE_PASSWORD }} FREEPDB1
+          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test_user_2 ${{ secrets.DBT_ORACLE_PASSWORD }} FREEPDB1
+          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test_user_3 ${{ secrets.DBT_ORACLE_PASSWORD }} FREEPDB1
 
       - name: Install dbt-oracle with core dependencies
         run: |
@@ -66,8 +66,8 @@ jobs:
           DBT_ORACLE_PORT: 1521
           DBT_ORACLE_SCHEMA: DBT_TEST
           DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_PASSWORD }}
-          DBT_ORACLE_DATABASE: XEPDB1
-          DBT_ORACLE_SERVICE: XEPDB1
+          DBT_ORACLE_DATABASE: FREEPDB1
+          DBT_ORACLE_SERVICE: FREEPDB1
           DBT_ORACLE_PROTOCOL: tcp
           LD_LIBRARY_PATH: /opt/oracle/instantclient_21_6
           TNS_ADMIN: /opt/tns_admin
@@ -85,8 +85,8 @@ jobs:
           DBT_ORACLE_PORT: 1521
           DBT_ORACLE_SCHEMA: DBT_TEST
           DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_PASSWORD }}
-          DBT_ORACLE_DATABASE: XEPDB1
-          DBT_ORACLE_SERVICE: XEPDB1
+          DBT_ORACLE_DATABASE: FREEPDB1
+          DBT_ORACLE_SERVICE: FREEPDB1
           DBT_ORACLE_PROTOCOL: tcp
           LD_LIBRARY_PATH: /opt/oracle/instantclient_21_6
           TNS_ADMIN: /opt/tns_admin
@@ -104,8 +104,8 @@ jobs:
           DBT_ORACLE_PORT: 1521
           DBT_ORACLE_SCHEMA: DBT_TEST
           DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_PASSWORD }}
-          DBT_ORACLE_DATABASE: XEPDB1
-          DBT_ORACLE_SERVICE: XEPDB1
+          DBT_ORACLE_DATABASE: FREEPDB1
+          DBT_ORACLE_SERVICE: FREEPDB1
           DBT_ORACLE_PROTOCOL: tcp
           DISABLE_OOB: on
           TNS_ADMIN: /opt/tns_admin
