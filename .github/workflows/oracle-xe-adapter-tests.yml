@@ -2,7 +2,7 @@ name: dbt-tests-adapter
 on: push
 
 jobs:
-  oracle_xe_21_3:
+  oracle_23c:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
@@ -11,11 +11,11 @@ jobs:
         python-version: [ '3.7', '3.8', '3.9', '3.10', '3.11' ]
 
     services:
-      oracle_db_xe:
+      oracle_db_23c:
         image: container-registry.oracle.com/database/free:latest
         env:
           ORACLE_PWD: ${{ secrets.DBT_ORACLE_PASSWORD }}
-        options: --name oracle_db_xe
+        options: --name oracle_db_23c
         ports:
           - 1521:1521
 
@@ -36,14 +36,14 @@ jobs:
       - name: Copy Create User script
         run: |
           chmod +x ${{ github.workspace }}/.github/scripts/create_new_user.sh
-          docker cp ${{ github.workspace }}/.github/scripts/create_new_user.sh oracle_db_xe:/home/oracle/create_new_user.sh
+          docker cp ${{ github.workspace }}/.github/scripts/create_new_user.sh oracle_db_23c:/home/oracle/create_new_user.sh
 
       - name: Create dbt test users
         run: |
-          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test ${{ secrets.DBT_ORACLE_PASSWORD }} FREEPDB1
-          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test_user_1 ${{ secrets.DBT_ORACLE_PASSWORD }} FREEPDB1
-          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test_user_2 ${{ secrets.DBT_ORACLE_PASSWORD }} FREEPDB1
-          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test_user_3 ${{ secrets.DBT_ORACLE_PASSWORD }} FREEPDB1
+          docker exec oracle_db_23c /home/oracle/create_new_user.sh dbt_test ${{ secrets.DBT_ORACLE_PASSWORD }} FREEPDB1
+          docker exec oracle_db_23c /home/oracle/create_new_user.sh dbt_test_user_1 ${{ secrets.DBT_ORACLE_PASSWORD }} FREEPDB1
+          docker exec oracle_db_23c /home/oracle/create_new_user.sh dbt_test_user_2 ${{ secrets.DBT_ORACLE_PASSWORD }} FREEPDB1
+          docker exec oracle_db_23c /home/oracle/create_new_user.sh dbt_test_user_3 ${{ secrets.DBT_ORACLE_PASSWORD }} FREEPDB1
 
       - name: Install dbt-oracle with core dependencies
         run: |
