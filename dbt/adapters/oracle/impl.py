@@ -32,7 +32,6 @@ from dbt.adapters.oracle.relation import OracleRelation
 from dbt.contracts.graph.manifest import Manifest
 from dbt.events import AdapterLogger
 
-from dbt.exceptions import raise_compiler_error
 from dbt.utils import filter_null_values
 
 from dbt.adapters.oracle.keyword_catalog import KEYWORDS
