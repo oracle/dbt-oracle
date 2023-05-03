@@ -25,6 +25,39 @@
     {{ return(load_result('get_columns_in_query').table.columns | map(attribute='name') | list) }}
 {% endmacro %}
 
+{% macro oracle__get_empty_subquery_sql(select_sql) %}
+    select * from (
+        {{ select_sql }}
+    ) dbt_sbq_tmp
+    where 1 = 0 and rownum < 1
+{% endmacro %}
+
+{% macro oracle__get_empty_schema_sql(columns) %}
+    {%- set col_err = [] -%}
+    select
+    {% for i in columns %}
+      {%- set col = columns[i] -%}
+      {%- if col['data_type'] is not defined -%}
+        {{ col_err.append(col['name']) }}
+      {%- endif -%}
+      cast(null as {{ col['data_type'] }}) as {{ col['name'] }}{{ ", " if not loop.last }}
+    {%- endfor -%}
+    {# Override for Oracle #}
+     from dual
+    {%- if (col_err | length) > 0 -%}
+      {{ exceptions.column_type_missing(column_names=col_err) }}
+    {%- endif -%}
+{% endmacro %}
+
+{% macro oracle__get_select_subquery(sql) %}
+    select
+    {% for column in model['columns'] %}
+      {{ column }}{{ ", " if not loop.last }}
+    {% endfor %}
+    from (
+        {{ sql }}
+    ) model_subq
+{%- endmacro %}
 
 {% macro oracle__create_schema(relation, schema_name) -%}
   {% if relation.database -%}
@@ -107,12 +140,18 @@
   {%- set sql_header = config.get('sql_header', none) -%}
   {%- set parallel = config.get('parallel', none) -%}
   {%- set compression_clause = config.get('table_compression_clause', none) -%}
+  {%- set contract_config = config.get('contract') -%}
 
   {{ sql_header if sql_header is not none }}
 
   create {% if temporary -%}
     global temporary
   {%- endif %} table {{ relation.include(schema=(not temporary)) }}
+  {%- if contract_config.enforced -%}
+      {{ get_assert_columns_equivalent(sql) }}
+      {{ get_table_columns_and_constraints() }}
+      {%- set sql = get_select_subquery(sql) %}
+  {% endif %}
   {% if temporary -%} on commit preserve rows {%- endif %}
   {% if not temporary -%}
     {% if parallel %} parallel {{ parallel }}{% endif %}
@@ -124,7 +163,10 @@
 {%- endmacro %}
 {% macro oracle__create_view_as(relation, sql) -%}
   {%- set sql_header = config.get('sql_header', none) -%}
-
+   {%- set contract_config = config.get('contract') -%}
+   {%- if contract_config.enforced -%}
+      {{ get_assert_columns_equivalent(sql) }}
+   {%- endif %}
   {{ sql_header if sql_header is not none }}
   create or replace view {{ relation }} as
     {{ sql }}

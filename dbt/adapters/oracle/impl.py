@@ -18,18 +18,23 @@ from typing import (
     Optional, List, Set
 )
 from itertools import chain
+from typing import (
+    Any,
+    Callable,
+    Dict)
 
 import agate
 
 import dbt.exceptions
 from dbt.adapters.base.relation import BaseRelation, InformationSchema
-from dbt.adapters.base.impl import GET_CATALOG_MACRO_NAME
+from dbt.adapters.base.impl import GET_CATALOG_MACRO_NAME, ConstraintSupport
 from dbt.adapters.sql import SQLAdapter
 from dbt.adapters.base.meta import available
 from dbt.adapters.oracle import OracleAdapterConnectionManager
 from dbt.adapters.oracle.column import OracleColumn
 from dbt.adapters.oracle.relation import OracleRelation
 from dbt.contracts.graph.manifest import Manifest
+from dbt.contracts.graph.nodes import ConstraintType
 from dbt.events import AdapterLogger
 
 from dbt.utils import filter_null_values
@@ -77,6 +82,14 @@ class OracleAdapter(SQLAdapter):
     ConnectionManager = OracleAdapterConnectionManager
     Relation = OracleRelation
     Column = OracleColumn
+
+    CONSTRAINT_SUPPORT = {
+        ConstraintType.check: ConstraintSupport.ENFORCED,
+        ConstraintType.not_null: ConstraintSupport.ENFORCED,
+        ConstraintType.unique: ConstraintSupport.ENFORCED,
+        ConstraintType.primary_key: ConstraintSupport.ENFORCED,
+        ConstraintType.foreign_key: ConstraintSupport.NOT_ENFORCED,
+    }
 
     def debug_query(self) -> None:
         self.execute("select 1 as id from dual")
@@ -316,3 +329,19 @@ class OracleAdapter(SQLAdapter):
 
     def valid_incremental_strategies(self):
         return ["append", "merge"]
+
+    @available
+    @classmethod
+    def render_raw_columns_constraints(cls, raw_columns: Dict[str, Dict[str, Any]]) -> List:
+        rendered_column_constraints = []
+
+        for v in raw_columns.values():
+            rendered_column_constraint = [f"{v['name']}"]
+            for con in v.get("constraints", None):
+                constraint = cls._parse_column_constraint(con)
+                c = cls.process_parsed_constraint(constraint, cls.render_column_constraint)
+                if c is not None:
+                    rendered_column_constraint.append(c)
+            rendered_column_constraints.append(" ".join(rendered_column_constraint))
+
+        return rendered_column_constraints
