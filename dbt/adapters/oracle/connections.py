@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2023, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,6 +32,35 @@ from dbt.adapters.oracle.connection_helper import oracledb, SQLNET_ORA_CONFIG
 
 logger = AdapterLogger("oracle")
 
+
+DATATYPES = {
+    "DB_TYPE_BFILE": "BFILE",
+    "DB_TYPE_BINARY_DOUBLE": "BINARY_DOUBLE",
+    "DB_TYPE_BINARY_FLOAT": "BINARY_FLOAT",
+    "DB_TYPE_BINARY_INTEGER": "BINARY_INTEGER",
+    "DB_TYPE_BLOB": "BLOB",
+    "DB_TYPE_BOOLEAN": "BOOLEAN",
+    "DB_TYPE_CHAR": "CHAR",
+    "DB_TYPE_CLOB": "CLOB",
+    "DB_TYPE_DATE": "DATE",
+    "DB_TYPE_INTERVAL_DS": "INTERVAL DAY TO SECOND",
+    "DB_TYPE_INTERVAL_YM": "INTERVAL YEAR TO MONTH",
+    "DB_TYPE_JSON": "JSON",
+    "DB_TYPE_LONG": "LONG",
+    "DB_TYPE_LONG_NVARCHAR": "LONG NVARCHAR",
+    "DB_TYPE_LONG_RAW": "LONG RAW",
+    "DB_TYPE_NCHAR": "NCHAR",
+    "DB_TYPE_NCLOB": "NCLOB",
+    "DB_TYPE_NUMBER": "NUMBER",
+    "DB_TYPE_NVARCHAR": "NVARCHAR2",
+    "DB_TYPE_OBJECT": "OBJECT",
+    "DB_TYPE_RAW": "RAW",
+    "DB_TYPE_ROWID": "ROWID",
+    "DB_TYPE_TIMESTAMP": "TIMESTAMP",
+    "DB_TYPE_TIMESTAMP_LTZ": "TIMESTAMP WITH LOCAL TZ",
+    "DB_TYPE_TIMESTAMP_TZ": "TIMESTAMP WITH TZ",
+    "DB_TYPE_VARCHAR": "VARCHAR2"
+}
 
 class OracleConnectionMethod(enum.Enum):
     HOST = 1
@@ -88,7 +117,7 @@ class OracleAdapterCredentials(Credentials):
 
     @property
     def unique_field(self):
-        return self.database
+        return self.database or self.user
 
     def _connection_keys(self) -> Tuple[str]:
         """
@@ -284,3 +313,7 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
         connection = self.get_thread_connection()
         cursor = connection.handle.cursor
         return connection, cursor
+
+    @classmethod
+    def data_type_code_to_name(cls, type_code) -> str:
+        return DATATYPES[type_code.name]
