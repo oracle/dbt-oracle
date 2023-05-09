@@ -16,12 +16,8 @@ Copyright (c) 2020, Vitor Avancini
 """
 import pytest
 
-from dbt.tests.adapter.caching.test_caching import (
-    BaseCachingTest,
-    BaseCachingLowercaseModel,
-    BaseCachingUppercaseModel,
-    BaseCachingSelectedSchemaOnly,
-)
+from dbt.tests.adapter.caching.test_caching import BaseCachingTest
+
 from dbt.tests.util import run_dbt
 
 model_sql = """
@@ -80,7 +76,7 @@ class TestCachingLowerCaseModel(OracleBaseCaching):
         }
 
 
-class TestCachingUppercaseModel(BaseCachingUppercaseModel):
+class TestCachingUppercaseModel(OracleBaseCaching):
 
     @pytest.fixture(scope="class")
     def models(self):
@@ -89,7 +85,7 @@ class TestCachingUppercaseModel(BaseCachingUppercaseModel):
         }
 
 
-class TestCachingSelectedSchemaOnly(BaseCachingSelectedSchemaOnly):
+class TestCachingSelectedSchemaOnly(OracleBaseCaching):
 
     @pytest.fixture(scope="class")
     def models(self):
@@ -97,3 +93,8 @@ class TestCachingSelectedSchemaOnly(BaseCachingSelectedSchemaOnly):
             "model.sql": model_sql,
             "another_schema_model.sql": another_schema_model_sql,
         }
+
+    def test_cache(self, project):
+        # this should only cache the schema containing the selected model
+        run_args = ["--cache-selected-only", "run", "--select", "model"]
+        self.run_and_inspect_cache(project, run_args)
