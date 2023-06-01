@@ -14,9 +14,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 #}
-{% materialization table, adapter='oracle' %}
+{% materialization table, adapter='oracle', supported_languages=['sql', 'python'] %}
   {% set identifier = model['alias'] %}
   {% set grant_config = config.get('grants') %}
+  {% set language = model['language'] %}
   {% set tmp_identifier = model['alias'] + '__dbt_tmp' %}
   {% set backup_identifier = model['alias'] + '__dbt_backup' %}
   {% set old_relation = adapter.get_relation(database=database, schema=schema, identifier=identifier) %}
@@ -56,14 +57,11 @@
   {{ drop_relation_if_exists(preexisting_intermediate_relation) }}
   {{ drop_relation_if_exists(preexisting_backup_relation) }}
 
-  {{ run_hooks(pre_hooks, inside_transaction=False) }}
-
-  -- `BEGIN` happens here:
-  {{ run_hooks(pre_hooks, inside_transaction=True) }}
+  {{ run_hooks(pre_hooks) }}
 
   -- build model
-  {% call statement('main') %}
-    {{ create_table_as(False, intermediate_relation, sql) }}
+  {% call statement('main', language=language) %}
+    {{ create_table_as(False, intermediate_relation, sql, language) }}
   {%- endcall %}
 
   -- cleanup
@@ -79,8 +77,6 @@
 
   {% do create_indexes(target_relation) %}
 
-  {{ run_hooks(post_hooks, inside_transaction=True) }}
-
   {% do persist_docs(target_relation, model) %}
 
   -- `COMMIT` happens here
@@ -89,10 +85,36 @@
   -- finally, drop the existing/backup relation after the commit
   {{ drop_relation_if_exists(backup_relation) }}
 
-  {{ run_hooks(post_hooks, inside_transaction=False) }}
+  {{ run_hooks(post_hooks) }}
 
   {% set should_revoke = should_revoke(old_relation, full_refresh_mode=True) %}
   {% do apply_grants(target_relation, grant_config, should_revoke=should_revoke) %}
 
   {{ return({'relations': [target_relation]}) }}
 {% endmaterialization %}
+
+{% macro py_write_table(compiled_code, target_relation, temporary=False) %}
+{{ compiled_code.replace(model.raw_code, "", 1) }}
+    def materialize(df, table, session):
+        if isinstance(df, pd.core.frame.DataFrame):
+           oml.create(df, table=table)
+        elif isinstance(df, oml.core.frame.DataFrame):
+           df.materialize(table=table)
+
+    dbt = dbtObj(load_df_function=oml.sync)
+    final_df = model(dbt, session=oml)
+
+    {{ log("Python model materialization is " ~ model.config.materialized, info=True) }}
+    {% if model.config.materialized.lower() == 'table' %}
+    table_name = f"{dbt.this.identifier}__dbt_tmp"
+    {% else %}
+    # incremental materialization
+    {% if temporary %}
+    table_name = "{{target_relation.identifier}}"
+    {% else %}
+    table_name = dbt.this.identifier
+    {% endif %}
+    {% endif %}
+    materialize(final_df, table=table_name.upper(), session=oml)
+    return pd.DataFrame.from_dict({"result": [1]})
+{% endmacro %}

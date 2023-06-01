@@ -45,12 +45,9 @@
                                                              schema=schema,
                                                              database=database) -%}
 
-  {{ run_hooks(pre_hooks, inside_transaction=False) }}
+  {{ run_hooks(pre_hooks) }}
 
   {{ drop_relation_if_exists(preexisting_backup_relation) }}
-
-  -- `BEGIN` happens here:
-  {{ run_hooks(pre_hooks, inside_transaction=True) }}
 
   -- if old_relation was a table
   {% if old_relation is not none and old_relation.type == 'table' %}
@@ -64,13 +61,11 @@
 
   {% do persist_docs(target_relation, model) %}
 
-  {{ run_hooks(post_hooks, inside_transaction=True) }}
-
   {{ adapter.commit() }}
 
   {{ drop_relation_if_exists(backup_relation) }}
 
-  {{ run_hooks(post_hooks, inside_transaction=False) }}
+  {{ run_hooks(post_hooks) }}
 
   {% set should_revoke = should_revoke(old_relation, full_refresh_mode=True) %}
   {% do apply_grants(target_relation, grant_config, should_revoke=should_revoke) %}
