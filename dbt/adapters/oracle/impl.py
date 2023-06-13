@@ -389,10 +389,17 @@ class OracleAdapter(SQLAdapter):
         if conda_env_name:
             logger.info("Custom python environment is %s", conda_env_name)
             py_q_eval_sql = f"""CREATE GLOBAL TEMPORARY TABLE {py_q_eval_result_table} 
-                                AS SELECT * FROM TABLE(pyqEval(NULL, ''{py_q_eval_output_fmt}'',''{py_q_script_name}'', NULL, ''{conda_env_name}''))"""
+                                AS SELECT * FROM TABLE(pyqEval(par_lst => NULL, 
+                                                               out_fmt => ''{py_q_eval_output_fmt}'',
+                                                               scr_name => ''{py_q_script_name}'', 
+                                                               scr_owner => NULL, 
+                                                               env_name => ''{conda_env_name}''))"""
         else:
             py_q_eval_sql = f"""CREATE GLOBAL TEMPORARY TABLE {py_q_eval_result_table} 
-                                AS SELECT * FROM TABLE(pyqEval(NULL, ''{py_q_eval_output_fmt}'',''{py_q_script_name}'', NULL))"""
+                                AS SELECT * FROM TABLE(pyqEval(par_lst => NULL, 
+                                                               out_fmt => ''{py_q_eval_output_fmt}'',
+                                                               scr_name => ''{py_q_script_name}'', 
+                                                               scr_owner => NULL))"""
 
         py_exec_main_sql = f""" 
                 BEGIN
