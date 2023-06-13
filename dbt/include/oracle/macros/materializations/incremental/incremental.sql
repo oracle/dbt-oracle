@@ -14,11 +14,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 #}
-{% materialization incremental, adapter='oracle' %}
+{% materialization incremental, adapter='oracle', supported_languages=['sql', 'python'] %}
 
   {% set unique_key = config.get('unique_key') %}
   {% set full_refresh_mode = flags.FULL_REFRESH %}
-
+  {%- set language = model['language'] -%}
   {% set target_relation = this.incorporate(type='table') %}
   {% set existing_relation = load_relation(this) %}
   {% set tmp_relation = make_temp_relation(this) %}
@@ -32,7 +32,7 @@
 
   {% set to_drop = [] %}
   {% if existing_relation is none %}
-      {% set build_sql = create_table_as(False, target_relation, sql) %}
+      {% set build_sql = create_table_as(False, target_relation, sql, language) %}
   {% elif existing_relation.is_view or full_refresh_mode %}
       {#-- Make sure the backup doesn't exist so we don't encounter issues with the rename below #}
       {% set backup_identifier = existing_relation.identifier ~ "__dbt_backup" %}
@@ -43,12 +43,16 @@
       {% else %}
             {% do adapter.rename_relation(existing_relation, backup_relation) %}
       {% endif %}
-      {% set build_sql = create_table_as(False, target_relation, sql) %}
+      {% set build_sql = create_table_as(False, target_relation, sql, language) %}
       {% do to_drop.append(backup_relation) %}
   {% else %}
       {% set tmp_relation = make_temp_relation(target_relation) %}
       {% do to_drop.append(tmp_relation) %}
-      {% do run_query(create_table_as(True, tmp_relation, sql)) %}
+      {% call statement("make_tmp_relation", language=language) %}
+        {{create_table_as(True, tmp_relation, sql, language)}}
+      {% endcall %}
+      {#-- After this language should be SQL --#}
+      {% set language = 'sql' %}
       {% do adapter.expand_target_column_types(
              from_relation=tmp_relation,
              to_relation=target_relation) %}
@@ -66,7 +70,7 @@
 
   {% endif %}
 
-  {% call statement("main") %}
+  {% call statement("main", language=language) %}
       {{ build_sql }}
   {% endcall %}
 

@@ -136,29 +136,33 @@
 {%- endmacro %}
 
 
-{% macro oracle__create_table_as(temporary, relation, sql) -%}
-  {%- set sql_header = config.get('sql_header', none) -%}
-  {%- set parallel = config.get('parallel', none) -%}
-  {%- set compression_clause = config.get('table_compression_clause', none) -%}
-  {%- set contract_config = config.get('contract') -%}
-
-  {{ sql_header if sql_header is not none }}
-
-  create {% if temporary -%}
-    global temporary
-  {%- endif %} table {{ relation.include(schema=(not temporary)) }}
-  {%- if contract_config.enforced -%}
-      {{ get_assert_columns_equivalent(sql) }}
-      {{ get_table_columns_and_constraints() }}
-      {%- set sql = get_select_subquery(sql) %}
-  {% endif %}
-  {% if temporary -%} on commit preserve rows {%- endif %}
-  {% if not temporary -%}
-    {% if parallel %} parallel {{ parallel }}{% endif %}
-    {% if compression_clause %} {{ compression_clause }} {% endif %}
-  {%- endif %}
-  as
-    {{ sql }}
+{% macro oracle__create_table_as(temporary, relation, sql, language='sql') -%}
+ {%- if language == 'sql' -%}
+      {%- set sql_header = config.get('sql_header', none) -%}
+      {%- set parallel = config.get('parallel', none) -%}
+      {%- set compression_clause = config.get('table_compression_clause', none) -%}
+      {%- set contract_config = config.get('contract') -%}
+      {{ sql_header if sql_header is not none }}
+      create {% if temporary -%}
+        global temporary
+      {%- endif %} table {{ relation.include(schema=(not temporary)) }}
+      {%- if contract_config.enforced -%}
+          {{ get_assert_columns_equivalent(sql) }}
+          {{ get_table_columns_and_constraints() }}
+          {%- set sql = get_select_subquery(sql) %}
+      {% endif %}
+      {% if temporary -%} on commit preserve rows {%- endif %}
+      {% if not temporary -%}
+        {% if parallel %} parallel {{ parallel }}{% endif %}
+        {% if compression_clause %} {{ compression_clause }} {% endif %}
+      {%- endif %}
+      as
+        {{ sql }}
+{%- elif language == 'python' -%}
+    {{ py_write_table(compiled_code=compiled_code, target_relation=relation, temporary=temporary) }}
+  {%- else -%}
+      {% do exceptions.raise_compiler_error("oracle__create_table_as macro didn't get supported language, it got %s" % language) %}
+  {%- endif -%}
 
 {%- endmacro %}
 {% macro oracle__create_view_as(relation, sql) -%}

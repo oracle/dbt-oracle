@@ -25,7 +25,11 @@ import dbt.exceptions
 from dbt.adapters.base import Credentials
 from dbt.adapters.sql import SQLConnectionManager
 from dbt.contracts.connection import AdapterResponse
+from dbt.events.functions import fire_event
+from dbt.events.types import ConnectionUsed, SQLQuery, SQLCommit, SQLQueryStatus
 from dbt.events import AdapterLogger
+from dbt.events.contextvars import get_node_info
+from dbt.utils import cast_to_str
 
 from dbt.version import __version__ as dbt_version
 from dbt.adapters.oracle.connection_helper import oracledb, SQLNET_ORA_CONFIG
@@ -105,6 +109,9 @@ class OracleAdapterCredentials(Credentials):
     retry_count: Optional[int] = 1
     retry_delay: Optional[int] = 3
 
+    # Fetch an auth token to run Python UDF
+    oml_auth_token_uri: Optional[str] = None
+
 
     _ALIASES = {
         'dbname': 'database',
@@ -129,7 +136,7 @@ class OracleAdapterCredentials(Credentials):
             'service', 'connection_string',
             'shardingkey', 'supershardingkey',
             'cclass', 'purity', 'retry_count',
-            'retry_delay'
+            'retry_delay', 'oml_auth_token_uri'
         )
 
     @classmethod
@@ -293,8 +300,13 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
         if auto_begin and connection.transaction_open is False:
             self.begin()
 
-        logger.debug('Using {} connection "{}".'
-                     .format(self.TYPE, connection.name))
+        fire_event(
+            ConnectionUsed(
+                conn_type=self.TYPE,
+                conn_name=cast_to_str(connection.name),
+                node_info=get_node_info(),
+            )
+        )
 
         with self.exception_handler(sql):
             if abridge_sql_log:
@@ -302,11 +314,22 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
             else:
                 log_sql = sql
 
-            logger.debug(f'On {connection.name}: f{log_sql}')
+            fire_event(
+                SQLQuery(
+                    conn_name=cast_to_str(connection.name), sql=log_sql, node_info=get_node_info()
+                )
+            )
+
             pre = time.time()
             cursor = connection.handle.cursor()
             cursor.execute(sql, bindings)
-            logger.debug(f"SQL status: {self.get_status(cursor)} in {(time.time() - pre)} seconds")
+            fire_event(
+                SQLQueryStatus(
+                    status=str(self.get_response(cursor)),
+                    elapsed=round((time.time() - pre)),
+                    node_info=get_node_info(),
+                )
+            )
             return connection, cursor
 
     def add_begin_query(self):
@@ -317,3 +340,10 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
     @classmethod
     def data_type_code_to_name(cls, type_code) -> str:
         return DATATYPES[type_code.name]
+
+    def commit(self):
+        connection = self.get_thread_connection()
+        fire_event(SQLCommit(conn_name=connection.name, node_info=get_node_info()))
+        self.add_commit_query()
+        connection.transaction_open = False
+        return connection
