@@ -57,7 +57,10 @@
   {{ drop_relation_if_exists(preexisting_intermediate_relation) }}
   {{ drop_relation_if_exists(preexisting_backup_relation) }}
 
-  {{ run_hooks(pre_hooks) }}
+  {{ run_hooks(pre_hooks, inside_transaction=False) }}
+
+  -- `BEGIN` happens here:
+  {{ run_hooks(pre_hooks, inside_transaction=True) }}
 
   -- build model
   {% call statement('main', language=language) %}
@@ -77,6 +80,8 @@
 
   {% do create_indexes(target_relation) %}
 
+  {{ run_hooks(post_hooks, inside_transaction=True) }}
+
   {% do persist_docs(target_relation, model) %}
 
   -- `COMMIT` happens here
@@ -85,7 +90,7 @@
   -- finally, drop the existing/backup relation after the commit
   {{ drop_relation_if_exists(backup_relation) }}
 
-  {{ run_hooks(post_hooks) }}
+  {{ run_hooks(post_hooks, inside_transaction=False) }}
 
   {% set should_revoke = should_revoke(old_relation, full_refresh_mode=True) %}
   {% do apply_grants(target_relation, grant_config, should_revoke=should_revoke) %}
