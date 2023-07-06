@@ -109,8 +109,8 @@ class OracleAdapterCredentials(Credentials):
     retry_count: Optional[int] = 1
     retry_delay: Optional[int] = 3
 
-    # Fetch an auth token to run Python UDF
-    oml_auth_token_uri: Optional[str] = None
+    # Base URL for ADB-S OML REST API
+    oml_cloud_service_url: Optional[str] = None
 
 
     _ALIASES = {
@@ -136,7 +136,7 @@ class OracleAdapterCredentials(Credentials):
             'service', 'connection_string',
             'shardingkey', 'supershardingkey',
             'cclass', 'purity', 'retry_count',
-            'retry_delay', 'oml_auth_token_uri'
+            'retry_delay', 'oml_cloud_service_url'
         )
 
     @classmethod
