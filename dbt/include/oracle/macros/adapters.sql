@@ -25,7 +25,7 @@
     {{ return(load_result('get_columns_in_query').table.columns | map(attribute='name') | list) }}
 {% endmacro %}
 
-{% macro oracle__get_empty_subquery_sql(select_sql) %}
+{% macro oracle__get_empty_subquery_sql(select_sql, select_sql_header=none) %}
     select * from (
         {{ select_sql }}
     ) dbt_sbq_tmp
