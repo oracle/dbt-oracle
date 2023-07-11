@@ -42,6 +42,8 @@ from dbt.events import AdapterLogger
 from dbt.utils import filter_null_values
 
 from dbt.adapters.oracle.keyword_catalog import KEYWORDS
+from dbt.adapters.oracle.python_submissions import OracleADBSPythonJob
+from dbt.adapters.oracle.connections import AdapterResponse
 
 logger = AdapterLogger("oracle")
 
@@ -367,49 +369,27 @@ class OracleAdapter(SQLAdapter):
 
     def submit_python_job(self, parsed_model: dict, compiled_code: str):
         """Submit user defined Python function
-
-        The function pyqEval when used in Oracle Autonomous Database,
-        calls a user-defined Python function.
-
-        pyqEval(PAR_LST, OUT_FMT, SRC_NAME, SRC_OWNER, ENV_NAME)
-
-        - PAR_LST -> Parameter List
-        - OUT_FMT -> JSON clob of the columns
-        - ENV_NAME -> Name of conda environment
+        https://docs.oracle.com/en/database/oracle/machine-learning/oml4py/1/mlepe/op-py-scripts-v1-do-eval-scriptname-post.html
 
 
         """
         identifier = parsed_model["alias"]
-        oml_oauth_access_token = self.get_oml_auth_token()
         py_q_script_name = f"{identifier}_dbt_py_script"
-        py_q_eval_output_fmt = '{"result":"number"}'
-        py_q_eval_result_table = f"o$pt_dbt_pyqeval_{identifier}_tmp_{datetime.datetime.utcnow().strftime('%H%M%S')}"
-
-        conda_env_name = parsed_model["config"].get("conda_env_name")
-        if conda_env_name:
-            logger.info("Custom python environment is %s", conda_env_name)
-            py_q_eval_sql = f"""CREATE GLOBAL TEMPORARY TABLE {py_q_eval_result_table} 
-                                AS SELECT * FROM TABLE(pyqEval(par_lst => NULL, 
-                                                               out_fmt => ''{py_q_eval_output_fmt}'',
-                                                               scr_name => ''{py_q_script_name}'', 
-                                                               scr_owner => NULL, 
-                                                               env_name => ''{conda_env_name}''))"""
-        else:
-            py_q_eval_sql = f"""CREATE GLOBAL TEMPORARY TABLE {py_q_eval_result_table} 
-                                AS SELECT * FROM TABLE(pyqEval(par_lst => NULL, 
-                                                               out_fmt => ''{py_q_eval_output_fmt}'',
-                                                               scr_name => ''{py_q_script_name}'', 
-                                                               scr_owner => NULL))"""
-
-        py_exec_main_sql = f""" 
-                BEGIN
-                   sys.pyqSetAuthToken('{oml_oauth_access_token}');
-                   sys.pyqScriptCreate('{py_q_script_name}', '{compiled_code.strip()}', FALSE, TRUE);
-                   EXECUTE IMMEDIATE '{py_q_eval_sql}';
-                   EXECUTE IMMEDIATE 'DROP TABLE {py_q_eval_result_table}';
-                   sys.pyqScriptDrop('{py_q_script_name}');
-                END;
+        py_q_create_script = f"""
+            BEGIN
+              sys.pyqScriptCreate('{py_q_script_name}', '{compiled_code.strip()}', FALSE, TRUE);
+            END;
         """
-        response, _ = self.execute(sql=py_exec_main_sql)
+        response, _ = self.execute(sql=py_q_create_script)
+        python_job = OracleADBSPythonJob(parsed_model=parsed_model,
+                                         credential=self.config.credentials)
+        python_job()
+        py_q_drop_script = f"""
+                 BEGIN
+                   sys.pyqScriptDrop('{py_q_script_name}');
+                 END;
+             """
+
+        response, _ = self.execute(sql=py_q_drop_script)
         logger.info(response)
         return response

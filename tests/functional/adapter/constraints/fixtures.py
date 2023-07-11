@@ -194,7 +194,7 @@ models:
           - type: not_null
           - type: primary_key
           - type: check
-            expression: (id > 0)
+            expression: id > 0
         tests:
           - unique
       - name: color
@@ -269,7 +269,7 @@ models:
         enforced: true
     constraints:
       - type: check
-        expression: (id > 0)
+        expression: id > 0
       - type: primary_key
         columns: [ id ]
       - type: unique
