@@ -51,6 +51,7 @@ jobs:
           pip install pytest dbt-tests-adapter==1.5.3
           pip install -r requirements.txt
           pip install -e .
+          pip install sqlparse==0.4.3
 
       - name: Check create-pem-from-p12 script is installed in bin
         run: |
