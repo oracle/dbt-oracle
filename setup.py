@@ -20,10 +20,10 @@ import sys
 from setuptools import setup, find_packages
 
 
-# lockstep with dbt-core==1.1 which requires Python > 3.7.2
-if sys.version_info < (3, 7, 2):
+# lockstep with dbt-core which requires Python > 3.8
+if sys.version_info < (3, 8):
     print("Error: dbt-oracle does not support this version of Python.")
-    print("Please upgrade to Python 3.7.2 or higher.")
+    print("Please upgrade to Python 3.8 or higher.")
     sys.exit(1)
 
 
@@ -32,13 +32,13 @@ with open('README.md') as readme_file:
 
 
 requirements = [
-        "dbt-core==1.5.3",
+        "dbt-core==1.6.0",
         "cx_Oracle==8.3.0",
         "oracledb==1.3.2"
 ]
 
 test_requirements = [
-    "dbt-tests-adapter==1.5.3",
+    "dbt-tests-adapter==1.6.0",
     "pytest"
 ]
 
@@ -52,17 +52,16 @@ project_urls = {
 
 url = 'https://github.com/oracle/dbt-oracle'
 
-VERSION = '1.5.2'
+VERSION = '1.6.0'
 setup(
     author="Oracle",
-    python_requires='>=3.7.2',
+    python_requires='>=3.8',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',

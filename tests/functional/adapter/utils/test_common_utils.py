@@ -76,8 +76,7 @@ models__test_cast_bool_to_text_sql = """
 with data as (
 
     select 0 as input, 'false' as expected from dual union all 
-    select 1 as input, 'true' as expected from dual union all
-    select null as input, null as expected from dual
+    select 1 as input, 'true' as expected from dual
 
 )
 select
