@@ -2,4 +2,4 @@ version: 2
 models:
   - name: sales_cost_incremental
     config:
-      post-hook: "{{ create_index('sales_cost_incremental', 'PROD_ID') }}"
+      post-hook: "SELECT COUNT(*) FROM sales_cost_incremental"

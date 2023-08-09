@@ -18,6 +18,14 @@ quoting:
 seeds:
     dbt_adbs_test_project:
         quote_columns: false
+        seed_with_empty_col:
+          +column_types:
+            id: number
+            first_name: varchar2(16)
+            last_name: varchar2(16)
+            email: varchar2(16)
+            gender: varchar2(16)
+            ip_address: varchar2(16)
 
 snapshots:
     dbt_adbs_test_project:
