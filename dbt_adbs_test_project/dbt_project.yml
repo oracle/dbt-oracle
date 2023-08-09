@@ -23,8 +23,9 @@ seeds:
             id: number
             first_name: varchar2(16)
             last_name: varchar2(16)
-            email: varchar2(16)
+            email: varchar2(26)
             gender: varchar2(16)
+            age: number
             ip_address: varchar2(16)
 
 snapshots:
