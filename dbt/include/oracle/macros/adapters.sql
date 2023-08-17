@@ -307,7 +307,11 @@
      pragma EXCEPTION_INIT(attempted_ddl_on_in_use_GTT, -14452);
   BEGIN
      SAVEPOINT start_transaction;
+     {%- if relation.is_materialized_view -%}
+     EXECUTE IMMEDIATE '{{ oracle__drop_materialized_view(relation) }}';
+     {%- else -%}
      EXECUTE IMMEDIATE 'DROP {{ relation.type }} {{ relation }} cascade constraint';
+     {%- endif -%}
      COMMIT;
   EXCEPTION
      WHEN attempted_ddl_on_in_use_GTT THEN
@@ -382,6 +386,12 @@
          view_name,
          'VIEW'
        from sys.all_views
+       union all
+       select SYS_CONTEXT('userenv', 'DB_NAME'),
+        owner,
+        mview_name,
+        'MATERIALIZED VIEW'
+        from sys.all_mviews
   )
   select table_catalog as "database_name"
     ,table_name as "name"
@@ -389,9 +399,10 @@
     ,case table_type
       when 'BASE TABLE' then 'table'
       when 'VIEW' then 'view'
+      when 'MATERIALIZED VIEW' then 'materialized_view'
     end as "kind"
   from tables
-  where table_type in ('BASE TABLE', 'VIEW')
+  where table_type in ('BASE TABLE', 'VIEW', 'MATERIALIZED VIEW')
     and upper(table_schema) = upper('{{ schema_relation.schema }}')
   {% endcall %}
   {{ return(load_result('list_relations_without_caching').table) }}
