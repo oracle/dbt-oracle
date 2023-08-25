@@ -17,7 +17,15 @@ Copyright (c) 2020, Vitor Avancini
 
 """The setup script."""
 import sys
-from setuptools import setup, find_packages
+from setuptools import setup
+
+try:
+    from setuptools import find_namespace_packages
+except ImportError:
+    # the user has a downlevel version of setuptools.
+    print("Error: dbt requires setuptools v40.1.0 or higher.")
+    print('Please upgrade setuptools with "pip install --upgrade setuptools" ' "and try again")
+    sys.exit(1)
 
 
 # lockstep with dbt-core which requires Python > 3.8
@@ -75,20 +83,12 @@ setup(
     include_package_data=True,
     keywords='Oracle dbt',
     name='dbt-oracle',
-    packages=find_packages(),
+    packages=find_namespace_packages(include=["dbt", "dbt.*"]),
     test_suite='tests',
     tests_require=test_requirements,
     scripts=['bin/create-pem-from-p12'],
     url=url,
     project_urls=project_urls,
     version=VERSION,
-    zip_safe=False,
-    package_data={
-        'dbt': [
-            'include/oracle/dbt_project.yml',
-            'include/oracle/profile_template.yml',
-            'include/oracle/macros/*.sql',
-            'include/oracle/macros/**/**/*.sql'
-        ]
-    }
+    zip_safe=False
 )
