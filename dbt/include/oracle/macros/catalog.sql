@@ -89,7 +89,7 @@
                    'VIEW'
                  from sys.all_views
                  union all
-                 select SYS_CONTEXT('userenv, 'DB_NAME'),
+                 select SYS_CONTEXT('userenv', 'DB_NAME'),
                    owner,
                    mview_name,
                    'MATERIALIZED VIEW'
