@@ -88,6 +88,12 @@
                    view_name,
                    'VIEW'
                  from sys.all_views
+                 union all
+                 select SYS_CONTEXT('userenv, 'DB_NAME'),
+                   owner,
+                   mview_name,
+                   'MATERIALIZED VIEW'
+                 from sys.all_mviews
           )
           select
               tables.table_catalog as "table_database",
