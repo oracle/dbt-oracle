@@ -9,11 +9,8 @@
 {%- endmacro %}
 
 {% macro oracle__get_replace_materialized_view_as_sql(relation, sql, existing_relation, backup_relation, intermediate_relation) %}
-    {% call statement(name="drop_mv") %}
-        {{ oracle__drop_relation(relation) }}
-    {% endcall %}
-    {{- log('ORACLE Applying REPLACE to: ' ~ relation) -}}
-    {{ get_create_materialized_view_as_sql(relation, sql) }}
+    {{ oracle__drop_relation(relation) }}
+    {{ oracle__get_create_materialized_view_as_sql(relation, sql) }}
 {% endmacro %}
 
 {% macro oracle__get_create_materialized_view_as_sql(relation, sql) %}

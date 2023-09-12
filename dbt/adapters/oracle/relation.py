@@ -36,6 +36,7 @@ from dbt.adapters.oracle.relation_configs import (
     OracleRefreshModeConfigChange,
     OracleBuildModeConfigChange,
     OracleQueryRewriteConfigChange,
+    OracleQueryConfigChange,
     OracleQuotePolicy,
     OracleIncludePolicy)
 
@@ -108,6 +109,12 @@ class OracleRelation(BaseRelation):
                 context=new_materialized_view.query_rewrite
             )
 
+        if new_materialized_view.query.upper() != existing_materialized_view.query.upper():
+            config_change_collection.query = OracleQueryConfigChange(
+                action=RelationConfigChangeAction.create,
+                context=new_materialized_view.query
+            )
+
         logger.debug(f"Config change collection {config_change_collection}")
 
         if config_change_collection.has_changes:
@@ -115,7 +122,7 @@ class OracleRelation(BaseRelation):
             if config_change_collection.refresh_mode is None:
                 config_change_collection.refresh_mode = OracleRefreshModeConfigChange(
                     action=RelationConfigChangeAction.alter,
-                    context=new_materialized_view.refresh_mode)
+                    context=existing_materialized_view.refresh_mode)
 
             if config_change_collection.query_rewrite is None:
                 config_change_collection.query_rewrite = OracleQueryRewriteConfigChange(
@@ -130,10 +137,13 @@ class OracleRelation(BaseRelation):
             if config_change_collection.build_mode is None:
                 config_change_collection.build_mode = OracleBuildModeConfigChange(
                     action=RelationConfigChangeAction.alter,
-                    context=new_materialized_view.build_mode)
+                    context=existing_materialized_view.build_mode)
+
+            if config_change_collection.query is None:
+                config_change_collection.query = OracleQueryConfigChange(
+                    action=RelationConfigChangeAction.create,
+                    context=existing_materialized_view.query)
 
             return config_change_collection
-
-
 
         return None

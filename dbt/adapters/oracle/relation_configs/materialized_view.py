@@ -128,7 +128,7 @@ class OracleMaterializedViewConfig(OracleRelationConfigBase):
 
 @dataclass(frozen=True, eq=True, unsafe_hash=True)
 class OracleRefreshModeConfigChange(RelationConfigChange):
-    context: Optional[bool] = None
+    context: Optional[str] = None
 
     @property
     def requires_full_refresh(self) -> bool:
@@ -137,7 +137,7 @@ class OracleRefreshModeConfigChange(RelationConfigChange):
 
 @dataclass(frozen=True, eq=True, unsafe_hash=True)
 class OracleRefreshMethodConfigChange(RelationConfigChange):
-    context: Optional[bool] = None
+    context: Optional[str] = None
 
     @property
     def requires_full_refresh(self) -> bool:
@@ -145,7 +145,7 @@ class OracleRefreshMethodConfigChange(RelationConfigChange):
 
 @dataclass(frozen=True, eq=True, unsafe_hash=True)
 class OracleBuildModeConfigChange(RelationConfigChange):
-    context: Optional[bool] = None
+    context: Optional[str] = None
 
     @property
     def requires_full_refresh(self) -> bool:
@@ -153,11 +153,19 @@ class OracleBuildModeConfigChange(RelationConfigChange):
 
 @dataclass(frozen=True, eq=True, unsafe_hash=True)
 class OracleQueryRewriteConfigChange(RelationConfigChange):
-    context: Optional[bool] = None
+    context: Optional[str] = None
 
     @property
     def requires_full_refresh(self) -> bool:
         return False
+
+@dataclass(frozen=True, eq=True, unsafe_hash=True)
+class OracleQueryConfigChange(RelationConfigChange):
+    context: Optional[str] = None
+
+    @property
+    def requires_full_refresh(self) -> bool:
+        return True
 
 
 @dataclass
@@ -166,6 +174,7 @@ class OracleMaterializedViewConfigChangeset:
     refresh_method: Optional[OracleRefreshMethodConfigChange] = None
     build_mode: Optional[OracleBuildModeConfigChange] = None
     query_rewrite: Optional[OracleQueryRewriteConfigChange] = None
+    query: Optional[OracleQueryConfigChange] = None
 
     @property
     def requires_full_refresh(self) -> bool:
@@ -175,6 +184,7 @@ class OracleMaterializedViewConfigChangeset:
                 self.refresh_method.requires_full_refresh if self.refresh_method else False,
                 self.build_mode.requires_full_refresh if self.build_mode else False,
                 self.query_rewrite.requires_full_refresh if self.query_rewrite else False,
+                self.query.requires_full_refresh if self.query else False
             }
         )
 
@@ -186,5 +196,6 @@ class OracleMaterializedViewConfigChangeset:
                 self.refresh_method if self.refresh_method else False,
                 self.build_mode if self.build_mode else False,
                 self.query_rewrite if self.query_rewrite else False,
+                self.query if self.query else False
             }
         )

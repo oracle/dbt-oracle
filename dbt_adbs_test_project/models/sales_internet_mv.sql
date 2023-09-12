@@ -15,4 +15,4 @@
 #}
 {{ config(materialized='materialized_view')}}
 select * from {{ source('sh_database', 'sales') }}
-where channel_id = 4
+where channel_id = 5

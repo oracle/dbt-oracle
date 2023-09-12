@@ -14,12 +14,15 @@ Copyright (c) 2023, Oracle and/or its affiliates.
   limitations under the License.
 """
 
-from dbt.adapters.oracle.relation_configs.materialized_view import (OracleMaterializedViewConfig,
-                                                                    OracleMaterializedViewConfigChangeset,
-                                                                    OracleBuildModeConfigChange,
-                                                                    OracleRefreshModeConfigChange,
-                                                                    OracleQueryRewriteConfigChange,
-                                                                    OracleRefreshMethodConfigChange)
+from dbt.adapters.oracle.relation_configs.materialized_view import (
+    OracleMaterializedViewConfig,
+    OracleMaterializedViewConfigChangeset,
+    OracleBuildModeConfigChange,
+    OracleRefreshModeConfigChange,
+    OracleQueryConfigChange,
+    OracleQueryRewriteConfigChange,
+    OracleRefreshMethodConfigChange)
 
-from dbt.adapters.oracle.relation_configs.policies import (OracleQuotePolicy,
-                                                           OracleIncludePolicy)
+from dbt.adapters.oracle.relation_configs.policies import (
+    OracleQuotePolicy,
+    OracleIncludePolicy)
