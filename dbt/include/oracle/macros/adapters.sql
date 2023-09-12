@@ -380,6 +380,7 @@
            else 'BASE TABLE'
          end table_type
        from sys.all_tables
+       where upper(table_name) not in (select upper(mview_name) from sys.all_mviews)
        union all
        select SYS_CONTEXT('userenv', 'DB_NAME'),
          owner,

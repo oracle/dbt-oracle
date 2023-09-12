@@ -39,6 +39,10 @@ from dbt.adapters.oracle.relation_configs import (
     OracleQuotePolicy,
     OracleIncludePolicy)
 
+from dbt.events import AdapterLogger
+
+logger = AdapterLogger("oracle")
+
 
 @dataclass(frozen=True, eq=False, repr=False)
 class OracleRelation(BaseRelation):
@@ -80,29 +84,31 @@ class OracleRelation(BaseRelation):
         assert isinstance(existing_materialized_view, OracleMaterializedViewConfig)
         assert isinstance(new_materialized_view, OracleMaterializedViewConfig)
 
-        if new_materialized_view.refresh_method != existing_materialized_view.refresh_method:
+        if new_materialized_view.refresh_method.upper() != existing_materialized_view.refresh_method.upper():
             config_change_collection.refresh_method = OracleRefreshMethodConfigChange(
                 action=RelationConfigChangeAction.alter,
                 context=new_materialized_view.refresh_method
             )
 
-        if new_materialized_view.refresh_mode != existing_materialized_view.refresh_method:
+        if new_materialized_view.refresh_mode.upper() != existing_materialized_view.refresh_mode.upper():
             config_change_collection.refresh_mode = OracleRefreshModeConfigChange(
                 action=RelationConfigChangeAction.alter,
                 context=new_materialized_view.refresh_mode
             )
 
-        if new_materialized_view.build_mode != existing_materialized_view.build_mode:
+        if new_materialized_view.build_mode.upper() != existing_materialized_view.build_mode.upper():
             config_change_collection.build_mode = OracleBuildModeConfigChange(
                 action=RelationConfigChangeAction.alter,
                 context=new_materialized_view.build_mode
             )
 
-        if new_materialized_view.query_rewrite != existing_materialized_view.query_rewrite:
+        if new_materialized_view.query_rewrite.upper() != existing_materialized_view.query_rewrite.upper():
             config_change_collection.query_rewrite = OracleQueryRewriteConfigChange(
                 action=RelationConfigChangeAction.alter,
                 context=new_materialized_view.query_rewrite
             )
+
+        logger.debug(f"Config change collection {config_change_collection}")
 
         if config_change_collection.has_changes:
 
@@ -127,5 +133,7 @@ class OracleRelation(BaseRelation):
                     context=new_materialized_view.build_mode)
 
             return config_change_collection
+
+
 
         return None

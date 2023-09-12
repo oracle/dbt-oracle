@@ -12,6 +12,7 @@
     {% call statement(name="drop_mv") %}
         {{ oracle__drop_relation(relation) }}
     {% endcall %}
+    {{- log('ORACLE Applying REPLACE to: ' ~ relation) -}}
     {{ get_create_materialized_view_as_sql(relation, sql) }}
 {% endmacro %}
 
@@ -56,7 +57,7 @@
 {% endmacro %}
 
 {% macro oracle__get_materialized_view_configuration_changes(existing_relation, new_config) %}
-    {% set _existing_materialized_view = oracle__describe_materialized_view(existing_relation) %}
+    {% set _existing_materialized_view = oracle__describe_materialized_view_config(existing_relation) %}
     {% set _configuration_changes = existing_relation.materialized_view_config_changeset(_existing_materialized_view, new_config) %}
     {% do return(_configuration_changes) %}
 {% endmacro %}

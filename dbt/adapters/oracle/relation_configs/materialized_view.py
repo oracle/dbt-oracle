@@ -25,7 +25,9 @@ from dbt.contracts.relation import ComponentName
 
 from dbt.contracts.graph.nodes import ModelNode
 from dbt.exceptions import DbtRuntimeError
+from dbt.events import AdapterLogger
 
+logger = AdapterLogger("oracle")
 
 @dataclass(frozen=True, eq=True, unsafe_hash=True)
 class OracleMaterializedViewConfig(OracleRelationConfigBase):
@@ -107,14 +109,16 @@ class OracleMaterializedViewConfig(OracleRelationConfigBase):
         """
 
         materialized_view: agate.Row = cls._get_first_row(relation_results.get("materialized_view"))
+        logger.debug(f"Materialized View data is {materialized_view}")
         config_dict = {
-            "mview_name": materialized_view.get("mview_name"),
-            "refresh_mode": materialized_view.get("refresh_mode"),
-            "refresh_method": materialized_view.get("refresh_method"),
-            "build_mode": materialized_view.get("build_mode"),
-            "query": materialized_view.get("query"),
+            "mview_name": materialized_view.get("mview_name".upper()),
+            "refresh_mode": materialized_view.get("refresh_mode".upper()),
+            "refresh_method": materialized_view.get("refresh_method".upper()),
+            "build_mode": materialized_view.get("build_mode".upper()),
+            "query": materialized_view.get("query".upper()),
         }
-        if materialized_view.get('rewrite_enabled').upper() == 'Y':
+        logger.debug(f"Materialized View config is {config_dict}")
+        if materialized_view.get('rewrite_enabled'.upper()).upper() == 'Y':
             config_dict["query_rewrite"] = "enable"
         else:
             config_dict["query_rewrite"] = "disable"
