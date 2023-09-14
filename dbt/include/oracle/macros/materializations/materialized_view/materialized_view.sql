@@ -9,7 +9,7 @@
 {%- endmacro %}
 
 {% macro oracle__get_replace_materialized_view_as_sql(relation, sql, existing_relation, backup_relation, intermediate_relation) %}
-    {{ oracle__drop_relation(relation) }}
+    {{ oracle__drop_relation(existing_relation) }}
     {{ oracle__get_create_materialized_view_as_sql(relation, sql) }}
 {% endmacro %}
 
