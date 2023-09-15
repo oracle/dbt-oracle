@@ -43,7 +43,7 @@
                 data_precision numeric_precision,
                 data_scale numeric_scale,
                 nullable is_nullable,
-                column_id ordinal_position,
+                coalesce(column_id, 0) ordinal_position,
                 default_length,
                 data_default column_default,
                 num_distinct,
@@ -82,12 +82,19 @@
                      else 'BASE TABLE'
                    end table_type
                  from sys.all_tables
+                 where upper(table_name) not in (select upper(mview_name) from sys.all_mviews) 
                  union all
                  select SYS_CONTEXT('userenv', 'DB_NAME'),
                    owner,
                    view_name,
                    'VIEW'
                  from sys.all_views
+                 union all
+                 select SYS_CONTEXT('userenv', 'DB_NAME'),
+                   owner,
+                   mview_name,
+                   'MATERIALIZED VIEW'
+                 from sys.all_mviews
           )
           select
               tables.table_catalog as "table_database",

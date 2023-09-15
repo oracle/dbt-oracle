@@ -1,0 +1,5 @@
+version: 2
+models:
+  - name: sales_cost_incremental
+    config:
+      post-hook: "SELECT COUNT(*) FROM sales_cost_incremental"

@@ -1,6 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
-Copyright (c) 2020, Vitor Avancini
+Copyright (c) 2023, Oracle and/or its affiliates.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -14,4 +13,22 @@ Copyright (c) 2020, Vitor Avancini
   See the License for the specific language governing permissions and
   limitations under the License.
 """
-version = "1.6.0"
+
+from dataclasses import dataclass
+
+from dbt.adapters.base.relation import Policy
+from dbt.dataclass_schema import StrEnum
+
+
+@dataclass
+class OracleQuotePolicy(Policy):
+    database: bool = False
+    schema: bool = False
+    identifier: bool = False
+
+
+@dataclass
+class OracleIncludePolicy(Policy):
+    database: bool = False
+    schema: bool = True
+    identifier: bool = True

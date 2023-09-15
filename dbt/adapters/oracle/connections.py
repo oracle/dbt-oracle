@@ -192,6 +192,9 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
             'dsn': dsn
         }
 
+        if oracledb.__name__ == "oracledb":
+            conn_config['connection_id_prefix'] = 'dbt-oracle-'
+
         if credentials.shardingkey:
             conn_config['shardingkey'] = credentials.shardingkey
 

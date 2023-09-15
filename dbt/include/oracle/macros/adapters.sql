@@ -305,14 +305,22 @@
      PRAGMA EXCEPTION_INIT(dne_942, -942);
      attempted_ddl_on_in_use_GTT EXCEPTION;
      pragma EXCEPTION_INIT(attempted_ddl_on_in_use_GTT, -14452);
+     mv_dne_12003 EXCEPTION;
+     PRAGMA EXCEPTION_INIT(mv_dne_12003, -12003);
   BEGIN
      SAVEPOINT start_transaction;
+     {%- if relation.is_materialized_view -%}
+     EXECUTE IMMEDIATE '{{ oracle__drop_materialized_view(relation) }}';
+     {%- else -%}
      EXECUTE IMMEDIATE 'DROP {{ relation.type }} {{ relation }} cascade constraint';
+     {%- endif -%}
      COMMIT;
   EXCEPTION
      WHEN attempted_ddl_on_in_use_GTT THEN
         NULL; -- if it its a global temporary table, leave it alone.
      WHEN dne_942 THEN
+        NULL;
+     WHEN mv_dne_12003 THEN
         NULL;
   END;
   {%- endcall %}
@@ -376,12 +384,19 @@
            else 'BASE TABLE'
          end table_type
        from sys.all_tables
+       where upper(table_name) not in (select upper(mview_name) from sys.all_mviews)
        union all
        select SYS_CONTEXT('userenv', 'DB_NAME'),
          owner,
          view_name,
          'VIEW'
        from sys.all_views
+       union all
+       select SYS_CONTEXT('userenv', 'DB_NAME'),
+        owner,
+        mview_name,
+        'MATERIALIZED VIEW'
+        from sys.all_mviews
   )
   select table_catalog as "database_name"
     ,table_name as "name"
@@ -389,9 +404,10 @@
     ,case table_type
       when 'BASE TABLE' then 'table'
       when 'VIEW' then 'view'
+      when 'MATERIALIZED VIEW' then 'materialized_view'
     end as "kind"
   from tables
-  where table_type in ('BASE TABLE', 'VIEW')
+  where table_type in ('BASE TABLE', 'VIEW', 'MATERIALIZED VIEW')
     and upper(table_schema) = upper('{{ schema_relation.schema }}')
   {% endcall %}
   {{ return(load_result('list_relations_without_caching').table) }}
