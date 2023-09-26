@@ -20,7 +20,7 @@ import os
 import dbt.exceptions
 from dbt.events import AdapterLogger
 
-from dbt.ui import warning_tag, yellow
+from dbt.ui import warning_tag, red
 
 logger = AdapterLogger("oracle")
 
@@ -104,14 +104,14 @@ ORA_PYTHON_DRIVER_TYPE = os.getenv('ORA_PYTHON_DRIVER_TYPE', 'cx').upper()
 if ORA_PYTHON_DRIVER_TYPE == OracleDriverType.CX_ORACLE:
     logger.info("Running in cx mode")
     description = (
-        f"cx_oracle will soon be deprecated, use python-oracledb"
+        f"cx_oracle is no longer maintained, use python-oracledb"
         f"\n\nTo switch to python-oracledb set the environment variable ORA_PYTHON_DRIVER_TYPE=thin "
         f"\n\nRead the guideline here: "
         f"https://docs.getdbt.com/reference/warehouse-setups/oracle-setup#configure-the-python-driver-mode"
         f"\n\nDocumentation for python-oracledb can be found here: "
         f"https://oracle.github.io/python-oracledb/"
     )
-    logger.warning(warning_tag(yellow(description)))
+    logger.warning(warning_tag(red(description)))
     import cx_Oracle as oracledb
 elif ORA_PYTHON_DRIVER_TYPE == OracleDriverType.THICK:
     import oracledb
