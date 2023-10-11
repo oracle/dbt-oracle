@@ -43,7 +43,7 @@
                 data_precision numeric_precision,
                 data_scale numeric_scale,
                 nullable is_nullable,
-                column_id ordinal_position,
+                coalesce(column_id, 0) ordinal_position,
                 default_length,
                 data_default column_default,
                 num_distinct,
