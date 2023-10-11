@@ -88,11 +88,8 @@ class OracleAdapter(SQLAdapter):
 
     @classmethod
     def convert_text_type(cls, agate_table, col_idx):
-        column = agate_table.columns[col_idx]
-        lens = (len(d.encode("utf-8")) for d in column.values_without_nulls())
-        max_len = max(lens) if lens else 64
-        length = max_len if max_len > 16 else 16
-        return "varchar2({})".format(length)
+        # Keep this consistent with STRING/TEXT datatypes mapped to "VARCHAR2(4000)"
+        return "varchar2(4000)"
 
     @classmethod
     def convert_date_type(cls, agate_table, col_idx):
