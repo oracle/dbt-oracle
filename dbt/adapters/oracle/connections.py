@@ -14,6 +14,7 @@ Copyright (c) 2020, Vitor Avancini
   See the License for the specific language governing permissions and
   limitations under the License.
 """
+import json
 from typing import List, Optional, Tuple, Any, Dict, Union
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -219,8 +220,14 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
         try:
             handle = oracledb.connect(**conn_config)
             # client_identifier and module are saved in corresponding columns in v$session
-            handle.module = f'dbt-{dbt_version}'
-            handle.client_identifier = f'dbt-oracle-client-{uuid.uuid4()}'
+            action = "dbt run"
+            client_identifier = f'dbt-oracle-client-{uuid.uuid4()}'
+            module = f'dbt-{dbt_version}'
+            client_info = {"action": action, "client_identifier": client_identifier, "module": module}
+            logger.info(f"Session info :{json.dumps(client_info)}")
+            handle.module = module
+            handle.client_identifier = client_identifier
+            handle.action = action
             connection.handle = handle
             connection.state = 'open'
         except oracledb.DatabaseError as e:
