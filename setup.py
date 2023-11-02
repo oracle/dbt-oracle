@@ -34,7 +34,7 @@ with open('README.md') as readme_file:
 requirements = [
         "dbt-core~=1.5,<1.6",
         "cx_Oracle==8.3.0",
-        "oracledb==1.4.1"
+        "oracledb==1.4.2"
 ]
 
 test_requirements = [
@@ -52,7 +52,7 @@ project_urls = {
 
 url = 'https://github.com/oracle/dbt-oracle'
 
-VERSION = '1.5.3'
+VERSION = '1.5.4'
 setup(
     author="Oracle",
     python_requires='>=3.7.2',
