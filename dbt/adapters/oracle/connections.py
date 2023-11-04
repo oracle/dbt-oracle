@@ -242,7 +242,10 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
             session_info = cls.get_session_info(credentials=credentials)
             logger.info(f"Session info :{json.dumps(session_info)}")
             for k, v in session_info.items():
-                setattr(handle, k, v)
+                try:
+                    setattr(handle, k, v)
+                except AttributeError:
+                    logger.warning(f"Python driver does not support setting {k}")
             connection.handle = handle
             connection.state = 'open'
         except oracledb.DatabaseError as e:
