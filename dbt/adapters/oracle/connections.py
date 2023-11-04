@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 import enum
 import time
 import uuid
+import platform
 
 import dbt.exceptions
 from dbt.adapters.base import Credentials
@@ -113,6 +114,9 @@ class OracleAdapterCredentials(Credentials):
     # Base URL for ADB-S OML REST API
     oml_cloud_service_url: Optional[str] = None
 
+    # session info is stored in v$session for each dbt run
+    session_info: Optional[Dict[str, str]] = field(default_factory=dict)
+
 
     _ALIASES = {
         'dbname': 'database',
@@ -137,7 +141,8 @@ class OracleAdapterCredentials(Credentials):
             'service', 'connection_string',
             'shardingkey', 'supershardingkey',
             'cclass', 'purity', 'retry_count',
-            'retry_delay', 'oml_cloud_service_url'
+            'retry_delay', 'oml_cloud_service_url',
+            'session_info'
         )
 
     @classmethod
@@ -174,6 +179,20 @@ class OracleAdapterCredentials(Credentials):
 
 class OracleAdapterConnectionManager(SQLConnectionManager):
     TYPE = 'oracle'
+
+    @staticmethod
+    def get_session_info(credentials):
+        default_action = "DBT RUN"
+        default_client_identifier = f'dbt-oracle-client-{uuid.uuid4()}'
+        default_client_info = "_".join([platform.node(), platform.machine()])
+        default_module = f'dbt-{dbt_version}'
+        return {
+            "action": credentials.session_info.get("action", default_action),
+            "client_identifier": credentials.session_info.get("client_identifier", default_client_identifier),
+            "client_info": credentials.session_info.get("client_info", default_client_info),
+            "module": credentials.session_info.get("module", default_module)
+        }
+
 
     @classmethod
     def open(cls, connection):
@@ -219,15 +238,11 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
 
         try:
             handle = oracledb.connect(**conn_config)
-            # client_identifier and module are saved in corresponding columns in v$session
-            action = "dbt run"
-            client_identifier = f'dbt-oracle-client-{uuid.uuid4()}'
-            module = f'dbt-{dbt_version}'
-            client_info = {"action": action, "client_identifier": client_identifier, "module": module}
-            logger.info(f"Session info :{json.dumps(client_info)}")
-            handle.module = module
-            handle.client_identifier = client_identifier
-            handle.action = action
+            # session_info is stored in v$session
+            session_info = cls.get_session_info(credentials=credentials)
+            logger.info(f"Session info :{json.dumps(session_info)}")
+            for k, v in session_info.items():
+                setattr(handle, k, v)
             connection.handle = handle
             connection.state = 'open'
         except oracledb.DatabaseError as e:
