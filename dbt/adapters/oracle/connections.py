@@ -189,7 +189,7 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
         return {
             "action": credentials.session_info.get("action", default_action),
             "client_identifier": credentials.session_info.get("client_identifier", default_client_identifier),
-            "client_info": credentials.session_info.get("client_info", default_client_info),
+            "clientinfo": credentials.session_info.get("client_info", default_client_info),
             "module": credentials.session_info.get("module", default_module)
         }
 
