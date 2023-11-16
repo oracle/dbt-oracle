@@ -19,8 +19,6 @@ import pytest
 
 # dbt imports
 from dbt.clients.yaml_helper import load_yaml_text
-import dbt.config
-from dbt.context.base import generate_base_context
 
 # dbt-oracle imports
 from dbt.adapters.oracle import OracleAdapterCredentials
@@ -28,14 +26,12 @@ from dbt.adapters.oracle.connections import OracleConnectionMethod
 
 
 def get_credentials(profile_yml):
-    "Render a YAML string profiles.yml into credentials"
+    " Render a YAML string profiles.yml into credentials "
     dicty_thing = load_yaml_text(profile_yml)
-    renderer = dbt.config.renderer.ProfileRenderer(generate_base_context({}))
-    profile = dbt.config.Profile.from_raw_profiles(
-        dicty_thing, 'default', renderer
-    )
-    return profile.credentials
-
+    dicty_thing["default"]["outputs"]["target"].pop("type")
+    dicty_thing["default"]["outputs"]["target"].pop("threads")
+    dicty_thing["default"]["outputs"]["target"]["database"] = "PDB1"
+    return OracleAdapterCredentials(**dicty_thing["default"]["outputs"]["target"])
 
 # Define data
 SCENARIOS = {
@@ -49,7 +45,7 @@ SCENARIOS = {
                         type: oracle
                         host: localhost
                         user: dbt_test
-                        pass: dbt_test
+                        password: dbt_test
                         protocol: tcps
                         service: xe
                         schema: dbt_test
@@ -68,7 +64,7 @@ SCENARIOS = {
                         type: oracle
                         host: localhost
                         user: dbt_test
-                        pass: dbt_test
+                        password: dbt_test
                         service: xe_ha.host.tld
                         schema: dbt_test
                         protocol: tcps
@@ -86,7 +82,7 @@ SCENARIOS = {
                     target:
                         type: oracle
                         user: dbt_test
-                        pass: dbt_test
+                        password: dbt_test
                         tns_name: xe
                         schema: dbt_test
                         port: 1522
@@ -105,7 +101,7 @@ SCENARIOS = {
                         type: oracle
                         host: localhost
                         user: dbt_test
-                        pass: dbt_test
+                        password: dbt_test
                         connection_string: "(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1522))(CONNECT_DATA=(SERVICE_NAME=xe)))"
                         schema: dbt_test
                         port: 1522
