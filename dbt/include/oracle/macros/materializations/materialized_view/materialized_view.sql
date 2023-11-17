@@ -30,7 +30,10 @@
     -- apply a full refresh immediately if needed
     {% if configuration_changes.requires_full_refresh %}
 
-        {{ get_replace_materialized_view_as_sql(relation, sql, existing_relation, backup_relation, intermediate_relation) }}
+        {{- log('Applying REPLACE to: ' ~ existing_relation ) -}}
+        {{ oracle__drop_relation(existing_relation) }}
+        {{ oracle__get_create_materialized_view_as_sql(target_relation, sql) }}
+
 
     -- otherwise apply individual changes as needed
     {% else %}
