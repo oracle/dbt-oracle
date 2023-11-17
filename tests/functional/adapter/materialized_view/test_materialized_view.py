@@ -82,3 +82,11 @@ class TestOracleMaterializedViewBasic(MaterializedViewBasic):
     def test_view_replaces_materialized_view(self, project, my_materialized_view):
         super().test_view_replaces_materialized_view(project, my_materialized_view)
 
+    def test_materialized_view_full_refresh(self, project, my_materialized_view):
+        _, logs = run_dbt_and_capture(
+            ["--debug", "run", "--models", my_materialized_view.identifier, "--full-refresh"]
+        )
+        assert self.query_relation_type(project, my_materialized_view) == "materialized_view"
+        view_name = f"{my_materialized_view}".upper()
+        assert_message_in_logs(f"Applying REPLACE to: {view_name}", logs)
+
