@@ -32,7 +32,7 @@
 
         {{- log('Applying REPLACE to: ' ~ existing_relation ) -}}
         {{ oracle__drop_relation(existing_relation) }}
-        {{ oracle__get_create_materialized_view_as_sql(target_relation, sql) }}
+        {{ oracle__get_create_materialized_view_as_sql(relation, sql) }}
 
 
     -- otherwise apply individual changes as needed
