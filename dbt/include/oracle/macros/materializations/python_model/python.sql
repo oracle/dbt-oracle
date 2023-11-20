@@ -54,8 +54,23 @@
 {% endmacro %}
 
 {% macro py_script_postfix(model) %}
-def main():
+def main(action, client_identifier, clientinfo, module):
     import oml
+    try:
+        connection = oml.core.methods._get_conn()
+    except Exception:
+        print("Exception getting connection object from OML client")
+    else:
+        session_info = {"action": action,
+                        "client_identifier": client_identifier,
+                        "clientinfo": clientinfo,
+                        "module": module}
+        for k, v in session_info.items():
+            try:
+                setattr(connection, k, v)
+            except AttributeError:
+                print(f"Python driver does not support setting {k}")
+
     import pandas as pd
     {{ build_ref_function(model ) }}
     {{ build_source_function(model ) }}
