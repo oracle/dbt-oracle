@@ -85,7 +85,7 @@ class OracleAdapterCredentials(Credentials):
     user: str
     password: str
     # Specifying database is optional
-    database: Optional[str]
+    database: Optional[str] = None
 
     # OracleConnectionMethod.TNS
     tns_name: Optional[str] = None
