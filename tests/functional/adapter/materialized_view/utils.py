@@ -53,3 +53,31 @@ def query_relation_type(project, relation: BaseRelation) -> Optional[str]:
     else:
         return results[0][0]
 
+
+def query_refresh_method(project, relation: OracleRelation):
+    sql = f"""SELECT refresh_method
+              FROM sys.all_mviews
+              WHERE mview_name = '{ relation.identifier.upper() }'"""
+    return project.run_sql(sql, fetch="one")[0].upper()
+
+
+def query_refresh_mode(project, relation: OracleRelation):
+    sql = f"""SELECT refresh_mode
+              FROM sys.all_mviews
+              WHERE mview_name = '{ relation.identifier.upper() }'"""
+    return project.run_sql(sql, fetch="one")[0].upper()
+
+
+def query_build_mode(project, relation: OracleRelation):
+    sql = f"""SELECT build_mode
+              FROM sys.all_mviews
+              WHERE mview_name = '{relation.identifier.upper()}'"""
+    return project.run_sql(sql, fetch="one")[0].upper()
+
+
+def query_rewrite_enabled(project, relation: OracleRelation):
+    sql = f"""SELECT rewrite_enabled
+              FROM sys.all_mviews
+              WHERE mview_name = '{relation.identifier.upper() }'"""
+    return "enable" if project.run_sql(sql, fetch="one")[0] == "Y" else "disable"
+
