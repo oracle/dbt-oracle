@@ -56,20 +56,23 @@
 {% macro py_script_postfix(model) %}
 def main(action, client_identifier, clientinfo, module):
     import oml
-    try:
-        connection = oml.core.methods._get_conn()
-    except Exception:
-        print("Exception getting connection object from OML client")
-    else:
-        session_info = {"action": action,
-                        "client_identifier": client_identifier,
-                        "clientinfo": clientinfo,
-                        "module": module}
-        for k, v in session_info.items():
-            try:
-                setattr(connection, k, v)
-            except AttributeError:
-                print(f"Python driver does not support setting {k}")
+    def set_connection_attributes():
+        try:
+            connection = oml.core.methods._get_conn()
+        except Exception:
+            raise
+        else:
+            session_info = {"action": action,
+                            "client_identifier": client_identifier,
+                            "clientinfo": clientinfo,
+                            "module": module}
+            for k, v in session_info.items():
+                try:
+                    setattr(connection, k, v)
+                except AttributeError:
+                    print(f"Python driver does not support setting {k}")
+
+    set_connection_attributes()
 
     import pandas as pd
     {{ build_ref_function(model ) }}
@@ -100,6 +103,12 @@ def main(action, client_identifier, clientinfo, module):
             self.config = config
             self.this = this()
             self.is_incremental = {{ is_incremental() }}
+
+    def materialize(df, table, session):
+        if isinstance(df, pd.core.frame.DataFrame):
+           oml.create(df, table=table)
+        elif isinstance(df, oml.core.frame.DataFrame):
+           df.materialize(table=table)
 
     {{ model.raw_code | indent(width=4, first=False, blank=True)}}
 
