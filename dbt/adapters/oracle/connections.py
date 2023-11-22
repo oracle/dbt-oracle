@@ -212,7 +212,7 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
         }
 
         if oracledb.__name__ == "oracledb":
-            conn_config['connection_id_prefix'] = 'dbt-oracle-'
+            conn_config['connection_id_prefix'] = f'dbt-oracle-{dbt_version}-'
 
         if credentials.shardingkey:
             conn_config['shardingkey'] = credentials.shardingkey
@@ -239,7 +239,7 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
             handle = oracledb.connect(**conn_config)
             # client_identifier and module are saved in corresponding columns in v$session
             session_info = cls.get_session_info(credentials=credentials)
-            logger.info(f"Session info :{json.dumps(session_info)}")
+            logger.debug(f"Session info :{json.dumps(session_info)}")
             for k, v in session_info.items():
                 try:
                     setattr(handle, k, v)
