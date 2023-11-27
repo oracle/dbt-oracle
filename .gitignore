@@ -148,4 +148,5 @@ doc/build.gitbak
 .venv1.5/
 .venv1.6/
 .venv1.7/
+.venv*/
 dbt_adbs_py_test_project
