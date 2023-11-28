@@ -60,7 +60,7 @@ project_urls = {
 
 url = 'https://github.com/oracle/dbt-oracle'
 
-VERSION = '1.6.1'
+VERSION = '1.6.2'
 setup(
     author="Oracle",
     python_requires='>=3.8',

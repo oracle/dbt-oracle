@@ -54,8 +54,26 @@
 {% endmacro %}
 
 {% macro py_script_postfix(model) %}
-def main():
+def main(action, client_identifier, clientinfo, module):
     import oml
+    def set_connection_attributes():
+        try:
+            connection = oml.core.methods._get_conn()
+        except Exception:
+            raise
+        else:
+            session_info = {"action": action,
+                            "client_identifier": client_identifier,
+                            "clientinfo": clientinfo,
+                            "module": module}
+            for k, v in session_info.items():
+                try:
+                    setattr(connection, k, v)
+                except AttributeError:
+                    pass # ok to be silent, ADB-S Python runtime complains about print statements
+
+    set_connection_attributes()
+
     import pandas as pd
     {{ build_ref_function(model ) }}
     {{ build_source_function(model ) }}
@@ -85,6 +103,12 @@ def main():
             self.config = config
             self.this = this()
             self.is_incremental = {{ is_incremental() }}
+
+    def materialize(df, table, session):
+        if isinstance(df, pd.core.frame.DataFrame):
+           oml.create(df, table=table)
+        elif isinstance(df, oml.core.frame.DataFrame):
+           df.materialize(table=table)
 
     {{ model.raw_code | indent(width=4, first=False, blank=True)}}
 
