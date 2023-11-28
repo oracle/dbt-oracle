@@ -70,7 +70,7 @@ def main(action, client_identifier, clientinfo, module):
                 try:
                     setattr(connection, k, v)
                 except AttributeError:
-                    print(f"Python driver does not support setting {k}")
+                    pass # ok to be silent, ADB-S Python runtime complains about print statements
 
     set_connection_attributes()
 
