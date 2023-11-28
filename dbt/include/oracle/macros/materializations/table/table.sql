@@ -100,26 +100,26 @@
 
 {% macro py_write_table(compiled_code, target_relation, temporary=False) %}
 {{ compiled_code.replace(model.raw_code, "", 1) }}
-    def materialize(df, table, session):
-        if isinstance(df, pd.core.frame.DataFrame):
-           oml.create(df, table=table)
-        elif isinstance(df, oml.core.frame.DataFrame):
-           df.materialize(table=table)
-
-    dbt = dbtObj(load_df_function=oml.sync)
-    final_df = model(dbt, session=oml)
-
-    {{ log("Python model materialization is " ~ model.config.materialized, info=True) }}
-    {% if model.config.materialized.lower() == 'table' %}
-    table_name = f"{dbt.this.identifier}__dbt_tmp"
-    {% else %}
-    # incremental materialization
-    {% if temporary %}
-    table_name = "{{target_relation.identifier}}"
-    {% else %}
-    table_name = dbt.this.identifier
-    {% endif %}
-    {% endif %}
-    materialize(final_df, table=table_name.upper(), session=oml)
-    return pd.DataFrame.from_dict({"result": [1]})
+    try:
+        dbt = dbtObj(load_df_function=oml.sync)
+        set_connection_attributes()
+        final_df = model(dbt, session=oml)
+        {{ log("Python model materialization is " ~ model.config.materialized, info=True) }}
+        {% if model.config.materialized.lower() == 'table' %}
+        table_name = f"{dbt.this.identifier}__dbt_tmp"
+        {% else %}
+        # incremental materialization
+        {% if temporary %}
+        table_name = "{{target_relation.identifier}}"
+        {% else %}
+        table_name = dbt.this.identifier
+        {% endif %}
+        {% endif %}
+        materialize(final_df, table=table_name.upper(), session=oml)
+        return pd.DataFrame.from_dict({"result": [1]})
+    except Exception:
+        raise
+    finally:
+        connection = oml.core.methods._get_conn()
+        connection.close()
 {% endmacro %}
