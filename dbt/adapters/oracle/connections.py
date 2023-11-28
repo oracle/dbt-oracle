@@ -175,7 +175,7 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
         }
 
         if oracledb.__name__ == "oracledb":
-            conn_config['connection_id_prefix'] = 'dbt-oracle-'
+            conn_config['connection_id_prefix'] = f'dbt-oracle-{dbt_version}-'
 
         if credentials.shardingkey:
             conn_config['shardingkey'] = credentials.shardingkey
@@ -209,8 +209,6 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
                 except AttributeError:
                     logger.warning(f"Python driver does not support setting {k}")
             
-            # handle.module = f'dbt-{dbt_version}'
-            # handle.client_identifier = f'dbt-oracle-client-{uuid.uuid4()}'
             connection.handle = handle
             connection.state = 'open'
         except oracledb.DatabaseError as e:
