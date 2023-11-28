@@ -11,6 +11,11 @@ dbt_test:
          service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
          #database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
          schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
+         session_info:
+            action: "dbt run"
+            client_identifier: "dbt-mac-abhisoms"
+            client_info: "dbt Python3.9 thin driver"
+            module: "dbt-module-1.5.2"
          retry_count: 1
          retry_delay: 5
          shardingkey:
@@ -41,6 +46,11 @@ dbt_test:
           database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
           tns_name: "{{ env_var('DBT_ORACLE_TNS_NAME') }}"
           schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
+          session_info:
+             action: "dbt run"
+             client_identifier: "dbt-mac-abhisoms"
+             client_info: "dbt Python3.9 thin driver"
+             module: "dbt-module-1.5.2"
           shardingkey:
               - skey
           supershardingkey:

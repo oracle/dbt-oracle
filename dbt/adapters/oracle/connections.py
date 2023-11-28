@@ -17,9 +17,11 @@ Copyright (c) 2020, Vitor Avancini
 from typing import List, Optional, Tuple, Any, Dict, Union
 from contextlib import contextmanager
 from dataclasses import dataclass, field
+import json
 import enum
 import time
 import uuid
+import platform
 
 import dbt.exceptions
 from dbt.adapters.base import Credentials
@@ -76,6 +78,9 @@ class OracleAdapterCredentials(Credentials):
     retry_count: Optional[int] = 1
     retry_delay: Optional[int] = 3
 
+    # session info is stored in v$session for each dbt run
+    session_info: Optional[Dict[str, str]] = field(default_factory=dict)
+
 
     _ALIASES = {
         'dbname': 'database',
@@ -100,7 +105,7 @@ class OracleAdapterCredentials(Credentials):
             'service', 'connection_string',
             'shardingkey', 'supershardingkey',
             'cclass', 'purity', 'retry_count',
-            'retry_delay'
+            'retry_delay', 'session_info'
         )
 
     @classmethod
@@ -138,6 +143,19 @@ class OracleAdapterCredentials(Credentials):
 class OracleAdapterConnectionManager(SQLConnectionManager):
     TYPE = 'oracle'
 
+    @staticmethod
+    def get_session_info(credentials):
+        default_action = "DBT RUN"
+        default_client_identifier = f'dbt-oracle-client-{uuid.uuid4()}'
+        default_client_info = "_".join([platform.node(), platform.machine()])
+        default_module = f'dbt-{dbt_version}'
+        return {
+            "action": credentials.session_info.get("action", default_action),
+            "client_identifier": credentials.session_info.get("client_identifier", default_client_identifier),
+            "clientinfo": credentials.session_info.get("client_info", default_client_info),
+            "module": credentials.session_info.get("module", default_module)
+        }
+
     @classmethod
     def open(cls, connection):
         if connection.state == 'open':
@@ -157,7 +175,7 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
         }
 
         if oracledb.__name__ == "oracledb":
-            conn_config['connection_id_prefix'] = 'dbt-oracle-'
+            conn_config['connection_id_prefix'] = f'dbt-oracle-{dbt_version}-'
 
         if credentials.shardingkey:
             conn_config['shardingkey'] = credentials.shardingkey
@@ -183,8 +201,14 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
         try:
             handle = oracledb.connect(**conn_config)
             # client_identifier and module are saved in corresponding columns in v$session
-            handle.module = f'dbt-{dbt_version}'
-            handle.client_identifier = f'dbt-oracle-client-{uuid.uuid4()}'
+            session_info = cls.get_session_info(credentials=credentials)
+            logger.info(f"Session info :{json.dumps(session_info)}")
+            for k, v in session_info.items():
+                try:
+                    setattr(handle, k, v)
+                except AttributeError:
+                    logger.warning(f"Python driver does not support setting {k}")
+            
             connection.handle = handle
             connection.state = 'open'
         except oracledb.DatabaseError as e:
