@@ -106,7 +106,7 @@ if ORA_PYTHON_DRIVER_TYPE == OracleDriverType.CX_ORACLE:
     description = (
         f"cx_oracle is no longer maintained, use python-oracledb"
         f"\n\nTo switch to python-oracledb set the environment variable ORA_PYTHON_DRIVER_TYPE=thin "
-        f"\n\nDefault value of ORA_PYTHON_DRIVER_TYPE is thin started with v1.7.0 "
+        f"\n\nStarting with dbt-oracle version 1.7, default value of ORA_PYTHON_DRIVER_TYPE is thin"
         f"\n\nRead the guideline here: "
         f"https://docs.getdbt.com/reference/warehouse-setups/oracle-setup#configure-the-python-driver-mode"
         f"\n\nDocumentation for python-oracledb can be found here: "
