@@ -15,21 +15,6 @@
   limitations under the License.
 #}
 {% macro oracle__get_catalog(information_schema, schemas) -%}
-    {% set query %}
-        with tables as (
-            {{ oracle__get_catalog_tables_sql(information_schema) }}
-            {{ oracle__get_catalog_schemas_where_clause_sql(schemas) }}
-        ),
-        columns as (
-            {{ oracle__get_catalog_columns_sql(information_schema) }}
-            {{ oracle__get_catalog_schemas_where_clause_sql(schemas) }}
-        )
-        {{ oracle__get_catalog_results_sql() }}
-    {%- endset -%}
-    {{ return(run_query(query)) }}
-{%- endmacro %}
-
-{% macro oracle__get_catalog(information_schema, schemas) -%}
 
   {%- call statement('catalog', fetch_result=True) -%}
     {#
