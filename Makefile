@@ -36,6 +36,7 @@ adbs_local_env_test: wheel clean_venv
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt run --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt snapshot --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt snapshot --profiles-dir ./
+	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt show --limit 4 --select people --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt docs generate --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt run-operation drop_schema --args 'relation: ${DBT_ORACLE_SCHEMA}' --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt clean --profiles-dir ./
@@ -57,6 +58,7 @@ adbs_pypi_test: clean_venv
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt run --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt snapshot --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt snapshot --profiles-dir ./
+	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt show --limit 4 --select people --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt docs generate --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt run-operation drop_schema --args 'relation: ${DBT_ORACLE_SCHEMA}' --profiles-dir ./
 	cd dbt_adbs_test_project && ${VENV_DIR}/bin/dbt clean --profiles-dir ./
