@@ -13,19 +13,11 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 #}
-{% macro oracle__collect_freshness(source, loaded_at_field, filter) %}
-  {% call statement('collect_freshness', fetch_result=True, auto_begin=False) -%}
-    select
-      {% if loaded_at_field | upper == 'ORA_ROWSCN' %}
-      SCN_TO_TIMESTAMP(max(ORA_ROWSCN)) as max_loaded_at,
-      {% else %}
-      max({{ loaded_at_field }}) as max_loaded_at,
-      {% endif %}
-      {{ current_timestamp() }} as snapshotted_at
-    from {{ source }}
-    {% if filter %}
-    where {{ filter }}
-    {% endif %}
-  {% endcall %}
-  {{ return(load_result('collect_freshness')) }}
+
+{% macro oracle__get_limit_subquery_sql(sql, limit) %}
+    select *
+    from (
+        {{ sql }}
+    )
+    fetch first {{ limit }} rows only
 {% endmacro %}
