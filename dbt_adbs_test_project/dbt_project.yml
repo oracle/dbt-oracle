@@ -38,8 +38,3 @@ on-run-start:
 on-run-end:
     - "select 'hook ended' from dual"
 
-models:
-  dbt_adbs_test_project:
-    sales_cost_incremental:
-      +post-hook:
-        - "{{ create_index('sales_cost_incremental', 'PROD_ID') }}"

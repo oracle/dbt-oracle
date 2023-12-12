@@ -17,6 +17,8 @@ import datetime
 import http
 import json
 from typing import Dict
+import uuid
+import platform
 
 import requests
 import time
@@ -25,6 +27,7 @@ import dbt.exceptions
 from dbt.adapters.oracle import OracleAdapterCredentials
 from dbt.events import AdapterLogger
 from dbt.ui import red, green
+from dbt.version import __version__ as dbt_version
 
 # ADB-S OML Rest API minimum timeout is 1800 seconds
 DEFAULT_TIMEOUT_IN_SECONDS = 1800
@@ -140,6 +143,20 @@ class OracleADBSPythonJob:
         self.oml4py_client = OracleOML4PYClient(oml_cloud_service_url=credential.oml_cloud_service_url,
                                                 username=credential.user,
                                                 password=credential.password)
+        self.session_info = self.get_session_info(credentials=credential)
+
+    @staticmethod
+    def get_session_info(credentials):
+        default_action = "DBT RUN OML4PY"
+        default_client_identifier = f'dbt-oracle-client-{uuid.uuid4()}'
+        default_client_info = "_".join([platform.node(), platform.machine()])
+        default_module = f'dbt-{dbt_version}'
+        return {
+            "action": credentials.session_info.get("action", default_action),
+            "client_identifier": credentials.session_info.get("client_identifier", default_client_identifier),
+            "clientinfo": credentials.session_info.get("client_info", default_client_info),
+            "module": credentials.session_info.get("module", default_module)
+        }
 
     def schedule_async_job_and_wait_for_completion(self, data):
         logger.info(f"Running Python aysnc job using {data}")
@@ -196,7 +213,8 @@ class OracleADBSPythonJob:
 
     def __call__(self, *args, **kwargs):
         data = {
-            "service": self.service
+            "service": self.service,
+            "parameters": json.dumps(self.session_info)
         }
         if self.async_flag:
             data["asyncFlag"] = self.async_flag
