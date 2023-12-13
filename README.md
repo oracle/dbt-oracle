@@ -5,7 +5,7 @@
 [![dbt-oracle docs](https://img.shields.io/badge/docs-read-blue)](https://docs.getdbt.com/reference/warehouse-setups/oracle-setup)
 [![dbt-oracle license](https://img.shields.io/badge/license-Apache%202.0-blue)][4]
 
-`dbt-oracle` implements [dbt (data build tool)](https://docs.getdbt.com/docs/introduction) functionalities for the Oracle database. 
+`dbt-oracle` implements [dbt (data build tool)](https://docs.getdbt.com/docs/introduction) functionalities for Oracle Autonomous Database. 
 
 > Prior to version 1.0.0, dbt-oracle was created and maintained by [Indicium](https://indicium.tech/) on [their GitHub repo](https://github.com/techindicium/dbt-oracle). Contributors in this repo are credited for laying the groundwork and maintaining the adapter till version 0.4.3.
 From version 1.0.0, dbt-oracle is maintained and distributed by Oracle.
