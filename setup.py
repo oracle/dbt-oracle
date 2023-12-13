@@ -75,7 +75,7 @@ setup(
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11'
     ],
-    description="dbt (data build tool) adapter for the Oracle database",
+    description="dbt (data build tool) adapter for Oracle Autonomous Database",
     install_requires=requirements,
     license="Apache Software License 2.0",
     long_description=readme,
