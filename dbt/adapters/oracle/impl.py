@@ -29,9 +29,10 @@ import requests
 
 import dbt.exceptions
 from dbt.adapters.base.relation import BaseRelation, InformationSchema
-from dbt.adapters.base.impl import GET_CATALOG_MACRO_NAME, ConstraintSupport
+from dbt.adapters.base.impl import GET_CATALOG_MACRO_NAME, ConstraintSupport, GET_CATALOG_RELATIONS_MACRO_NAME, _expect_row_value
 from dbt.adapters.sql import SQLAdapter
 from dbt.adapters.base.meta import available
+from dbt.adapters.capability import CapabilityDict, CapabilitySupport, Support, Capability
 from dbt.adapters.oracle import OracleAdapterConnectionManager
 from dbt.adapters.oracle.column import OracleColumn
 from dbt.adapters.oracle.relation import OracleRelation
@@ -94,6 +95,10 @@ class OracleAdapter(SQLAdapter):
         ConstraintType.primary_key: ConstraintSupport.ENFORCED,
         ConstraintType.foreign_key: ConstraintSupport.ENFORCED,
     }
+
+    _capabilities = CapabilityDict(
+        {Capability.SchemaMetadataByRelations: CapabilitySupport(support=Support.Full)}
+    )
 
     def debug_query(self) -> None:
         self.execute("select 1 as id from dual")
@@ -223,6 +228,69 @@ class OracleAdapter(SQLAdapter):
 
         results = self._catalog_filter_table(table, manifest)
         return results
+
+    def _get_one_catalog_by_relations(
+        self,
+        information_schema: InformationSchema,
+        relations: List[BaseRelation],
+        manifest: Manifest,
+    ) -> agate.Table:
+
+        kwargs = {
+            "information_schema": information_schema,
+            "relations": relations,
+        }
+        table = self.execute_macro(
+            GET_CATALOG_RELATIONS_MACRO_NAME,
+            kwargs=kwargs,
+            # pass in the full manifest, so we get any local project
+            # overrides
+            manifest=manifest,
+        )
+
+        # In case database is not defined, we can use the the configured database which we set as part of credentials
+        for node in chain(manifest.nodes.values(), manifest.sources.values()):
+            if not node.database or node.database == 'None':
+                node.database = self.config.credentials.database
+
+        results = self._catalog_filter_table(table, manifest)  # type: ignore[arg-type]
+        return results
+
+    def get_filtered_catalog(
+        self, manifest: Manifest, relations: Optional[Set[BaseRelation]] = None
+    ):
+        catalogs: agate.Table
+        if (
+            relations is None
+            or len(relations) > 100
+            or not self.supports(Capability.SchemaMetadataByRelations)
+        ):
+            # Do it the traditional way. We get the full catalog.
+            catalogs, exceptions = self.get_catalog(manifest)
+        else:
+            # Do it the new way. We try to save time by selecting information
+            # only for the exact set of relations we are interested in.
+            catalogs, exceptions = self.get_catalog_by_relations(manifest, relations)
+
+        if relations and catalogs:
+            relation_map = {
+                (
+                    r.schema.casefold() if r.schema else None,
+                    r.identifier.casefold() if r.identifier else None,
+                )
+                for r in relations
+            }
+
+            def in_map(row: agate.Row):
+                s = _expect_row_value("table_schema", row)
+                i = _expect_row_value("table_name", row)
+                s = s.casefold() if s is not None else None
+                i = i.casefold() if i is not None else None
+                return (s, i) in relation_map
+
+            catalogs = catalogs.where(in_map)
+
+        return catalogs, exceptions
 
     def list_relations_without_caching(
             self, schema_relation: BaseRelation,
