@@ -40,7 +40,11 @@
       {%- if col['data_type'] is not defined -%}
         {{ col_err.append(col['name']) }}
       {%- endif -%}
-      cast(null as {{ col['data_type'] }}) as {{ col['name'] }}{{ ", " if not loop.last }}
+      {%- if col['data_type'] | lower == 'clob' -%}
+        empty_clob() as {{ col['name'] }}{{ ", " if not loop.last }}
+      {%- else -%}
+        cast(null as {{ col['data_type'] }}) as {{ col['name'] }}{{ ", " if not loop.last }}
+      {%- endif -%}
     {%- endfor -%}
     {# Override for Oracle #}
      from dual
@@ -268,7 +272,7 @@
       {% set comment = column_dict[column_name]['description'] %}
       {% set escaped_comment = oracle_escape_comment(comment) %}
       {% call statement('alter _column comment', fetch_result=False) -%}
-        comment on column {{ relation }}.{{ column_name }} is {{ escaped_comment }}
+        comment on column {{ relation }}.{{ adapter.check_and_quote_identifier(column_name, model.columns) }} is {{ escaped_comment }}
       {%- endcall %}
     {% endfor %}
   {% endif %}
@@ -385,6 +389,11 @@
          end table_type
        from sys.all_tables
        where upper(table_name) not in (select upper(mview_name) from sys.all_mviews)
+       where upper(table_name) not in (
+       select upper(mview_name)
+       from sys.all_mviews
+       where upper(owner) = upper('{{ schema_relation.schema }}')
+       )
        union all
        select SYS_CONTEXT('userenv', 'DB_NAME'),
          owner,

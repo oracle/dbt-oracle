@@ -18,6 +18,27 @@ sources:
       - name: costs
 
 models:
+  - name: kafka
+    description: kafka_description
+    config:
+      materialized: incremental
+      incremental_strategy: append
+      on_schema_change: fail
+      full_refresh: false
+      contract:
+        enforced: true
+      constraints:
+        - type: not_null
+          columns: [message]
+    columns:
+      - name: message
+        description: Kafka message
+        data_type: CLOB
+        constraints:
+          - type: not_null
+
+
+
   - name: people
     columns:
       - name: id

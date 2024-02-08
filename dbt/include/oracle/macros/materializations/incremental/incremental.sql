@@ -17,7 +17,7 @@
 {% materialization incremental, adapter='oracle', supported_languages=['sql', 'python'] %}
 
   {% set unique_key = config.get('unique_key') %}
-  {% set full_refresh_mode = flags.FULL_REFRESH %}
+  {% set full_refresh_mode = should_full_refresh() %}
   {%- set language = model['language'] -%}
   {% set target_relation = this.incorporate(type='table') %}
   {% set existing_relation = load_relation(this) %}
