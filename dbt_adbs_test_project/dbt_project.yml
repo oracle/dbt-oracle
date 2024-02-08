@@ -18,6 +18,9 @@ quoting:
 seeds:
     dbt_adbs_test_project:
         quote_columns: false
+        kafka_message:
+          +column_types:
+            message: CLOB
         seed_with_empty_col:
           +column_types:
             id: number
