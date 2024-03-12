@@ -397,7 +397,7 @@ class OracleAdapter(SQLAdapter):
             return column
 
     def valid_incremental_strategies(self):
-        return ["append", "merge"]
+        return ["append", "merge", "delete+insert"]
 
     @available
     @classmethod

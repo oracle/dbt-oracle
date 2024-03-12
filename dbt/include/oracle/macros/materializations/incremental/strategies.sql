@@ -149,3 +149,42 @@
 {% macro oracle__get_incremental_default_sql(arg_dict) %}
   {% do return(get_incremental_merge_sql(arg_dict)) %}
 {% endmacro %}
+
+{% macro oracle__get_incremental_delete_insert_sql(args_dict) %}
+    {%- set parallel = config.get('parallel', none) -%}
+    {%- set dest_columns = args_dict["dest_columns"] -%}
+    {%- set temp_relation = args_dict["temp_relation"] -%}
+    {%- set target_relation = args_dict["target_relation"] -%}
+    {%- set unique_key = args_dict["unique_key"] -%}
+    {%- set dest_column_names = dest_columns | map(attribute='name') | list -%}
+    {%- set dest_cols_csv = get_quoted_column_csv(model, dest_column_names)  -%}
+    {%- set merge_update_columns = config.get('merge_update_columns') -%}
+    {%- set merge_exclude_columns = config.get('merge_exclude_columns') -%}
+    {%- set incremental_predicates = args_dict["incremental_predicates"] -%}
+    {%- set update_columns = get_merge_update_columns(merge_update_columns, merge_exclude_columns, dest_columns) -%}
+    {%- if unique_key -%}
+        {%- set unique_key_result = oracle_check_and_quote_unique_key_for_incremental_merge(unique_key, incremental_predicates) -%}
+        {%- set unique_key_list = unique_key_result['unique_key_list'] -%}
+        {%- set unique_key_merge_predicates = unique_key_result['unique_key_merge_predicates'] -%}
+        BEGIN
+        EXECUTE IMMEDIATE  'merge {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %} into {{ target_relation }} DBT_INTERNAL_DEST
+          using {{ temp_relation }} DBT_INTERNAL_SOURCE
+          on ({{ unique_key_merge_predicates | join(' AND ') }})
+        when matched then
+          update set
+          {% for col in update_columns if (col.upper() not in unique_key_list and col not in unique_key_list) -%}
+            DBT_INTERNAL_DEST.{{ col }} = DBT_INTERNAL_SOURCE.{{ col }}{% if not loop.last %}, {% endif %}
+          {% endfor -%}
+          DELETE WHERE 1=1';
+        EXECUTE IMMEDIATE 'insert {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %} into  {{ target_relation }} ({{ dest_cols_csv }})(
+           select {{ dest_cols_csv }}
+           from {{ temp_relation }})';
+        END;
+    {%- else -%}
+    insert {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %} into  {{ target_relation }} ({{ dest_cols_csv }})
+    (
+       select {{ dest_cols_csv }}
+       from {{ temp_relation }}
+    )
+    {%- endif -%}
+{% endmacro %}

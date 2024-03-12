@@ -16,7 +16,7 @@
 {{
     config(
         materialized='incremental',
-        unique_key='group_id',
+        incremental_strategy='delete+insert',
         parallel=4,
         partition_config={"clause": "PARTITION BY HASH(PROD_NAME) PARTITIONS 4"},
         table_compression_clause='COLUMN STORE COMPRESS FOR QUERY LOW')
@@ -41,4 +41,3 @@ WHERE sales.prod_id=products.prod_id AND sales.cust_id=customers.cust_id
 {% endif %}
 
 GROUP BY prod_name, channel_desc, calendar_month_desc
-

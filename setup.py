@@ -42,7 +42,7 @@ with open('README.md') as readme_file:
 requirements = [
         "dbt-core~=1.7,<1.8",
         "cx_Oracle==8.3.0",
-        "oracledb==2.0.1"
+        "oracledb==2.1.0"
 ]
 
 test_requirements = [
@@ -60,7 +60,7 @@ project_urls = {
 
 url = 'https://github.com/oracle/dbt-oracle'
 
-VERSION = '1.7.2'
+VERSION = '1.7.3'
 setup(
     author="Oracle",
     python_requires='>=3.8',
@@ -73,7 +73,8 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
-        'Programming Language :: Python :: 3.11'
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12'
     ],
     description="dbt (data build tool) adapter for Oracle Autonomous Database",
     install_requires=requirements,

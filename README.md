@@ -22,6 +22,12 @@ pip install dbt-oracle
 
 Please refer to the [Oracle setup on dbt docs website][1] for documentation.
 
+## Help
+
+Questions can be asked either in [db-oracle community Slack channel][6] or in [GitHub Discussions][7]
+
+Bugs reports or feature requests can be raised in [GitHub Issues][8]
+
 ## Sample project
 
 To get started, a sample dbt project can be found in the directory [/dbt_adbs_test_project][5].
@@ -42,3 +48,7 @@ dbt-oracle is licensed under Apache 2.0 License which you can find [here][4].
 [3]: https://github.com/oracle/dbt-oracle/blob/main/SECURITY.md
 [4]: https://github.com/oracle/dbt-oracle/blob/main/LICENSE.txt
 [5]: https://github.com/oracle/dbt-oracle/tree/main/dbt_adbs_test_project
+[6]: https://getdbt.slack.com/archives/C01PWH4TXLY
+[7]: https://github.com/oracle/dbt-oracle/discussions
+[8]: https://github.com/oracle/dbt-oracle/issues
+

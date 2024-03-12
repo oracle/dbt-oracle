@@ -146,6 +146,7 @@
       {%- set parallel = config.get('parallel', none) -%}
       {%- set compression_clause = config.get('table_compression_clause', none) -%}
       {%- set contract_config = config.get('contract') -%}
+      {%- set partition_clause = config.get('partition_config', {}).get('clause') -%}
       {{ sql_header if sql_header is not none }}
       create {% if temporary -%}
         global temporary
@@ -157,6 +158,7 @@
       {% endif %}
       {% if temporary -%} on commit preserve rows {%- endif %}
       {% if not temporary -%}
+        {% if partition_clause %} {{ partition_clause }} {% endif %}
         {% if parallel %} parallel {{ parallel }}{% endif %}
         {% if compression_clause %} {{ compression_clause }} {% endif %}
       {%- endif %}
