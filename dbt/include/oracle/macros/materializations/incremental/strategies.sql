@@ -150,6 +150,32 @@
   {% do return(get_incremental_merge_sql(arg_dict)) %}
 {% endmacro %}
 
+
+{% macro oracle__get_delete_sql_for_delete_insert_strategy(target, source, unique_key, incremental_predicates) %}
+    {%- if unique_key -%}
+        {%- set unique_key_result = oracle_check_and_quote_unique_key_for_incremental_merge(unique_key, incremental_predicates) -%}
+        {%- set unique_key_list = unique_key_result['unique_key_list'] -%}
+            DELETE FROM {{ target }} DBT_INTERNAL_DEST
+            WHERE ({% for key in unique_key_list %}
+                   DBT_INTERNAL_DEST.{{ key }} {{ ", " if not loop.last}}
+                   {% endfor %})
+            IN    (SELECT {% for key in unique_key_list %}
+                   DBT_INTERNAL_SOURCE.{{ key }} {{ ", " if not loop.last}}
+                   {% endfor %} FROM {{source}} DBT_INTERNAL_SOURCE)
+        {%- if incremental_predicates -%}
+            {% for predicate in incremental_predicates %}
+                AND {{ predicate }}
+            {% endfor %}
+        {%- endif -%}
+    {%- elif incremental_predicates -%}
+        DELETE FROM {{ target }} DBT_INTERNAL_DEST
+        WHERE  {%- for predicate in incremental_predicates -%}
+                    {{ "AND" if not loop.first}} {{ predicate }}
+                {%- endfor -%}
+    {%- endif -%}
+{% endmacro %}
+
+
 {% macro oracle__get_incremental_delete_insert_sql(args_dict) %}
     {%- set parallel = config.get('parallel', none) -%}
     {%- set dest_columns = args_dict["dest_columns"] -%}
@@ -158,30 +184,16 @@
     {%- set unique_key = args_dict["unique_key"] -%}
     {%- set dest_column_names = dest_columns | map(attribute='name') | list -%}
     {%- set dest_cols_csv = get_quoted_column_csv(model, dest_column_names)  -%}
-    {%- set merge_update_columns = config.get('merge_update_columns') -%}
-    {%- set merge_exclude_columns = config.get('merge_exclude_columns') -%}
     {%- set incremental_predicates = args_dict["incremental_predicates"] -%}
-    {%- set update_columns = get_merge_update_columns(merge_update_columns, merge_exclude_columns, dest_columns) -%}
-    {%- if unique_key -%}
-        {%- set unique_key_result = oracle_check_and_quote_unique_key_for_incremental_merge(unique_key, incremental_predicates) -%}
-        {%- set unique_key_list = unique_key_result['unique_key_list'] -%}
-        {%- set unique_key_merge_predicates = unique_key_result['unique_key_merge_predicates'] -%}
+    {%- if unique_key or incremental_predicates -%}
         BEGIN
-        EXECUTE IMMEDIATE  'merge {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %} into {{ target_relation }} DBT_INTERNAL_DEST
-          using {{ temp_relation }} DBT_INTERNAL_SOURCE
-          on ({{ unique_key_merge_predicates | join(' AND ') }})
-        when matched then
-          update set
-          {% for col in update_columns if (col.upper() not in unique_key_list and col not in unique_key_list) -%}
-            DBT_INTERNAL_DEST.{{ col }} = DBT_INTERNAL_SOURCE.{{ col }}{% if not loop.last %}, {% endif %}
-          {% endfor -%}
-          DELETE WHERE 1=1';
+        EXECUTE IMMEDIATE  '{{ oracle__get_delete_sql_for_delete_insert_strategy(target_relation, temp_relation, unique_key, incremental_predicates) }}';
         EXECUTE IMMEDIATE 'insert {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %} into  {{ target_relation }} ({{ dest_cols_csv }})(
            select {{ dest_cols_csv }}
            from {{ temp_relation }})';
         END;
     {%- else -%}
-    insert {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %} into  {{ target_relation }} ({{ dest_cols_csv }})
+    insert {%- if parallel -%} /*+parallel({{ parallel }})*/ {%- endif -%} into  {{ target_relation }} ({{ dest_cols_csv }})
     (
        select {{ dest_cols_csv }}
        from {{ temp_relation }}

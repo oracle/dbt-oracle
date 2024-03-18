@@ -16,6 +16,8 @@
 {{
     config(
         materialized='incremental',
+        unique_key='group_id',
+        incremental_predicates=["DBT_INTERNAL_DEST.calendar_month_desc > TO_CHAR(sysdate, ''yyyy/mm/dd'')"],
         incremental_strategy='delete+insert',
         parallel=4,
         partition_config={"clause": "PARTITION BY HASH(PROD_NAME) PARTITIONS 4"},
