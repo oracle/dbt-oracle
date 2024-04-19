@@ -56,25 +56,6 @@ jobs:
         run: |
           create-pem-from-p12 --help
 
-      - name: Run adapter tests - ORA_PYTHON_DRIVER_TYPE => CX
-        run: |
-          pytest -v
-        env:
-          ORA_PYTHON_DRIVER_TYPE: CX
-          DBT_ORACLE_USER: DBT_TEST
-          DBT_ORACLE_HOST: localhost
-          DBT_ORACLE_PORT: 1521
-          DBT_ORACLE_SCHEMA: DBT_TEST
-          DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_PASSWORD }}
-          DBT_ORACLE_DATABASE: XEPDB1
-          DBT_ORACLE_SERVICE: XEPDB1
-          DBT_ORACLE_PROTOCOL: tcp
-          LD_LIBRARY_PATH: /opt/oracle/instantclient_21_6
-          TNS_ADMIN: /opt/tns_admin
-          DBT_TEST_USER_1: DBT_TEST_USER_1
-          DBT_TEST_USER_2: DBT_TEST_USER_2
-          DBT_TEST_USER_3: DBT_TEST_USER_3
-
       - name: Run adapter tests - ORA_PYTHON_DRIVER_TYPE => THICK
         run: |
           pytest -v
