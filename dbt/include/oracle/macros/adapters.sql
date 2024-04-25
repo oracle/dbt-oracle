@@ -151,7 +151,7 @@
       create {% if temporary -%}
         global temporary
       {%- endif %} table {{ relation.include(schema=(not temporary)) }}
-      {%- if contract_config.enforced -%}
+      {%- if contract_config.enforced and not temporary -%}
           {{ get_assert_columns_equivalent(sql) }}
           {{ get_table_columns_and_constraints() }}
           {%- set sql = get_select_subquery(sql) %}
