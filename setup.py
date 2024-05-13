@@ -41,7 +41,7 @@ with open('README.md') as readme_file:
 
 requirements = [
         "dbt-core~=1.7,<1.8",
-        "oracledb==2.1.2"
+        "oracledb==2.2.0"
 ]
 
 test_requirements = [
