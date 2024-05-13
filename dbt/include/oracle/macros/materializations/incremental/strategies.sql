@@ -149,3 +149,53 @@
 {% macro oracle__get_incremental_default_sql(arg_dict) %}
   {% do return(get_incremental_merge_sql(arg_dict)) %}
 {% endmacro %}
+
+
+{% macro oracle__get_delete_sql_for_delete_insert_strategy(target, source, unique_key, incremental_predicates) %}
+    {%- if unique_key -%}
+        {%- set unique_key_result = oracle_check_and_quote_unique_key_for_incremental_merge(unique_key, incremental_predicates) -%}
+        {%- set unique_key_list = unique_key_result['unique_key_list'] -%}
+            DELETE FROM {{ target }} DBT_INTERNAL_DEST
+            WHERE ({% for key in unique_key_list %}
+                   DBT_INTERNAL_DEST.{{ key }} {{ ", " if not loop.last}}
+                   {% endfor %})
+            IN    (SELECT {% for key in unique_key_list %}
+                   DBT_INTERNAL_SOURCE.{{ key }} {{ ", " if not loop.last}}
+                   {% endfor %} FROM {{source}} DBT_INTERNAL_SOURCE)
+        {%- if incremental_predicates -%}
+            {% for predicate in incremental_predicates %}
+                AND {{ predicate }}
+            {% endfor %}
+        {%- endif -%}
+    {%- elif incremental_predicates -%}
+        DELETE FROM {{ target }} DBT_INTERNAL_DEST
+        WHERE  {%- for predicate in incremental_predicates -%}
+                    {{ "AND" if not loop.first}} {{ predicate }}
+                {%- endfor -%}
+    {%- endif -%}
+{% endmacro %}
+
+{% macro oracle__get_incremental_delete_insert_sql(args_dict) %}
+    {%- set parallel = config.get('parallel', none) -%}
+    {%- set dest_columns = args_dict["dest_columns"] -%}
+    {%- set temp_relation = args_dict["temp_relation"] -%}
+    {%- set target_relation = args_dict["target_relation"] -%}
+    {%- set unique_key = args_dict["unique_key"] -%}
+    {%- set dest_column_names = dest_columns | map(attribute='name') | list -%}
+    {%- set dest_cols_csv = get_quoted_column_csv(model, dest_column_names)  -%}
+    {%- set incremental_predicates = args_dict["incremental_predicates"] -%}
+    {%- if unique_key or incremental_predicates -%}
+        BEGIN
+        EXECUTE IMMEDIATE  '{{ oracle__get_delete_sql_for_delete_insert_strategy(target_relation, temp_relation, unique_key, incremental_predicates) }}';
+        EXECUTE IMMEDIATE 'insert {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %} into  {{ target_relation }} ({{ dest_cols_csv }})(
+           select {{ dest_cols_csv }}
+           from {{ temp_relation }})';
+        END;
+    {%- else -%}
+    insert {%- if parallel -%} /*+parallel({{ parallel }})*/ {%- endif -%} into  {{ target_relation }} ({{ dest_cols_csv }})
+    (
+       select {{ dest_cols_csv }}
+       from {{ temp_relation }}
+    )
+    {%- endif -%}
+{% endmacro %}

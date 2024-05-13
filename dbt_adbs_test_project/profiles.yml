@@ -19,12 +19,6 @@ dbt_test:
            module: "dbt-module-1.5.2"
          retry_count: 1
          retry_delay: 5
-         shardingkey:
-           - skey
-         supershardingkey:
-           - sskey
-         cclass: CONNECTIVITY_CLASS
-         purity: self
          threads: 1
       test:
           type: oracle
