@@ -1,5 +1,5 @@
 {#
- Copyright (c) 2022, Oracle and/or its affiliates.
+ Copyright (c) 2024, Oracle and/or its affiliates.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 {{
     config(
         materialized='incremental',
-        unique_key='group_id',
-	full_refresh=false,
+        incremental_strategy='delete+insert',
         parallel=4,
         partition_config={"clause": "PARTITION BY HASH(PROD_NAME) PARTITIONS 4"},
         table_compression_clause='COLUMN STORE COMPRESS FOR QUERY LOW')
@@ -42,4 +41,3 @@ WHERE sales.prod_id=products.prod_id AND sales.cust_id=customers.cust_id
 {% endif %}
 
 GROUP BY prod_name, channel_desc, calendar_month_desc
-
