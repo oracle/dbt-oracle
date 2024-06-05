@@ -17,10 +17,10 @@ Copyright (c) 2020, Vitor Avancini
 import enum
 import os
 
-import dbt.exceptions
-from dbt.events import AdapterLogger
+import dbt_common.exceptions
+from dbt.adapters.events.logging import AdapterLogger
 
-from dbt.ui import warning_tag, yellow, red
+from dbt_common.ui import warning_tag, yellow, red
 
 logger = AdapterLogger("oracle")
 
@@ -129,5 +129,5 @@ elif ORA_PYTHON_DRIVER_TYPE == OracleDriverType.THIN:
     SQLNET_ORA_CONFIG = OracleNetConfig.from_env()
     logger.info("Running in thin mode")
 else:
-    raise dbt.exceptions.DbtRuntimeError("Invalid value set for ORA_PYTHON_DRIVER_TYPE\n"
-                                         "Use any one of 'cx', 'thin', or 'thick'")
+    raise dbt_common.exceptions.DbtRuntimeError("Invalid value set for ORA_PYTHON_DRIVER_TYPE\n"
+                                                "Use any one of 'cx', 'thin', or 'thick'")

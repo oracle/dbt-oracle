@@ -23,15 +23,16 @@ import time
 import uuid
 import platform
 
-import dbt.exceptions
-from dbt.adapters.base import Credentials
+import dbt_common.exceptions
+from dbt.adapters.contracts.connection import AdapterResponse, Credentials
+from dbt.adapters.exceptions.connection import FailedToConnectError
 from dbt.adapters.sql import SQLConnectionManager
-from dbt.contracts.connection import AdapterResponse
-from dbt.events.functions import fire_event
-from dbt.events.types import ConnectionUsed, SQLQuery, SQLCommit, SQLQueryStatus
-from dbt.events import AdapterLogger
-from dbt.events.contextvars import get_node_info
-from dbt.utils import cast_to_str
+from dbt.adapters.events.types import ConnectionUsed, SQLQuery, SQLCommit, SQLQueryStatus
+from dbt.adapters.events.logging import AdapterLogger
+
+from dbt_common.events.functions import fire_event
+from dbt_common.events.contextvars import get_node_info
+from dbt_common.utils import cast_to_str
 
 from dbt.version import __version__ as dbt_version
 from dbt.adapters.oracle.connection_helper import oracledb, SQLNET_ORA_CONFIG
@@ -256,7 +257,7 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
             connection.handle = None
             connection.state = 'fail'
 
-            raise dbt.exceptions.FailedToConnectError(str(e))
+            raise FailedToConnectError(str(e))
 
         return connection
 
@@ -302,18 +303,18 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
                 logger.info("Failed to release connection!")
                 pass
 
-            raise dbt.exceptions.DbtDatabaseError(str(e).strip()) from e
+            raise dbt_common.exceptions.DbtDatabaseError(str(e).strip()) from e
 
         except Exception as e:
             logger.info("Rolling back transaction.")
             self.release()
-            if isinstance(e, dbt.exceptions.DbtRuntimeError):
+            if isinstance(e, dbt_common.exceptions.DbtRuntimeError):
                 # during a sql query, an internal to dbt exception was raised.
                 # this sounds a lot like a signal handler and probably has
                 # useful information, so raise it without modification.
                 raise e
 
-            raise dbt.exceptions.DbtRuntimeError(str(e)) from e
+            raise dbt_common.exceptions.DbtRuntimeError(str(e)) from e
 
     @classmethod
     def get_credentials(cls, credentials):

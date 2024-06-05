@@ -1,5 +1,5 @@
 """
-Copyright (c) 2023, Oracle and/or its affiliates.
+Copyright (c) 2024, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@ Copyright (c) 2020, Vitor Avancini
 """
 import datetime
 from typing import (
-    Optional, List, Set
+    Optional, List, Set, FrozenSet, Tuple, Iterable
 )
 from itertools import chain
 from typing import (
@@ -27,24 +27,23 @@ from typing import (
 import agate
 import requests
 
-import dbt.exceptions
+import dbt_common.exceptions
+from dbt_common.contracts.constraints import ConstraintType
+from dbt_common.utils import filter_null_values
+
 from dbt.adapters.base.relation import BaseRelation, InformationSchema
 from dbt.adapters.base.impl import GET_CATALOG_MACRO_NAME, ConstraintSupport, GET_CATALOG_RELATIONS_MACRO_NAME, _expect_row_value
+from dbt.adapters.contracts.relation import RelationConfig
+from dbt.adapters.events.logging import AdapterLogger
 from dbt.adapters.sql import SQLAdapter
 from dbt.adapters.base.meta import available
 from dbt.adapters.capability import CapabilityDict, CapabilitySupport, Support, Capability
+
 from dbt.adapters.oracle import OracleAdapterConnectionManager
 from dbt.adapters.oracle.column import OracleColumn
 from dbt.adapters.oracle.relation import OracleRelation
-from dbt.contracts.graph.manifest import Manifest
-from dbt.contracts.graph.nodes import ConstraintType
-from dbt.events import AdapterLogger
-
-from dbt.utils import filter_null_values
-
 from dbt.adapters.oracle.keyword_catalog import KEYWORDS
 from dbt.adapters.oracle.python_submissions import OracleADBSPythonJob
-from dbt.adapters.oracle.connections import AdapterResponse
 
 logger = AdapterLogger("oracle")
 
@@ -139,7 +138,7 @@ class OracleAdapter(SQLAdapter):
             database = database.strip('"')
         expected = self.config.credentials.database
         if expected and database.lower() != expected.lower():
-            raise dbt.exceptions.DbtRuntimeError(
+            raise dbt_common.exceptions.DbtRuntimeError(
                 'Cross-db references not allowed in {} ({} vs {})'
                 .format(self.type(), database, expected)
             )
@@ -210,55 +209,44 @@ class OracleAdapter(SQLAdapter):
             self,
             information_schema: InformationSchema,
             schemas: Set[str],
-            manifest: Manifest,
+            used_schemas: FrozenSet[Tuple[str, str]],
     ) -> agate.Table:
-
+        logger.info(f"GET ONE CATALOG =====>  {schemas}")
+        logger.info(f"GET ONE CATALOG =====> {information_schema}")
+        logger.info(f"GET ONE CATALOG =====> {used_schemas}")
         kwargs = {"information_schema": information_schema, "schemas": schemas}
-        table = self.execute_macro(
-            GET_CATALOG_MACRO_NAME,
-            kwargs=kwargs,
-            # pass in the full manifest so we get any local project
-            # overrides
-            manifest=manifest,
-        )
-        # In case database is not defined, we can use the the configured database which we set as part of credentials
-        for node in chain(manifest.nodes.values(), manifest.sources.values()):
-            if not node.database or node.database == 'None':
-                node.database = self.config.credentials.database
-
-        results = self._catalog_filter_table(table, manifest)
+        table = self.execute_macro(GET_CATALOG_MACRO_NAME, kwargs=kwargs)
+        results = self._catalog_filter_table(table, used_schemas=used_schemas)
+        logger.info(f"GET ONE CATALOG =====> {results}")
         return results
 
     def _get_one_catalog_by_relations(
         self,
         information_schema: InformationSchema,
         relations: List[BaseRelation],
-        manifest: Manifest,
+        used_schemas: FrozenSet[Tuple[str, str]],
     ) -> agate.Table:
-
+        logger.info(f"GET ONE _get_one_catalog_by_relations =====>  {relations}")
+        logger.info(f"GET ONE _get_one_catalog_by_relations =====> {information_schema}")
+        logger.info(f"GET ONE _get_one_catalog_by_relations =====> {used_schemas}")
         kwargs = {
             "information_schema": information_schema,
             "relations": relations,
         }
-        table = self.execute_macro(
-            GET_CATALOG_RELATIONS_MACRO_NAME,
-            kwargs=kwargs,
-            # pass in the full manifest, so we get any local project
-            # overrides
-            manifest=manifest,
-        )
-
-        # In case database is not defined, we can use the the configured database which we set as part of credentials
-        for node in chain(manifest.nodes.values(), manifest.sources.values()):
-            if not node.database or node.database == 'None':
-                node.database = self.config.credentials.database
-
-        results = self._catalog_filter_table(table, manifest)  # type: ignore[arg-type]
+        table = self.execute_macro(GET_CATALOG_RELATIONS_MACRO_NAME, kwargs=kwargs)
+        results = self._catalog_filter_table(table, used_schemas)  # type: ignore[arg-type]
+        logger.info(f"GET ONE _get_one_catalog_by_relations =====> {results}")
         return results
 
     def get_filtered_catalog(
-        self, manifest: Manifest, relations: Optional[Set[BaseRelation]] = None
+            self,
+            relation_configs: Iterable[RelationConfig],
+            used_schemas: FrozenSet[Tuple[str, str]],
+            relations: Optional[Set[BaseRelation]] = None
     ):
+        logger.info(f"GET ONE get_filtered_catalog =====>  {relations}")
+        logger.info(f"GET ONE get_filtered_catalog =====> {relations}")
+        logger.info(f"GET ONE get_filtered_catalog =====> {used_schemas}")
         catalogs: agate.Table
         if (
             relations is None
@@ -266,11 +254,11 @@ class OracleAdapter(SQLAdapter):
             or not self.supports(Capability.SchemaMetadataByRelations)
         ):
             # Do it the traditional way. We get the full catalog.
-            catalogs, exceptions = self.get_catalog(manifest)
+            catalogs, exceptions = self.get_catalog(relation_configs, used_schemas)
         else:
             # Do it the new way. We try to save time by selecting information
             # only for the exact set of relations we are interested in.
-            catalogs, exceptions = self.get_catalog_by_relations(manifest, relations)
+            catalogs, exceptions = self.get_catalog_by_relations(used_schemas, relations)
 
         if relations and catalogs:
             relation_map = {
@@ -388,8 +376,8 @@ class OracleAdapter(SQLAdapter):
         elif quote_config is None:
             pass
         else:
-            raise dbt.exceptions.CompilationError(f'The seed configuration value of "quote_columns" '
-                                                  f'has an invalid type {type(quote_config)}')
+            raise dbt_common.exceptions.CompilationError(f'The seed configuration value of "quote_columns" '
+                                                         f'has an invalid type {type(quote_config)}')
 
         if quote_columns:
             return self.quote(column)
@@ -417,7 +405,7 @@ class OracleAdapter(SQLAdapter):
 
     def get_oml_auth_token(self) -> str:
         if self.config.credentials.oml_auth_token_uri is None:
-            raise dbt.exceptions.DbtRuntimeError("oml_auth_token_uri should be set to run dbt-py models")
+            raise dbt_common.exceptions.DbtRuntimeError("oml_auth_token_uri should be set to run dbt-py models")
         data = {
             "grant_type": "password",
             "username": self.config.credentials.user,
@@ -428,7 +416,7 @@ class OracleAdapter(SQLAdapter):
                               json=data)
             r.raise_for_status()
         except requests.exceptions.RequestException:
-            raise dbt.exceptions.DbtRuntimeError("Error getting OML OAuth2.0 token")
+            raise dbt_common.exceptions.DbtRuntimeError("Error getting OML OAuth2.0 token")
         else:
             return r.json()["accessToken"]
 

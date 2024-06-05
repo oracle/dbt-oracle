@@ -6,4 +6,4 @@ tox
 coverage
 twine
 pytest
-dbt-tests-adapter~=1.7,<1.8
+dbt-tests-adapter~=1.8,<1.9

@@ -1,5 +1,5 @@
 """
-Copyright (c) 2023, Oracle and/or its affiliates.
+Copyright (c) 2024, Oracle and/or its affiliates.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -15,19 +15,19 @@ Copyright (c) 2023, Oracle and/or its affiliates.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Set
+from typing import Optional
 
 import agate
 from dbt.adapters.oracle.relation_configs.base import OracleRelationConfigBase
 from dbt.adapters.relation_configs import RelationResults, RelationConfigChange
 
-from dbt.contracts.relation import ComponentName
+from dbt.adapters.contracts.relation import ComponentName
 
 from dbt.contracts.graph.nodes import ModelNode
-from dbt.exceptions import DbtRuntimeError
-from dbt.events import AdapterLogger
+from dbt.adapters.events.logging import AdapterLogger
 
 logger = AdapterLogger("oracle")
+
 
 @dataclass(frozen=True, eq=True, unsafe_hash=True)
 class OracleMaterializedViewConfig(OracleRelationConfigBase):
@@ -143,6 +143,7 @@ class OracleRefreshMethodConfigChange(RelationConfigChange):
     def requires_full_refresh(self) -> bool:
         return True
 
+
 @dataclass(frozen=True, eq=True, unsafe_hash=True)
 class OracleBuildModeConfigChange(RelationConfigChange):
     context: Optional[str] = None
@@ -151,6 +152,7 @@ class OracleBuildModeConfigChange(RelationConfigChange):
     def requires_full_refresh(self) -> bool:
         return False
 
+
 @dataclass(frozen=True, eq=True, unsafe_hash=True)
 class OracleQueryRewriteConfigChange(RelationConfigChange):
     context: Optional[str] = None
@@ -158,6 +160,7 @@ class OracleQueryRewriteConfigChange(RelationConfigChange):
     @property
     def requires_full_refresh(self) -> bool:
         return False
+
 
 @dataclass(frozen=True, eq=True, unsafe_hash=True)
 class OracleQueryConfigChange(RelationConfigChange):

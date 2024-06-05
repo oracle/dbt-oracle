@@ -1,5 +1,5 @@
 """
-Copyright (c) 2023, Oracle and/or its affiliates.
+Copyright (c) 2024, Oracle and/or its affiliates.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ import platform
 import requests
 import time
 
-import dbt.exceptions
+import dbt_common.exceptions
 from dbt.adapters.oracle import OracleAdapterCredentials
-from dbt.events import AdapterLogger
-from dbt.ui import red, green
+from dbt.adapters.events.logging import AdapterLogger
+from dbt_common.ui import red, green
 from dbt.version import __version__ as dbt_version
 
 # ADB-S OML Rest API minimum timeout is 1800 seconds
@@ -170,7 +170,7 @@ class OracleADBSPythonJob:
             r.raise_for_status()
         except requests.exceptions.RequestException as e:
             logger.error(red(f"Error {e} scheduling async Python job for model {self.identifier}"))
-            raise dbt.exceptions.DbtRuntimeError(f"Error scheduling Python model {self.identifier}")
+            raise dbt_common.exceptions.DbtRuntimeError(f"Error scheduling Python model {self.identifier}")
 
         job_location = r.headers["location"]
         logger.info(f"Started async job {job_location}")
@@ -192,24 +192,24 @@ class OracleADBSPythonJob:
                     job_result_json = job_result.json()
                     if 'errorMessage' in job_result_json:
                         logger.error(red(f"FAILURE - Python model {self.identifier} Job failure is: {job_result_json}"))
-                        raise dbt.exceptions.DbtRuntimeError(f"Error running Python model {self.identifier}")
+                        raise dbt_common.exceptions.DbtRuntimeError(f"Error running Python model {self.identifier}")
                     job_result.raise_for_status()
                     logger.info(green(f"SUCCESS - Python model {self.identifier} Job result is: {job_result_json}"))
                     return
                 elif job_status_code == http.HTTPStatus.INTERNAL_SERVER_ERROR:
                     logger.error(red(f"FAILURE - Job status is: {job_status.json()}"))
-                    raise dbt.exceptions.DbtRuntimeError(f"Error running Python model {self.identifier}")
+                    raise dbt_common.exceptions.DbtRuntimeError(f"Error running Python model {self.identifier}")
                 else:
                     logger.debug(f"Python model {self.identifier} job status is: {job_status.json()}")
                     job_status.raise_for_status()
 
             except requests.exceptions.RequestException as e:
                 logger.error(red(f"Error {e} checking status of Python job {job_location}  for model {self.identifier}"))
-                raise dbt.exceptions.DbtRuntimeError(f"Error checking status for job {job_location}")
+                raise dbt_common.exceptions.DbtRuntimeError(f"Error checking status for job {job_location}")
 
             time.sleep(DEFAULT_DELAY_BETWEEN_POLL_IN_SECONDS)
         logger.error(red(f"Timeout error for Python model {self.identifier}"))
-        raise dbt.exceptions.DbtRuntimeError(f"Timeout error for Python model {self.identifier}")
+        raise dbt_common.exceptions.DbtRuntimeError(f"Timeout error for Python model {self.identifier}")
 
     def __call__(self, *args, **kwargs):
         data = {
@@ -234,10 +234,10 @@ class OracleADBSPythonJob:
                 job_result = r.json()
                 if 'errorMessage' in job_result:
                     logger.error(red(f"FAILURE - Python model {self.identifier} Job failure is: {job_result}"))
-                    raise dbt.exceptions.DbtRuntimeError(f"Error running Python model {self.identifier}")
+                    raise dbt_common.exceptions.DbtRuntimeError(f"Error running Python model {self.identifier}")
                 r.raise_for_status()
                 logger.info(green(f"SUCCESS - Python model {self.identifier} Job result is: {job_result}"))
             except requests.exceptions.RequestException as e:
                 logger.error(red(f"Error {e} running Python model {self.identifier}"))
-                raise dbt.exceptions.DbtRuntimeError(f"Error running Python model {self.identifier}")
+                raise dbt_common.exceptions.DbtRuntimeError(f"Error running Python model {self.identifier}")
 
