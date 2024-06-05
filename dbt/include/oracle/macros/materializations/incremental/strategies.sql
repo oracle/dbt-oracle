@@ -193,7 +193,7 @@
            from {{ temp_relation }})';
         END;
     {%- else -%}
-    insert {%- if parallel -%} /*+parallel({{ parallel }})*/ {%- endif -%} into  {{ target_relation }} ({{ dest_cols_csv }})
+    insert {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %} into  {{ target_relation }} ({{ dest_cols_csv }})
     (
        select {{ dest_cols_csv }}
        from {{ temp_relation }}

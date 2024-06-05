@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2024, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,7 @@ with open('README.md') as readme_file:
 
 requirements = [
         "dbt-core~=1.7,<1.8",
-        "oracledb==2.2.0"
+        "oracledb==2.2.1"
 ]
 
 test_requirements = [
@@ -59,7 +59,7 @@ project_urls = {
 
 url = 'https://github.com/oracle/dbt-oracle'
 
-VERSION = '1.7.5'
+VERSION = '1.7.6'
 setup(
     author="Oracle",
     python_requires='>=3.8',
