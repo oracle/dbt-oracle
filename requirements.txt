@@ -1,2 +1,2 @@
 dbt-core~=1.7,<1.8
-oracledb==2.2.0
+oracledb==2.2.1
