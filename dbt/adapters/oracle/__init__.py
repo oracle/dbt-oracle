@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2024, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,6 @@ Copyright (c) 2020, Vitor Avancini
 from dbt.adapters.oracle.connections import OracleAdapterConnectionManager
 from dbt.adapters.oracle.connections import OracleAdapterCredentials
 from dbt.adapters.oracle.impl import OracleAdapter
-
 from dbt.adapters.base import AdapterPlugin
 from dbt.include import oracle
 

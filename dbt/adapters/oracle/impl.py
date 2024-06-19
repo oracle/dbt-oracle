@@ -18,7 +18,6 @@ import datetime
 from typing import (
     Optional, List, Set, FrozenSet, Tuple, Iterable
 )
-from itertools import chain
 from typing import (
     Any,
     Callable,
@@ -31,8 +30,9 @@ import dbt_common.exceptions
 from dbt_common.contracts.constraints import ConstraintType
 from dbt_common.utils import filter_null_values
 
+from dbt.adapters.base.connections import Connection
 from dbt.adapters.base.relation import BaseRelation, InformationSchema
-from dbt.adapters.base.impl import GET_CATALOG_MACRO_NAME, ConstraintSupport, GET_CATALOG_RELATIONS_MACRO_NAME, _expect_row_value
+from dbt.adapters.base.impl import ConstraintSupport, GET_CATALOG_RELATIONS_MACRO_NAME, _expect_row_value
 from dbt.adapters.contracts.relation import RelationConfig
 from dbt.adapters.events.logging import AdapterLogger
 from dbt.adapters.sql import SQLAdapter
@@ -44,6 +44,8 @@ from dbt.adapters.oracle.column import OracleColumn
 from dbt.adapters.oracle.relation import OracleRelation
 from dbt.adapters.oracle.keyword_catalog import KEYWORDS
 from dbt.adapters.oracle.python_submissions import OracleADBSPythonJob
+
+from dbt_common.ui import warning_tag, yellow
 
 logger = AdapterLogger("oracle")
 
@@ -80,6 +82,15 @@ join diff_count using (id)
 
 LIST_RELATIONS_MACRO_NAME = 'list_relations_without_caching'
 GET_DATABASE_MACRO_NAME = 'get_database_name'
+
+MISSING_DATABASE_NAME_FOR_CATALOG_WARNING_MESSAGE = (
+    "database key is missing from the target-profile in the file profiles.yml "
+    "\n Starting with dbt-oracle 1.8  database name is needed for catalog generation "
+    "\n Without database key in the target profile the generated catalog will be empty "
+    "\n \t i.e. `dbt docs generate` command will generate an empty catalog json "
+    "\n Make the following entry in dbt profile.yml file for the target profile "
+    "\n database: {0}"
+)
 
 
 class OracleAdapter(SQLAdapter):
@@ -137,7 +148,7 @@ class OracleAdapter(SQLAdapter):
         if database.startswith('"'):
             database = database.strip('"')
         expected = self.config.credentials.database
-        if expected and database.lower() != expected.lower():
+        if expected and database.lower() != 'none' and database.lower() != expected.lower():
             raise dbt_common.exceptions.DbtRuntimeError(
                 'Cross-db references not allowed in {} ({} vs {})'
                 .format(self.type(), database, expected)
@@ -205,37 +216,18 @@ class OracleAdapter(SQLAdapter):
             database = self.config.credentials.database
         return super().get_relation(database, schema, identifier)
 
-    def _get_one_catalog(
+    def _get_one_catalog_by_relations(
             self,
             information_schema: InformationSchema,
-            schemas: Set[str],
+            relations: List[BaseRelation],
             used_schemas: FrozenSet[Tuple[str, str]],
-    ) -> agate.Table:
-        logger.info(f"GET ONE CATALOG =====>  {schemas}")
-        logger.info(f"GET ONE CATALOG =====> {information_schema}")
-        logger.info(f"GET ONE CATALOG =====> {used_schemas}")
-        kwargs = {"information_schema": information_schema, "schemas": schemas}
-        table = self.execute_macro(GET_CATALOG_MACRO_NAME, kwargs=kwargs)
-        results = self._catalog_filter_table(table, used_schemas=used_schemas)
-        logger.info(f"GET ONE CATALOG =====> {results}")
-        return results
-
-    def _get_one_catalog_by_relations(
-        self,
-        information_schema: InformationSchema,
-        relations: List[BaseRelation],
-        used_schemas: FrozenSet[Tuple[str, str]],
-    ) -> agate.Table:
-        logger.info(f"GET ONE _get_one_catalog_by_relations =====>  {relations}")
-        logger.info(f"GET ONE _get_one_catalog_by_relations =====> {information_schema}")
-        logger.info(f"GET ONE _get_one_catalog_by_relations =====> {used_schemas}")
+    ) -> "agate.Table":
         kwargs = {
             "information_schema": information_schema,
             "relations": relations,
         }
         table = self.execute_macro(GET_CATALOG_RELATIONS_MACRO_NAME, kwargs=kwargs)
         results = self._catalog_filter_table(table, used_schemas)  # type: ignore[arg-type]
-        logger.info(f"GET ONE _get_one_catalog_by_relations =====> {results}")
         return results
 
     def get_filtered_catalog(
@@ -244,10 +236,21 @@ class OracleAdapter(SQLAdapter):
             used_schemas: FrozenSet[Tuple[str, str]],
             relations: Optional[Set[BaseRelation]] = None
     ):
-        logger.info(f"GET ONE get_filtered_catalog =====>  {relations}")
-        logger.info(f"GET ONE get_filtered_catalog =====> {relations}")
-        logger.info(f"GET ONE get_filtered_catalog =====> {used_schemas}")
         catalogs: agate.Table
+
+        def is_database_none(database):
+            return database is None or database == 'None'
+
+        def populate_database(database):
+            if not is_database_none(database):
+                return database
+            return self.config.credentials.database
+
+        # In case database is not defined, we can use database set in credentials object
+        if any(is_database_none(database) for database, schema in used_schemas):
+            used_schemas = frozenset([(populate_database(database).casefold(), schema)
+                                      for database, schema in used_schemas])
+
         if (
             relations is None
             or len(relations) > 100
@@ -446,3 +449,15 @@ class OracleAdapter(SQLAdapter):
         response, _ = self.execute(sql=py_q_drop_script)
         logger.info(response)
         return response
+
+    def acquire_connection(self, name=None) -> Connection:
+        connection = self.connections.set_connection_name(name)
+        if connection.credentials.database is None or connection.credentials.database.lower() == 'none':
+            with connection.handle.cursor() as cr:
+                cr.execute("select SYS_CONTEXT('userenv', 'DB_NAME') FROM DUAL")
+                r = cr.fetchone()
+            database = r[0]
+            logger.warning(warning_tag(yellow(MISSING_DATABASE_NAME_FOR_CATALOG_WARNING_MESSAGE.format(database))))
+            self.config.credentials.database = database
+            connection.credentials.database = database
+        return connection
