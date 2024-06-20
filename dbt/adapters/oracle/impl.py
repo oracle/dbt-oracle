@@ -84,10 +84,10 @@ LIST_RELATIONS_MACRO_NAME = 'list_relations_without_caching'
 GET_DATABASE_MACRO_NAME = 'get_database_name'
 
 MISSING_DATABASE_NAME_FOR_CATALOG_WARNING_MESSAGE = (
-    "database key is missing from the target-profile in the file profiles.yml "
+    "database key is missing from the target profile in the file profiles.yml "
     "\n Starting with dbt-oracle 1.8  database name is needed for catalog generation "
     "\n Without database key in the target profile the generated catalog will be empty "
-    "\n \t i.e. `dbt docs generate` command will generate an empty catalog json "
+    "\n i.e. `dbt docs generate` command will generate an empty catalog json "
     "\n Make the following entry in dbt profile.yml file for the target profile "
     "\n database: {0}"
 )
