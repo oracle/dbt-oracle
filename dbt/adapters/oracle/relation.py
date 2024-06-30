@@ -19,6 +19,7 @@ from typing import Optional
 from dataclasses import dataclass, field
 
 from dbt.adapters.base.relation import BaseRelation
+from dbt.adapters.events.logging import AdapterLogger
 from dbt.adapters.relation_configs import (
     RelationConfigBase,
     RelationConfigChangeAction,
@@ -26,7 +27,7 @@ from dbt.adapters.relation_configs import (
 )
 from dbt.context.providers import RuntimeConfigObject
 from dbt.contracts.graph.nodes import ModelNode
-from dbt.contracts.relation import RelationType
+from dbt.adapters.base import RelationType
 from dbt.exceptions import DbtRuntimeError
 
 from dbt.adapters.oracle.relation_configs import (
@@ -40,7 +41,7 @@ from dbt.adapters.oracle.relation_configs import (
     OracleQuotePolicy,
     OracleIncludePolicy)
 
-from dbt.events import AdapterLogger
+
 
 logger = AdapterLogger("oracle")
 

@@ -1,5 +1,5 @@
 """
-Copyright (c) 2023, Oracle and/or its affiliates.
+Copyright (c) 2024, Oracle and/or its affiliates.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@ Copyright (c) 2023, Oracle and/or its affiliates.
 from dataclasses import dataclass
 
 from dbt.adapters.base.relation import Policy
-from dbt.dataclass_schema import StrEnum
+from dbt_common.dataclass_schema import StrEnum
 
 
 @dataclass
