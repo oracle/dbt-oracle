@@ -22,6 +22,9 @@ sources:
       - name: costs
 
 models:
+  - name: sales_internet_mv
+    description: Test comment for Materialized View
+
   - name: kafka
     description: kafka_description
     config:
