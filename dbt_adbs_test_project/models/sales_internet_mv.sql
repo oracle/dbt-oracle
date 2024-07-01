@@ -13,6 +13,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 #}
-{{ config(materialized='materialized_view')}}
+{{ config(materialized='materialized_view',  persist_docs={"relation": true, "columns": true}) }}
 select * from {{ source('sh_database', 'sales') }}
 where channel_id = 5
