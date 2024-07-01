@@ -260,8 +260,12 @@
 
 {% macro oracle__alter_relation_comment(relation, comment) %}
   {% set escaped_comment = oracle_escape_comment(comment) %}
+  {% if relation.type == 'materialized_view' %}
+  comment on materialized view {{ relation }} is {{ escaped_comment }}
+  {% else %}
   {# "comment on table" even for views #}
   comment on table {{ relation }} is {{ escaped_comment }}
+  {% endif %}
 {% endmacro %}
 
 {% macro oracle__persist_docs(relation, model, for_relation, for_columns) -%}
