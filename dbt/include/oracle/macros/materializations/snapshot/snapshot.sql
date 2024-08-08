@@ -215,7 +215,7 @@
   {% endif %}
 
   {% if not adapter.check_schema_exists(model_database, model.schema) %}
-    {% do create_schema(model_database, model.schema) %}
+    {% do create_schema(model.schema) %}
   {% endif %}
 
   {% set target_relation_exists, target_relation = get_or_create_relation(

@@ -21,6 +21,7 @@ seeds:
         kafka_message:
           +column_types:
             message: CLOB
+            blob_message: BLOB
         seed_with_empty_col:
           +column_types:
             id: number

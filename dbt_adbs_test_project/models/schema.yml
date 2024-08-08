@@ -43,6 +43,11 @@ models:
         data_type: CLOB
         constraints:
           - type: not_null
+      - name: blob_message
+        description: Kafka message
+        data_type: BLOB
+        constraints:
+          - type: not_null
 
 
   - name: people
