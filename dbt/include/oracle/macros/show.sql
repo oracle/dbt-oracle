@@ -24,9 +24,8 @@
 
 
 {% macro oracle__get_limit_sql(sql, limit) %}
-    select *
-    from (
-        {{ sql }}
-    )
-    fetch first {{ limit }} rows only
+  {{ compiled_code }}
+  {% if limit is not none %}
+  fetch first {{ limit }} rows only
+  {%- endif -%}
 {% endmacro %}
