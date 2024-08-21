@@ -1,5 +1,5 @@
 {#
- Copyright (c) 2023, Oracle and/or its affiliates.
+ Copyright (c) 2024, Oracle and/or its affiliates.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -20,4 +20,12 @@
         {{ sql }}
     )
     fetch first {{ limit }} rows only
+{% endmacro %}
+
+
+{% macro oracle__get_limit_sql(sql, limit) %}
+  {{ compiled_code }}
+  {% if limit is not none %}
+  fetch first {{ limit }} rows only
+  {%- endif -%}
 {% endmacro %}

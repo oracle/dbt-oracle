@@ -9,7 +9,7 @@ dbt_test:
          host: "{{ env_var('DBT_ORACLE_HOST') }}"
          port: 1522
          service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
-#         database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
+         database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
          schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
          oml_cloud_service_url: "{{ env_var('DBT_ORACLE_OML_CLOUD_SERVICE_URL')}}"
          session_info:

@@ -42,6 +42,8 @@
       {%- endif -%}
       {%- if col['data_type'] | lower == 'clob' -%}
       empty_clob() as {{ col['name'] }}{{ ", " if not loop.last }}
+      {%- elif col['data_type'] | lower == 'blob' -%}
+      empty_blob() as {{ col['name'] }}{{ ", " if not loop.last }}
       {%- else -%}
       cast(null as {{ col['data_type'] }}) as {{ col['name'] }}{{ ", " if not loop.last }}
      {%- endif -%}
@@ -63,7 +65,7 @@
     ) model_subq
 {%- endmacro %}
 
-{% macro oracle__create_schema(relation, schema_name) -%}
+{% macro oracle__create_schema(relation) -%}
   {% if relation.database -%}
     {{ adapter.verify_database(relation.database) }}
   {%- endif -%}
