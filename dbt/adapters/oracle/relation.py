@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2024, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@ from typing import Optional
 from dataclasses import dataclass, field
 
 from dbt.adapters.base.relation import BaseRelation
+from dbt.adapters.contracts.relation import ComponentName
 from dbt.adapters.events.logging import AdapterLogger
 from dbt.adapters.relation_configs import (
     RelationConfigBase,
@@ -148,3 +149,19 @@ class OracleRelation(BaseRelation):
             return config_change_collection
 
         return None
+
+    def _is_exactish_match(self, field: ComponentName, value: str) -> bool:
+        """
+
+        The only purpose of _is_exactish_match is to detect matches that are
+        approximate (case-insensitive and quote-stripped) but not exact,
+        so that dbt can raise an exception saying a too-similar relation
+        already exists in the cache
+
+        """
+        if self.dbt_created and self.quote_policy.get_part(field) is False:
+            return self.path.get_lowered_part(field) == value.lower()
+        elif self.quote_policy.get_part(field) is False:
+            return self.path.get_lowered_part(field) == value.lower()
+        else:
+            return self.path.get_part(field) == value

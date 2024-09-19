@@ -7,6 +7,7 @@ default:
          host: "{{ env_var('DBT_ORACLE_HOST') }}"
          user: "{{ env_var('DBT_ORACLE_USER') }}"
          password: "{{ env_var('DBT_ORACLE_PASSWORD') }}"
+         database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
          port: 1522
          service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
          schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
