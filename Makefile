@@ -1,5 +1,5 @@
 # Configuration variables
-VERSION=1.8.1
+VERSION=1.8.3
 PROJ_DIR?=$(shell pwd)
 VENV_DIR?=${PROJ_DIR}/.bldenv
 BUILD_DIR=${PROJ_DIR}/build
