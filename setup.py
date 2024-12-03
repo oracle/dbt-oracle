@@ -29,7 +29,7 @@ except ImportError:
 
 
 # lockstep with dbt-core which requires Python > 3.8
-if sys.version_info < (3, 8):
+if sys.version_info < (3, 9):
     print("Error: dbt-oracle does not support this version of Python.")
     print("Please upgrade to Python 3.8 or higher.")
     sys.exit(1)
@@ -43,7 +43,7 @@ requirements = [
         "dbt-common>=1.1.0,<2.0",
         "dbt-adapters>=1.2.1,<2.0",
         "dbt-core~=1.8,<1.9",
-        "oracledb==2.4.1"
+        "oracledb==2.5.0"
 ]
 
 test_requirements = [
@@ -61,17 +61,16 @@ project_urls = {
 
 url = 'https://github.com/oracle/dbt-oracle'
 
-VERSION = '1.8.3'
+VERSION = '1.8.4'
 setup(
     author="Oracle",
-    python_requires='>=3.8',
+    python_requires='>=3.9',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
