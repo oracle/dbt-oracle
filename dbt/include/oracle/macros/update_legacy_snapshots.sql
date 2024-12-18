@@ -24,16 +24,16 @@
 
 This hash function is used in the marcro oracle__snapshot_hash_arguments
 
-dbt-oracle 2.0 will switch to a stronger hash function - SHA256. Changing the
+dbt-oracle 1.9 will switch to a stronger hash function - SHA256. Changing the
 hash function will invalidate existing snapshots.These helper macros will
-ensure a smoother transition to dbt-oracle 2.0.
+ensure a smoother transition to dbt-oracle 1.9.
 
 It is recommended for teams to switch to SHA256 hash function before
-dbt-oracle 2.0 using a 2-step process:
+dbt-oracle 1.9 using a 2-step process:
 1. Create a macro oracle__snapshot_hash_arguments(args) in your dbt project
    Copy paste the contents of macro
    oracle__snapshot_standard_hash_arguments(args) shown below. This will become
-   the default from dbt-oracle 2.0
+   the default from dbt-oracle 1.9
 
 2. Run the following operation on your snapshot table
 
