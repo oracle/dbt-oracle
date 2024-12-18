@@ -31,7 +31,7 @@ except ImportError:
 # lockstep with dbt-core which requires Python > 3.8
 if sys.version_info < (3, 9):
     print("Error: dbt-oracle does not support this version of Python.")
-    print("Please upgrade to Python 3.8 or higher.")
+    print("Please upgrade to Python 3.9 or higher.")
     sys.exit(1)
 
 
