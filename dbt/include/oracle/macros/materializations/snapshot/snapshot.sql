@@ -164,7 +164,7 @@
         {{ strategy.scd_id }} as dbt_scd_id,
         {{ strategy.updated_at }} as dbt_updated_at,
         {{ strategy.updated_at }} as dbt_valid_from,
-        cast(nullif({{ strategy.updated_at }}, {{ strategy.updated_at }}) as TIMESTAMP) as dbt_valid_to
+        cast(nullif({{ strategy.updated_at }}, {{ strategy.updated_at }}) as TIMESTAMP(9)) as dbt_valid_to
     from (
         {{ sql }}
     ) sbq

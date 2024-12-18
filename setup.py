@@ -43,7 +43,7 @@ requirements = [
         "dbt-common>=1.1.0,<2.0",
         "dbt-adapters>=1.2.1,<2.0",
         "dbt-core~=1.8,<1.9",
-        "oracledb==2.5.0"
+        "oracledb==2.5.1"
 ]
 
 test_requirements = [
