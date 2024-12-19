@@ -159,9 +159,9 @@
           {%- set sql = get_select_subquery(sql) %}
       {% endif %}
       {% if temporary -%} on commit preserve rows {%- endif %}
+      {% if parallel %} parallel {{ parallel }}{% endif %}
       {% if not temporary -%}
         {% if partition_clause %} {{ partition_clause }} {% endif %}
-        {% if parallel %} parallel {{ parallel }}{% endif %}
         {% if compression_clause %} {{ compression_clause }} {% endif %}
       {%- endif %}
       as
