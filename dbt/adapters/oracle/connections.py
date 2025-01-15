@@ -1,5 +1,5 @@
 """
-Copyright (c) 2023, Oracle and/or its affiliates.
+Copyright (c) 2025, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -208,11 +208,19 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
         logger.debug(f"Attempting to connect using Oracle method: '{method}' "
                      f"and dsn: '{dsn}'")
 
-        conn_config = {
-            'user': credentials.user,
-            'password': credentials.password,
-            'dsn': dsn
-        }
+        if credentials.password is None:
+            logger.debug("Password not supplied. "
+                         "Using external authentication")
+            conn_config = {
+                'externalauth': True,
+                'dsn': dsn
+            }
+        else:
+            conn_config = {
+                'user': credentials.user,
+                'password': credentials.password,
+                'dsn': dsn
+            }
 
         if oracledb.__name__ == "oracledb":
             conn_config['connection_id_prefix'] = f'dbt-oracle-{dbt_version}-'
