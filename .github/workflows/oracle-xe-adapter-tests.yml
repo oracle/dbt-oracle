@@ -69,7 +69,7 @@ jobs:
           DBT_ORACLE_DATABASE: XEPDB1
           DBT_ORACLE_SERVICE: XEPDB1
           DBT_ORACLE_PROTOCOL: tcp
-          LD_LIBRARY_PATH: /opt/oracle/instantclient_21_6
+          LD_LIBRARY_PATH: /opt/oracle/instantclient_23_7
           TNS_ADMIN: /opt/tns_admin
           DBT_TEST_USER_1: DBT_TEST_USER_1
           DBT_TEST_USER_2: DBT_TEST_USER_2
