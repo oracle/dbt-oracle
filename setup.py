@@ -43,7 +43,7 @@ requirements = [
         "dbt-common>=1.1.0,<2.0",
         "dbt-adapters>=1.2.1,<2.0",
         "dbt-core~=1.9,<1.10",
-        "oracledb==2.5.1"
+        "oracledb==3.0.0"
 ]
 
 test_requirements = [
@@ -61,7 +61,7 @@ project_urls = {
 
 url = 'https://github.com/oracle/dbt-oracle'
 
-VERSION = '1.9.0'
+VERSION = '1.9.1'
 setup(
     author="Oracle",
     python_requires='>=3.9',
