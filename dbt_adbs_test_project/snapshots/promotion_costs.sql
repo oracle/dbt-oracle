@@ -18,7 +18,7 @@
                 strategy='check',
                 unique_key='promo_id',
                 check_cols='all',
-                invalidate_hard_deletes=True
+                hard_deletes='invalidate'
             )
     }}
     select * from {{ ref('promotion_costs') }}

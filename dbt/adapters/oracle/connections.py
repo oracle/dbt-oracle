@@ -120,6 +120,10 @@ class OracleAdapterCredentials(Credentials):
     # session info is stored in v$session for each dbt run
     session_info: Optional[Dict[str, str]] = field(default_factory=dict)
 
+    # read http proxy from profiles.yml
+    https_proxy: Optional[str] = None
+    https_proxy_port: Optional[int] = None
+
 
     _ALIASES = {
         'dbname': 'database',
@@ -242,6 +246,11 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
                 conn_config['purity'] = oracledb.ATTR_PURITY_SELF
             elif purity == 'default':
                 conn_config['purity'] = oracledb.ATTR_PURITY_DEFAULT
+
+        if credentials.https_proxy and credentials.https_proxy_port:
+            conn_config['https_proxy'] = credentials.https_proxy
+            conn_config['https_proxy_port'] = credentials.https_proxy_port
+
 
         if SQLNET_ORA_CONFIG is not None:
             conn_config.update(SQLNET_ORA_CONFIG)

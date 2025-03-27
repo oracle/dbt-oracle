@@ -17,7 +17,8 @@
 {% macro snapshot_check_strategy(node, snapshotted_rel, current_rel, config, target_exists) %}
     {% set check_cols_config = config['check_cols'] %}
     {% set primary_key = config['unique_key'] %}
-    {% set invalidate_hard_deletes = config.get('invalidate_hard_deletes', false) %}
+    {% set hard_deletes = adapter.get_hard_deletes_behavior(config) %}
+    {% set invalidate_hard_deletes = hard_deletes == 'invalidate' %}
 
     {% set select_current_time -%}
         select {{ snapshot_get_time() }} FROM dual
@@ -28,7 +29,7 @@
     {% if now is none or now is undefined -%}
         {%- do exceptions.raise_compiler_error('Could not get a snapshot start time from the database') -%}
     {%- endif %}
-    {% set updated_at = snapshot_string_as_time(now) %}
+    {% set updated_at = config.get('updated_at') or snapshot_string_as_time(now) %}
 
     {% set column_added = false %}
 
@@ -59,14 +60,16 @@
     )
     {%- endset %}
 
-    {% set scd_id_expr = snapshot_hash_arguments([primary_key, updated_at]) %}
+    {% set scd_args = api.Relation.scd_args(primary_key, updated_at) %}
+    {% set scd_id_expr = snapshot_hash_arguments(scd_args) %}
 
     {% do return({
         "unique_key": primary_key,
         "updated_at": updated_at,
         "row_changed": row_changed_expr,
         "scd_id": scd_id_expr,
-        "invalidate_hard_deletes": invalidate_hard_deletes
+        "invalidate_hard_deletes": invalidate_hard_deletes,
+        "hard_deletes": hard_deletes
     }) %}
 {% endmacro %}
 
@@ -100,21 +103,25 @@
 {%- endmacro %}
 
 {% macro snapshot_timestamp_strategy(node, snapshotted_rel, current_rel, config, target_exists) %}
-    {% set primary_key = config['unique_key'] %}
-    {% set updated_at = config['updated_at'] %}
-    {% set invalidate_hard_deletes = config.get('invalidate_hard_deletes', false) %}
+    {% set primary_key = config.get('unique_key') %}
+    {% set updated_at = config.get('updated_at') %}
+    {% set hard_deletes = adapter.get_hard_deletes_behavior(config) %}
+    {% set invalidate_hard_deletes = hard_deletes == 'invalidate' %}
+    {% set columns = config.get("snapshot_table_column_names") or get_snapshot_table_column_names() %}
 
     {% set row_changed_expr -%}
-        ({{ snapshotted_rel }}.dbt_valid_from < {{ current_rel }}.{{ updated_at }})
+        ({{ snapshotted_rel }}.{{ columns.dbt_valid_from }} < {{ current_rel }}.{{ updated_at }})
     {%- endset %}
     {# updated_at should be cast as timestamp because in hash computation "CAST(date as VARCHAR)" truncates time fields  #}
-    {% set scd_id_expr = snapshot_hash_arguments([primary_key, 'CAST(' ~ updated_at ~ ' AS TIMESTAMP)']) %}
+    {% set scd_args = api.Relation.scd_args(primary_key, updated_at) %}
+    {% set scd_id_expr = snapshot_hash_arguments(scd_args) %}
 
     {% do return({
         "unique_key": primary_key,
         "updated_at": updated_at,
         "row_changed": row_changed_expr,
         "scd_id": scd_id_expr,
-        "invalidate_hard_deletes": invalidate_hard_deletes
+        "invalidate_hard_deletes": invalidate_hard_deletes,
+        "hard_deletes": hard_deletes
     }) %}
 {% endmacro %}

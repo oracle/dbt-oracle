@@ -71,8 +71,6 @@ class OracleNetConfig(dict):
         'wallet_password',
         'wallet_location',
         'expire_time',
-        'https_proxy',
-        'https_proxy_port',
         'retry_count',
         'retry_delay',
         'tcp_connect_timeout',
