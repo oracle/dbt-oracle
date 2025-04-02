@@ -377,8 +377,8 @@
 {%- endmacro %}
 
 {% macro oracle__get_dbt_valid_to_current(strategy, columns) %}
-  {% set dbt_valid_to_current = config.get('dbt_valid_to_current') or "CAST(null as TIMESTAMP(9)" %}
-  coalesce(nullif({{ strategy.updated_at }}, {{ strategy.updated_at }}), {{dbt_valid_to_current}}))
+  {% set dbt_valid_to_current = config.get('dbt_valid_to_current') or "CAST(null as TIMESTAMP(9))" %}
+  coalesce(nullif({{ strategy.updated_at }}, {{ strategy.updated_at }}), {{dbt_valid_to_current}})
   as {{ columns.dbt_valid_to }}
 {% endmacro %}
 
