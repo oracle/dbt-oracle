@@ -116,6 +116,6 @@ def main(action, client_identifier, clientinfo, module):
 {{py_script_comment()}}
 {% endmacro %}
 
-{#-- entry point for add instuctions for running compiled_code --#}
+{#-- entry point for add instructions for running compiled_code --#}
 {%macro py_script_comment()%}
 {%endmacro%}
