@@ -71,7 +71,7 @@
   {%- endif -%}
   {%- call statement('create_schema') -%}
     -- Noop for not breaking tests, oracle
-    -- schemas are actualy users, we can't
+    -- schemas are actually users, we can't
     -- create it here
     select 'a' from dual
   {%- endcall -%}
