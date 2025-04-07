@@ -5,7 +5,7 @@ set -Exeuo pipefail
 # Parameters
 DB_USER="${1}"
 DB_PASSWORD="${2}"
-TARGET_PDB="${3:-XEPDB1}"
+TARGET_PDB="${3:-FREEPDB1}"
 
 # Prepare container switch statement to create user in PDB.
 ALTER_SESSION_CMD="ALTER SESSION SET CONTAINER=${TARGET_PDB};"
