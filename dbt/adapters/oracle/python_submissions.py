@@ -159,7 +159,7 @@ class OracleADBSPythonJob:
         }
 
     def schedule_async_job_and_wait_for_completion(self, data):
-        logger.info(f"Running Python aysnc job using {data}")
+        logger.info(f"Running Python async job using {data}")
         try:
             r = self.oml4py_client.request(method="POST",
                                            path=OML_DO_EVAL_API.format(script_name=self.py_q_script_name),
