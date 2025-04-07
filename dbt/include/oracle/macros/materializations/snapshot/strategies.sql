@@ -15,8 +15,8 @@
   limitations under the License.
 #}
 {% macro snapshot_check_strategy(node, snapshotted_rel, current_rel, config, target_exists) %}
-    {% set check_cols_config = config['check_cols'] %}
-    {% set primary_key = config['unique_key'] %}
+    {% set check_cols_config = config.get('check_cols') %}
+    {% set primary_key = config.get('unique_key') %}
     {% set hard_deletes = adapter.get_hard_deletes_behavior(config) %}
     {% set invalidate_hard_deletes = hard_deletes == 'invalidate' %}
 
