@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2025, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,7 @@ cc_all_snapshot_sql = """
 {% snapshot cc_all_snapshot %}
     {{ config(
         check_cols='all', 
-        unique_key='id', 
+        unique_key=['id'], 
         strategy='check',
         target_database=database, 
         target_schema=schema,

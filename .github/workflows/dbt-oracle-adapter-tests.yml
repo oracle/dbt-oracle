@@ -2,7 +2,7 @@ name: dbt-tests-adapter
 on: push
 
 jobs:
-  oracle_xe_21_3:
+  dbt_oracle_adapter_tests:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
@@ -11,11 +11,11 @@ jobs:
         python-version: ['3.9', '3.10', '3.11', '3.12']
 
     services:
-      oracle_db_xe:
-        image: container-registry.oracle.com/database/express:21.3.0-xe
+      oracle_db:
+        image: container-registry.oracle.com/database/free:latest-lite
         env:
           ORACLE_PWD: ${{ secrets.DBT_ORACLE_PASSWORD }}
-        options: --name oracle_db_xe
+        options: --name oracle_db
         ports:
           - 1521:1521
 
@@ -36,19 +36,19 @@ jobs:
       - name: Copy Create User script
         run: |
           chmod +x ${{ github.workspace }}/.github/scripts/create_new_user.sh
-          docker cp ${{ github.workspace }}/.github/scripts/create_new_user.sh oracle_db_xe:/home/oracle/create_new_user.sh
+          docker cp ${{ github.workspace }}/.github/scripts/create_new_user.sh oracle_db:/home/oracle/create_new_user.sh
 
       - name: Create dbt test users
         run: |
-          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test ${{ secrets.DBT_ORACLE_PASSWORD }}
-          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test_user_1 ${{ secrets.DBT_ORACLE_PASSWORD }}
-          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test_user_2 ${{ secrets.DBT_ORACLE_PASSWORD }}
-          docker exec oracle_db_xe /home/oracle/create_new_user.sh dbt_test_user_3 ${{ secrets.DBT_ORACLE_PASSWORD }}
+          docker exec oracle_db /home/oracle/create_new_user.sh dbt_test ${{ secrets.DBT_ORACLE_PASSWORD }}
+          docker exec oracle_db /home/oracle/create_new_user.sh dbt_test_user_1 ${{ secrets.DBT_ORACLE_PASSWORD }}
+          docker exec oracle_db /home/oracle/create_new_user.sh dbt_test_user_2 ${{ secrets.DBT_ORACLE_PASSWORD }}
+          docker exec oracle_db /home/oracle/create_new_user.sh dbt_test_user_3 ${{ secrets.DBT_ORACLE_PASSWORD }}
 
       - name: Install dbt-oracle with core dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest 'dbt-tests-adapter~=1.10,<1.11'
+          pip install pytest 'dbt-tests-adapter~=1.11,<1.12'
           pip install -r requirements.txt
           pip install -e .
 
@@ -66,8 +66,8 @@ jobs:
           DBT_ORACLE_PORT: 1521
           DBT_ORACLE_SCHEMA: DBT_TEST
           DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_PASSWORD }}
-          DBT_ORACLE_DATABASE: XEPDB1
-          DBT_ORACLE_SERVICE: XEPDB1
+          DBT_ORACLE_DATABASE: FREEPDB1
+          DBT_ORACLE_SERVICE: FREEPDB1
           DBT_ORACLE_PROTOCOL: tcp
           LD_LIBRARY_PATH: /opt/oracle/instantclient_23_7
           TNS_ADMIN: /opt/tns_admin
@@ -85,8 +85,8 @@ jobs:
           DBT_ORACLE_PORT: 1521
           DBT_ORACLE_SCHEMA: DBT_TEST
           DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_PASSWORD }}
-          DBT_ORACLE_DATABASE: XEPDB1
-          DBT_ORACLE_SERVICE: XEPDB1
+          DBT_ORACLE_DATABASE: FREEPDB1
+          DBT_ORACLE_SERVICE: FREEPDB1
           DBT_ORACLE_PROTOCOL: tcp
           DISABLE_OOB: on
           TNS_ADMIN: /opt/tns_admin

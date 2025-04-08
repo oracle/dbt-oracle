@@ -38,10 +38,10 @@ my_invalid_model_sql = """
 my_snapshot_sql = """
 {% snapshot my_snapshot %}
     {{ config(
-        check_cols='all', unique_key='id', strategy='check',
+        check_cols='all', unique_key=['id'], strategy='check',
         target_database=database, target_schema=schema
     ) }}
-    select 1 as id, cast('blue' as {{ type_string() }}) as color from dual
+    select 1 as id, cast('blue' as {{ type_string() }}) as color
 {% endsnapshot %}
 """.strip()
 

@@ -188,7 +188,7 @@
             {{ new_scd_id }} as {{ columns.dbt_scd_id }},
             'True' as {{ columns.dbt_is_deleted }}
         from snapshotted_data
-        left join deletes_source_data as source_data
+        left join deletes_source_data source_data
             on {{ unique_key_join_on(strategy.unique_key, "snapshotted_data", "source_data") }}
         where {{ unique_key_is_null(strategy.unique_key, "source_data") }}
 
