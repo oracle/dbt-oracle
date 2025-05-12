@@ -42,3 +42,5 @@ on-run-start:
 on-run-end:
     - "select 'hook ended' from dual"
 
+dbt-cloud:
+  tenant_hostname: cloud.getdbt.com

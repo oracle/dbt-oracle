@@ -150,3 +150,4 @@ doc/build.gitbak
 .venv1.7/
 .venv*/
 dbt_adbs_py_test_project
+dbt_adbs_test_project/target.zip
