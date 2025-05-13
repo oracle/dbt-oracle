@@ -43,7 +43,7 @@
 
 {% macro oracle__snapshot_staging_table(strategy, source_sql, target_relation) -%}
 
-    {% set columns = config.get('snapshot_table_column_names') or get_snapshot_table_column_names() %}
+    {% set columns = config.get('snapshot_meta_column_names') or get_snapshot_table_column_names() %}
     {% if strategy.hard_deletes == 'new_record' %}
         {% set new_scd_id = snapshot_hash_arguments([columns.dbt_scd_id, snapshot_get_time()]) %}
     {% endif %}
@@ -212,7 +212,7 @@
 
 
 {% macro oracle__build_snapshot_table(strategy, sql) %}
-    {% set columns = config.get('snapshot_table_column_names') or get_snapshot_table_column_names() %}
+    {% set columns = config.get('snapshot_meta_column_names') or get_snapshot_table_column_names() %}
 
     select sbq.*,
         {{ strategy.scd_id }} as {{ columns.dbt_scd_id }},
@@ -301,7 +301,7 @@
 
   {% else %}
 
-      {% set columns = config.get("snapshot_table_column_names") or get_snapshot_table_column_names() %}
+      {% set columns = config.get("snapshot_meta_column_names") or get_snapshot_table_column_names() %}
 
       {{ adapter.assert_valid_snapshot_target_given_strategy(target_relation, columns, strategy) }}
 
