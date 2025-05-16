@@ -259,7 +259,6 @@
 
 
 {% materialization snapshot, adapter='oracle' %}
-  {%- set config = model['config'] -%}
 
   {%- set target_table = model.get('alias', model.get('name')) -%}
 
