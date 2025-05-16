@@ -422,3 +422,13 @@
     {% set db_name = results.columns[0].values()[0] %}
     {{ return(db_name) }}
 {% endmacro %}
+
+{% macro generate_insert_hint(parallel, insert_mode) %}
+    {% if parallel and insert_mode == 'append' %}
+        /*+parallel({{ parallel }}) append*/
+    {% elif parallel %}
+        /*+parallel({{ parallel }})*/
+    {% elif insert_mode == 'append' %}
+        /*+ append */
+    {% endif %}
+{% endmacro %}

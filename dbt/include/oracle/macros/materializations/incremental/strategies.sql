@@ -95,13 +95,13 @@
 {% macro oracle__get_incremental_append_sql(args_dict) %}
     {%- set parallel = config.get('parallel', none) -%}
     {%- set insert_mode = config.get('insert_mode', none) -%}
+    {%- set insert_hint = generate_insert_hint(parallel, insert_mode) -%}
     {%- set dest_columns = args_dict["dest_columns"] -%}
     {%- set temp_relation = args_dict["temp_relation"] -%}
     {%- set target_relation = args_dict["target_relation"] -%}
     {%- set dest_column_names = dest_columns | map(attribute='name') | list -%}
     {%- set dest_cols_csv = get_quoted_column_csv(model, dest_column_names)  -%}
-    INSERT {% if parallel %} /*+PARALLEL({{ parallel }})*/ {% endif %}
-    {% if insert_mode == 'append' %} /*+ append */ {% endif %}
+    INSERT {{ insert_hint }}
     INTO {{ target_relation }} ({{ dest_cols_csv }})
     (
        SELECT {{ dest_cols_csv }}
@@ -112,6 +112,7 @@
 {% macro oracle__get_incremental_merge_sql(args_dict) %}
     {%- set parallel = config.get('parallel', none) -%}
     {%- set insert_mode = config.get('insert_mode', none) -%}
+    {%- set insert_hint = generate_insert_hint(parallel, insert_mode) -%}
     {%- set dest_columns = args_dict["dest_columns"] -%}
     {%- set temp_relation = args_dict["temp_relation"] -%}
     {%- set target_relation = args_dict["target_relation"] -%}
@@ -142,8 +143,7 @@
             {% endfor -%}
           )
     {%- else -%}
-    insert {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %}
-    {% if insert_mode == 'append' %} /*+ append */ {% endif %}
+    insert {{ insert_hint }}
     into  {{ target_relation }} ({{ dest_cols_csv }})
     (
        select {{ dest_cols_csv }}
@@ -185,6 +185,7 @@
 {% macro oracle__get_incremental_delete_insert_sql(args_dict) %}
     {%- set parallel = config.get('parallel', none) -%}
     {%- set insert_mode = config.get('insert_mode', none) -%}
+    {%- set insert_hint = generate_insert_hint(parallel, insert_mode) -%}
     {%- set dest_columns = args_dict["dest_columns"] -%}
     {%- set temp_relation = args_dict["temp_relation"] -%}
     {%- set target_relation = args_dict["target_relation"] -%}
@@ -195,15 +196,13 @@
     {%- if unique_key or incremental_predicates -%}
         BEGIN
         EXECUTE IMMEDIATE  '{{ oracle__get_delete_sql_for_delete_insert_strategy(target_relation, temp_relation, unique_key, incremental_predicates) }}';
-        EXECUTE IMMEDIATE 'insert {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %}
-           {% if insert_mode == 'append' %} /*+ append */ {% endif %}
+        EXECUTE IMMEDIATE 'INSERT {{ insert_hint }}
            into {{ target_relation }} ({{ dest_cols_csv }})(
            select {{ dest_cols_csv }}
            from {{ temp_relation }})';
         END;
     {%- else -%}
-    insert {% if parallel %} /*+parallel({{ parallel }})*/ {% endif %}
-    {% if insert_mode == 'append' %} /*+ append */ {% endif %}
+    insert {{ insert_hint }}
     into  {{ target_relation }} ({{ dest_cols_csv }})
     (
        select {{ dest_cols_csv }}
