@@ -1,0 +1,49 @@
+version: 2
+models:
+- name: property_data_product
+  config:
+    meta:
+      data_contract: property-data-product
+      owner: property_onboarding
+    materialized: table
+    contract:
+      enforced: True
+  description: This table contains all active mortgages and their financed properties.
+  columns:
+  - name: property_id
+    data_tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 0
+    data_type: NUMBER
+    description: Unique identifier for the property
+    constraints:
+    - type: not_null
+    - type: unique
+    meta:
+      pii: false
+  - name: mortgage_id
+    data_tests:
+    - dbt_expectations.expect_column_values_to_be_between:
+        min_value: 0
+    data_type: NUMBER
+    description: Unique identifier for the mortgage agreement
+    constraints:
+    - type: not_null
+    meta:
+      pii: false
+  - name: property_type
+    data_type: STRING
+    description: Type of the property like single-family home.
+    meta:
+      pii: false
+  - name: living_area
+    data_type: FLOAT
+    description: Living area of the property
+    meta:
+      pii: false
+  - name: create_date
+    data_type: DATE
+    description: Creation date of the mortgage agreement
+    meta:
+      pii: false
+
