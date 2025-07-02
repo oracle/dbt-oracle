@@ -18,26 +18,34 @@
     {%- set insert_cols_csv = [] -%}
 
     {% for column in insert_cols %}
-      {% do insert_cols_csv.append("s." + column) %}
+      {% do insert_cols_csv.append("DBT_INTERNAL_SOURCE." + column) %}
     {% endfor %}
 
     {%- set dest_cols_csv = [] -%}
 
     {% for column in insert_cols %}
-      {% do dest_cols_csv.append("d." + column) %}
+      {% do dest_cols_csv.append("DBT_INTERNAL_DEST." + column) %}
     {% endfor %}
 
-    merge into {{ target }} d
-    using {{ source }} s
-    on (s.dbt_scd_id = d.dbt_scd_id)
+    {%- set columns = config.get("snapshot_table_column_names") or get_snapshot_table_column_names() -%}
+
+    merge into {{ target }} DBT_INTERNAL_DEST
+    using {{ source }} DBT_INTERNAL_SOURCE
+    on (DBT_INTERNAL_SOURCE.{{ columns.dbt_scd_id }} = DBT_INTERNAL_DEST.{{ columns.dbt_scd_id }})
 
     when matched
         then update
-        set dbt_valid_to = s.dbt_valid_to
-        where d.dbt_valid_to is null
-          and s.dbt_change_type in ('update', 'delete')
+        set {{ columns.dbt_valid_to }} = DBT_INTERNAL_SOURCE.{{ columns.dbt_valid_to }}
+        where
+          {% if config.get("dbt_valid_to_current") %}
+            (DBT_INTERNAL_DEST.{{ columns.dbt_valid_to }} = {{ config.get('dbt_valid_to_current') }} or
+            DBT_INTERNAL_DEST.{{ columns.dbt_valid_to }} is null)
+          {% else %}
+            DBT_INTERNAL_DEST.{{ columns.dbt_valid_to }} is null
+          {% endif %}
+          and DBT_INTERNAL_SOURCE.dbt_change_type in ('update', 'delete')
     when not matched
         then insert ({{ dest_cols_csv | join(', ') }})
         values ({{ insert_cols_csv | join(', ') }})
-        where s.dbt_change_type = 'insert'
+        where DBT_INTERNAL_SOURCE.dbt_change_type = 'insert'
 {% endmacro %}

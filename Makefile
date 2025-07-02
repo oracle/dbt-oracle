@@ -1,10 +1,10 @@
 # Configuration variables
-VERSION=1.8.3
+VERSION=1.9.2
 PROJ_DIR?=$(shell pwd)
 VENV_DIR?=${PROJ_DIR}/.bldenv
 BUILD_DIR=${PROJ_DIR}/build
 DIST_DIR=${PROJ_DIR}/dist
-PYTHON_3=python3.9
+PYTHON_3=python3.12
 
 
 clean_venv:

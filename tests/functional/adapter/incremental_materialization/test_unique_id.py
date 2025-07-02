@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2025, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,6 +57,11 @@ values ('CT','Hartford','Hartford', TO_DATE('2022-02-14', 'YYYY-MM-DD'));
 """
 
 models__expected__unique_key_list__inplace_overwrite_sql = """
+{{
+    config(
+        materialized='table'
+    )
+}}
 SELECT
     'CT' AS state,
     'Hartford' AS county,
@@ -72,9 +77,16 @@ union all
 SELECT 'NY','New York','Manhattan', TO_DATE('2021-04-01',  'YYYY-MM-DD') FROM DUAL
 union all
 SELECT 'PA','Philadelphia','Philadelphia', TO_DATE('2021-05-21', 'YYYY-MM-DD') FROM DUAL
+union all
+select 'CO','Denver',null,TO_DATE('2021-06-18', 'YYYY-MM-DD') FROM DUAL
 """
 
 models__expected__one_str__overwrite_sql  = """
+{{
+    config(
+        materialized='table'
+    )
+}}
 SELECT
     'CT' AS state,
     'Hartford' AS county,
@@ -90,6 +102,8 @@ union all
 SELECT 'NY','New York','Manhattan', TO_DATE('2021-04-01',  'YYYY-MM-DD') FROM DUAL
 union all
 SELECT 'PA','Philadelphia','Philadelphia', TO_DATE('2021-05-21', 'YYYY-MM-DD') FROM DUAL
+union all
+select 'CO','Denver', null, TO_DATE('2021-06-18', 'YYYY-MM-DD') FROM DUAL
 """
 
 

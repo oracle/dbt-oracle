@@ -103,6 +103,50 @@ select * from {{ upstream }}
 """
 
 
+cc_all_snapshot_sql = """
+{% snapshot cc_all_snapshot %}
+    {{ config(
+        check_cols='all', unique_key=['id'], strategy='check',
+        target_database=database, target_schema=schema
+    ) }}
+    select * from {{ ref(var('seed_name', 'base')) }}
+{% endsnapshot %}
+""".strip()
+
+cc_name_snapshot_sql = """
+{% snapshot cc_name_snapshot %}
+    {{ config(
+        check_cols=['name'], unique_key=['id'], strategy='check',
+        target_database=database, target_schema=schema
+    ) }}
+    select * from {{ ref(var('seed_name', 'base')) }}
+{% endsnapshot %}
+""".strip()
+
+cc_date_snapshot_sql = """
+{% snapshot cc_date_snapshot %}
+    {{ config(
+        check_cols=['some_date'], unique_key=['id'], strategy='check',
+        target_database=database, target_schema=schema
+    ) }}
+    select * from {{ ref(var('seed_name', 'base')) }}
+{% endsnapshot %}
+""".strip()
+
+ts_snapshot_sql = """
+{% snapshot ts_snapshot %}
+    {{ config(
+        strategy='timestamp',
+        unique_key=['id'],
+        updated_at='some_date',
+        target_database=database,
+        target_schema=schema,
+    )}}
+    select * from {{ ref(var('seed_name', 'base')) }}
+{% endsnapshot %}
+""".strip()
+
+
 class TestSimpleMaterializationsOracle(BaseSimpleMaterializations):
     pass
 
@@ -146,11 +190,23 @@ class TestGenericTestsOracle(BaseGenericTests):
 
 
 class TestSnapshotCheckColsOracle(BaseSnapshotCheckCols):
-    pass
+
+    @pytest.fixture(scope="class")
+    def snapshots(self):
+        return {
+            "cc_all_snapshot.sql": cc_all_snapshot_sql,
+            "cc_date_snapshot.sql": cc_date_snapshot_sql,
+            "cc_name_snapshot.sql": cc_name_snapshot_sql,
+        }
 
 
 class TestSnapshotTimestampOracle(BaseSnapshotTimestamp):
-    pass
+
+    @pytest.fixture(scope="class")
+    def snapshots(self):
+        return {
+            "ts_snapshot.sql": ts_snapshot_sql,
+        }
 
 
 class TestBaseAdapterMethodOracle(BaseAdapterMethod):

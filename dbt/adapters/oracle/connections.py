@@ -1,5 +1,5 @@
 """
-Copyright (c) 2023, Oracle and/or its affiliates.
+Copyright (c) 2025, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -120,6 +120,10 @@ class OracleAdapterCredentials(Credentials):
     # session info is stored in v$session for each dbt run
     session_info: Optional[Dict[str, str]] = field(default_factory=dict)
 
+    # read http proxy from profiles.yml
+    https_proxy: Optional[str] = None
+    https_proxy_port: Optional[int] = None
+
 
     _ALIASES = {
         'dbname': 'database',
@@ -208,11 +212,19 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
         logger.debug(f"Attempting to connect using Oracle method: '{method}' "
                      f"and dsn: '{dsn}'")
 
-        conn_config = {
-            'user': credentials.user,
-            'password': credentials.password,
-            'dsn': dsn
-        }
+        if credentials.password is None:
+            logger.debug("Password not supplied. "
+                         "Using external authentication")
+            conn_config = {
+                'externalauth': True,
+                'dsn': dsn
+            }
+        else:
+            conn_config = {
+                'user': credentials.user,
+                'password': credentials.password,
+                'dsn': dsn
+            }
 
         if oracledb.__name__ == "oracledb":
             conn_config['connection_id_prefix'] = f'dbt-oracle-{dbt_version}-'
@@ -234,6 +246,11 @@ class OracleAdapterConnectionManager(SQLConnectionManager):
                 conn_config['purity'] = oracledb.ATTR_PURITY_SELF
             elif purity == 'default':
                 conn_config['purity'] = oracledb.ATTR_PURITY_DEFAULT
+
+        if credentials.https_proxy and credentials.https_proxy_port:
+            conn_config['https_proxy'] = credentials.https_proxy
+            conn_config['https_proxy_port'] = credentials.https_proxy_port
+
 
         if SQLNET_ORA_CONFIG is not None:
             conn_config.update(SQLNET_ORA_CONFIG)

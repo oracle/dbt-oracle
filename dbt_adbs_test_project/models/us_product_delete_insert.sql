@@ -20,6 +20,7 @@
         incremental_predicates=["DBT_INTERNAL_DEST.calendar_month_desc > TO_CHAR(sysdate, ''yyyy/mm/dd'')"],
         incremental_strategy='delete+insert',
         parallel=4,
+        insert_mode="append",
         partition_config={"clause": "PARTITION BY HASH(PROD_NAME) PARTITIONS 4"},
         table_compression_clause='COLUMN STORE COMPRESS FOR QUERY LOW')
 }}

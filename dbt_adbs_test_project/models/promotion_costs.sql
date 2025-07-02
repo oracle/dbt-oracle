@@ -13,7 +13,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 #}
-{{ config(materialized='table', grants = {'select': ['dbt_test_1']})}}
+{{ config(materialized='table', grants = {'select': ['DBT_TEST_USER_1']})}}
 with all_promo_costs as(
     select * from {{ source('sh_database', 'promotions') }}
 )

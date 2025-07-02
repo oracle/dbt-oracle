@@ -18,7 +18,12 @@
                 strategy='check',
                 unique_key='promo_id',
                 check_cols='all',
-                invalidate_hard_deletes=True
+                hard_deletes='invalidate',
+                snapshot_meta_column_names={
+                    "dbt_valid_from": "promo_valid_from",
+                    "dbt_valid_to": "promo_valid_to",
+                    "dbt_scd_id": "dbt_scd_id"
+                }
             )
     }}
     select * from {{ ref('promotion_costs') }}
