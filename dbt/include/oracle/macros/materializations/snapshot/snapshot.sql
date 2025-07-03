@@ -119,7 +119,9 @@
         on {{ unique_key_join_on(strategy.unique_key, "snapshotted_data", "source_data") }}
         where {{ unique_key_is_null(strategy.unique_key, "snapshotted_data") }}
             or ({{ unique_key_is_not_null(strategy.unique_key, "snapshotted_data") }} and ({{ strategy.row_changed }})
-
+            {%- if strategy.hard_deletes == 'new_record' -%}
+            or ({{ unique_key_is_not_null(strategy.unique_key, "snapshotted_data") }} and snapshotted_data.{{ columns.dbt_is_deleted }} = 'True')
+            {%- endif %}
         )
 
     ),
@@ -140,6 +142,10 @@
         where (
             {{ strategy.row_changed }}
         )
+        {%- if strategy.hard_deletes == 'new_record' -%}
+          or snapshotted_data.{{ columns.dbt_is_deleted }} = 'True'
+         {%- endif %}
+
     )
 
     {%- if strategy.hard_deletes == 'invalidate' or strategy.hard_deletes == 'new_record' -%}
@@ -162,6 +168,20 @@
         left join deletes_source_data source_data
         on {{ unique_key_join_on(strategy.unique_key, "snapshotted_data", "source_data") }}
             where {{ unique_key_is_null(strategy.unique_key, "source_data") }}
+           {%- if strategy.hard_deletes == 'new_record' %}
+               and not (
+                   --avoid updating the record's valid_to if the latest entry is marked as deleted
+                     snapshotted_data.{{ columns.dbt_is_deleted }} = 'True'
+                     and
+                     {% if config.get('dbt_valid_to_current') %}
+                        {% set source_unique_key = columns.dbt_valid_to | trim %}
+                        {% set target_unique_key = config.get('dbt_valid_to_current') | trim %}
+                         ( {{ equals(source_unique_key, target_unique_key) }} or {{ source_unique_key }} is null )
+                     {% else %}
+                        {{ columns.dbt_valid_to }} is null
+                     {% endif %}
+                 )
+          {%- endif %}
     )
     {%- endif %}
 
@@ -191,7 +211,18 @@
         left join deletes_source_data source_data
             on {{ unique_key_join_on(strategy.unique_key, "snapshotted_data", "source_data") }}
         where {{ unique_key_is_null(strategy.unique_key, "source_data") }}
-
+        and not (
+            --avoid inserting a new record if the latest one is marked as deleted
+            snapshotted_data.{{ columns.dbt_is_deleted }} = 'True'
+            and
+            {% if config.get('dbt_valid_to_current') %}
+                {% set source_unique_key = columns.dbt_valid_to | trim %}
+                {% set target_unique_key = config.get('dbt_valid_to_current') | trim %}
+                ( {{ equals(source_unique_key, target_unique_key) }} or {{ source_unique_key }} is null )
+            {% else %}
+                    {{ columns.dbt_valid_to }} is null
+            {% endif %}
+            )
     )
     {%- endif %}
 
