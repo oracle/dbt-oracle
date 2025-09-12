@@ -165,3 +165,12 @@ class OracleRelation(BaseRelation):
             return self.path.get_lowered_part(field) == value.lower()
         else:
             return self.path.get_part(field) == value
+
+    def render_limited(self) -> str:
+        rendered = self.render()
+        if self.limit is None:
+            return rendered
+        elif self.limit == 0:
+            return f"(select * from {rendered} where 1 = 0 and rownum < 1)"
+        else:
+            return f"(select * from {rendered} where rownum <= {self.limit})"
