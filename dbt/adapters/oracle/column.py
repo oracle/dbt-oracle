@@ -40,14 +40,15 @@ class OracleColumn(Column):
     @property
     def data_type(self) -> str:
         if self.is_string():
-            return self.oracle_string_type(self.dtype, self.string_size())
+            return self.oracle_string_type(self.dtype, self.string_size(), self.char_length_unit)
         elif self.is_numeric():
             return self.numeric_type(self.dtype, self.numeric_precision, self.numeric_scale)
         else:
             return self.dtype
 
     @classmethod
-    def oracle_string_type(cls, dtype: str, size: int = None):
+    def oracle_string_type(cls, dtype: str, size: int = None,
+                           char_length_unit: str = None):
         """
             - CHAR(SIZE)
             - VARCHAR2(SIZE)
@@ -56,6 +57,8 @@ class OracleColumn(Column):
         """
         if size is None:
             return dtype
+        elif char_length_unit and char_length_unit.upper() == 'C':
+            return "{}({} CHAR)".format(dtype, size)
         else:
             return "{}({})".format(dtype, size)
 
