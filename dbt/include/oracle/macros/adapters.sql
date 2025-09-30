@@ -235,7 +235,8 @@
           data_type as "type",
           char_length as "character_maximum_length",
           numeric_precision as "numeric_precision",
-          numeric_scale as "numeric_scale"
+          numeric_scale as "numeric_scale",
+	      char_used as "char_length_unit"
       from columns
       where upper(table_name) = upper('{{ relation.identifier }}')
         {% if relation.schema %}

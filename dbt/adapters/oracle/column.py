@@ -15,8 +15,7 @@ Copyright (c) 2020, Vitor Avancini
   limitations under the License.
 """
 from dataclasses import dataclass
-from typing import Dict, ClassVar
-
+from typing import Dict, ClassVar, Optional
 
 from dbt.adapters.base.column import Column
 from dbt.adapters.oracle.keyword_catalog import KEYWORDS
@@ -35,6 +34,8 @@ class OracleColumn(Column):
 
     STRING_DATATYPES = {'char', 'nchar', 'varchar', 'varchar2', 'nvarchar2'}
     NUMBER_DATATYPES = {'number', 'float'}
+
+    char_length_unit: Optional[str] = None
 
     @property
     def data_type(self) -> str:

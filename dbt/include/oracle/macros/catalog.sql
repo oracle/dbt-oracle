@@ -98,8 +98,13 @@
       columns.column_name as "column_name",
       ordinal_position as "column_index",
       case
-        when data_type like '%CHAR%'
-        then data_type || '(' || cast(char_length as varchar(10)) || ')'
+        when data_type like '%CHAR%' then
+            CASE
+                WHEN char_used = 'C' THEN
+                    data_type || '(' || cast(char_length as varchar(10)) || ' CHAR )'
+                ELSE
+                    data_type || '(' || cast(char_length as varchar(10)) || ')'
+            END
         else data_type
       end as "column_type",
       all_col_comments.comments as "column_comment",
