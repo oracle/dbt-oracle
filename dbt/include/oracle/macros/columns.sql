@@ -57,3 +57,11 @@
     {%- set cols_csv = quoted | join(', ') -%}
     {{ return(cols_csv) }}
 {% endmacro %}
+
+{% macro oracle__create_columns(relation, columns) %}
+  {% for column in columns %}
+    {% call statement() %}
+      alter table {{ relation }} add {{ adapter.check_and_quote_identifier(column.name, model.columns) }} {{ column.data_type }}
+    {% endcall %}
+  {% endfor %}
+{% endmacro %}

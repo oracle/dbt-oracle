@@ -7,7 +7,7 @@ dbt_test:
          pass: "{{ env_var('DBT_ORACLE_PASSWORD') }}"
          protocol: "tcps"
          host: "{{ env_var('DBT_ORACLE_HOST') }}"
-         port: 1522
+         port: 1521
          service: "{{ env_var('DBT_ORACLE_SERVICE') }}"
          database: "{{ env_var('DBT_ORACLE_DATABASE') }}"
          schema: "{{ env_var('DBT_ORACLE_SCHEMA') }}"
