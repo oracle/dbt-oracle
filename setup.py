@@ -43,7 +43,7 @@ requirements = [
         "dbt-common>=1.1.0,<2.0",
         "dbt-adapters>=1.2.1,<2.0",
         "dbt-core~=1.10,<1.11",
-        "oracledb==3.3.0"
+        "oracledb==3.4.1"
 ]
 
 test_requirements = [
@@ -61,24 +61,25 @@ project_urls = {
 
 url = 'https://github.com/oracle/dbt-oracle'
 
-VERSION = '1.9.4'
+VERSION = '1.10.0'
 setup(
     author="Oracle",
     python_requires='>=3.9',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
-        'Programming Language :: Python :: 3.12'
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13'
     ],
     description="dbt (data build tool) adapter for Oracle Autonomous Database",
     install_requires=requirements,
-    license="Apache Software License 2.0",
+    license="Apache License 2.0",
+    license_files=["LICENSE.txt"],
     long_description=readme,
     long_description_content_type='text/markdown',
     include_package_data=True,
