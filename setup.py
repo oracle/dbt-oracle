@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2026, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,8 +28,8 @@ except ImportError:
     sys.exit(1)
 
 
-# lockstep with dbt-core which requires Python > 3.8
-if sys.version_info < (3, 9):
+# lockstep with dbt-core which requires Python > 3.9
+if sys.version_info < (3, 10):
     print("Error: dbt-oracle does not support this version of Python.")
     print("Please upgrade to Python 3.9 or higher.")
     sys.exit(1)
@@ -42,12 +42,12 @@ with open('README.md') as readme_file:
 requirements = [
         "dbt-common>=1.1.0,<2.0",
         "dbt-adapters>=1.2.1,<2.0",
-        "dbt-core~=1.10,<1.11",
-        "oracledb==3.4.1"
+        "dbt-core~=1.11,<1.12",
+        "oracledb==3.4.2"
 ]
 
 test_requirements = [
-    "dbt-tests-adapter~=1.10,<1.11",
+    "dbt-tests-adapter~=1.11,<1.12",
     "pytest"
 ]
 
@@ -61,7 +61,7 @@ project_urls = {
 
 url = 'https://github.com/oracle/dbt-oracle'
 
-VERSION = '1.10.0'
+VERSION = '1.11.0'
 setup(
     author="Oracle",
     python_requires='>=3.9',
@@ -70,7 +70,6 @@ setup(
         'Intended Audience :: Developers',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: 3.12',
