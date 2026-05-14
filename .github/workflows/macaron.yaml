@@ -1,0 +1,25 @@
+name: macaron_security_analysis
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out dbt-oracle repository code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Run Macaron GitHub Actions policy
+        uses: oracle/macaron@4ddb55e3c9ef2c77b548be55c557078c4476fd9c # v0.24.0
+        with:
+          repo_path: ./
+          policy_file: check-github-actions
+          policy_purl: "pkg:github.com/oracle/dbt-oracle@.*"
+          reports_retention_days: 90
