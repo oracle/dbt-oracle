@@ -1,5 +1,7 @@
 name: dbt-tests-adapter
-on: push
+on:
+  push:
+  workflow_call:
 
 permissions:
   contents: read

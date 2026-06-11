@@ -60,16 +60,11 @@ pip install --upgrade pip
 pip install -r requirements_dev.txt
 ```
 
-Install core dependencies
-```bash
-pip install -r requirements.txt
-```
-
-Run the following command.
+Install the project in editable mode.
 ```bash
 python3 -m pip install -e .
 ```
-This command installs the project in editable mode, so changes to the source are immediately available without rebuilding the package.
+This command installs the core dependencies from `pyproject.toml`, and changes to the source are immediately available without rebuilding the package.
 
 Once done with development, the project can be removed from the staging area using
 
