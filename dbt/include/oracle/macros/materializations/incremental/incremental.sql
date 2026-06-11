@@ -67,6 +67,7 @@
       {% set strategy_sql_macro_func = adapter.get_incremental_strategy_macro(context, incremental_strategy) %}
       {% set strategy_arg_dict = ({'target_relation': target_relation, 'temp_relation': tmp_relation, 'unique_key': unique_key, 'dest_columns': dest_columns, 'incremental_predicates': incremental_predicates }) %}
       {% set build_sql = strategy_sql_macro_func(strategy_arg_dict) %}
+      {% set build_sql = oracle__wrap_incremental_sql_with_tmp_cleanup(build_sql, tmp_relation) %}
 
   {% endif %}
 

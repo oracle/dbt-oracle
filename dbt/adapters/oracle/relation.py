@@ -18,7 +18,7 @@ from typing import Optional
 
 from dataclasses import dataclass, field
 
-from dbt.adapters.base.relation import BaseRelation
+from dbt.adapters.base.relation import BaseRelation, EventTimeFilter
 from dbt.adapters.contracts.relation import ComponentName
 from dbt.adapters.events.logging import AdapterLogger
 from dbt.adapters.relation_configs import (
@@ -174,3 +174,28 @@ class OracleRelation(BaseRelation):
             return f"(select * from {rendered} where 1 = 0 and rownum < 1)"
         else:
             return f"(select * from {rendered} where rownum <= {self.limit})"
+
+    @staticmethod
+    def _event_time_literal(event_time):
+        timestamp_text = event_time.strftime("%Y-%m-%d %H:%M:%S.%f")
+        return f"TO_TIMESTAMP('{timestamp_text}', 'YYYY-MM-DD HH24:MI:SS.FF')"
+
+    def _render_event_time_filtered(self, event_time_filter: EventTimeFilter) -> str:
+        filters = []
+        if event_time_filter.start:
+            filters.append(
+                f"{event_time_filter.field_name} >= {self._event_time_literal(event_time_filter.start)}"
+            )
+        if event_time_filter.end:
+            filters.append(
+                f"{event_time_filter.field_name} < {self._event_time_literal(event_time_filter.end)}"
+            )
+
+        return f"select * from {self.render()} where {' and '.join(filters)}"
+
+    def render_event_time_filtered(self, rendered: Optional[str] = None) -> str:
+        if self.event_time_filter is None:
+            return rendered or self.render()
+
+        filter = self._render_event_time_filtered(self.event_time_filter)
+        return f"({filter}) dbt_et_filter_subq_{self.identifier}"

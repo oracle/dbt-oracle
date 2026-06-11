@@ -57,7 +57,7 @@ source .db-oracle-env/bin/activate
 Install development requirements
 ```bash
 pip install --upgrade pip
-pip install -r requirements_dev,txt
+pip install -r requirements_dev.txt
 ```
 
 Install core dependencies
@@ -67,20 +67,14 @@ pip install -r requirements.txt
 
 Run the following command.
 ```bash
-python3 setup.py develop
+python3 -m pip install -e .
 ```
-This command allows you to deploy the project’s source for use in one or more “staging areas” where it will be available for importing. This deployment is done in such a way that changes to the project source are immediately available in the staging area(s), without needing to run a build or install step after each change.
-
-It creates a special `.egg-link` file in the deployment directory, that links to the source code.
-And if the deployment directory is Python's site-packages directory, it will also update the
-`easy-install.pth` file to include the source code, thereby making it available on `sys.path` for all programs using the Python installation
-
-For details check - https://setuptools.pypa.io/en/latest/userguide/commands.html#develop
+This command installs the project in editable mode, so changes to the source are immediately available without rebuilding the package.
 
 Once done with development, the project can be removed from the staging area using
 
 ```bash
-python3 setup.py develop --uninstall
+python3 -m pip uninstall dbt-oracle
 ```
 
 ## Testing <a name='testing'></a>
@@ -177,23 +171,18 @@ For each environment, you can also see the test runtime as summary
 
 This section explains how to build dbt-oracle package, generate the distribution archive and upload it to Python Package Index (PyPI).
 
-[pyproject.toml](pyproject.toml) tells build tools like `pip` and `build` what is required to build the project. We use the standard `setuptools`
+[pyproject.toml](pyproject.toml) contains the build-system configuration, project metadata, dependencies, package discovery, and setuptools options. We use the standard `setuptools` build backend.
 
 ```toml
 # pyproject.toml
 [build-system]
-requires = ['setuptools', 'wheel']
+requires = ["setuptools >= 77.0", "wheel"]
 build-backend = "setuptools.build_meta"
 ```
 
 ### Configuring Metadata <a name='configuring-metadata'></a>
 
-- Static metadata
-  - [setup.cfg](setup.cfg) is a configuration file for `setuptools`. It is guaranteed to be the same everytime
-
-- Dynamic metadata
-  - [setup.py](setup.py) is the build script for `setuptools`
-  - It is used to determine any items at install time. All Extension modules need to go into setup.py
+Package metadata is configured in [pyproject.toml](pyproject.toml) using the standard `[project]` table and `tool.setuptools` tables.
 
 ### Generating distribution archives <a name='generating-distribution-archives'></a>
 
@@ -201,10 +190,6 @@ Run the command
 
 ```bash
 python3 -m build
-
-or
-
-python3 setup.py bdist_wheel
 ```
 
 This will generate 2 files in the `dist` folder.

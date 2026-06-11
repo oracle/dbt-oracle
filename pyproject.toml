@@ -1,3 +1,53 @@
 [build-system]
-requires = ['setuptools >= 40.8.0', 'wheel']
+requires = ["setuptools >= 77.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "dbt-oracle"
+version = "1.11.1"
+description = "dbt (data build tool) adapter for Oracle Autonomous Database"
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE.txt"]
+authors = [
+    { name = "Oracle" }
+]
+keywords = ["Oracle", "dbt"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "dbt-common>=1.1.0,<2.0",
+    "dbt-adapters>=1.2.1,<2.0",
+    "dbt-core~=1.11,<1.12",
+    "oracledb==3.4.2",
+]
+
+[project.optional-dependencies]
+test = [
+    "dbt-tests-adapter~=1.11,<1.12",
+    "pytest",
+]
+
+[project.urls]
+Documentation = "https://docs.getdbt.com/reference/warehouse-profiles/oracle-profile"
+Source = "https://github.com/oracle/dbt-oracle"
+"Bug Tracker" = "https://github.com/oracle/dbt-oracle/issues"
+CI = "https://github.com/oracle/dbt-oracle/actions"
+"Release Notes" = "https://github.com/oracle/dbt-oracle/releases"
+
+[tool.setuptools]
+include-package-data = true
+script-files = ["bin/create-pem-from-p12"]
+zip-safe = false
+
+[tool.setuptools.packages.find]
+include = ["dbt", "dbt.*"]
+namespaces = true
