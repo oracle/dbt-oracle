@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dbt-oracle"
-version = "1.11.1"
+version = "1.11.1rc2"
 description = "dbt (data build tool) adapter for Oracle Autonomous Database"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
