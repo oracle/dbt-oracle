@@ -61,6 +61,8 @@
         {% set dest_columns = adapter.get_columns_in_relation(existing_relation) %}
       {% endif %}
 
+      {{ oracle__apply_partition_config_to_existing_relation(target_relation) }}
+
       {#-- Get the incremental_strategy, the macro to use for the strategy, and build the sql --#}
       {% set incremental_strategy = config.get('incremental_strategy') or 'default' %}
       {% set incremental_predicates = config.get('predicates', none) or config.get('incremental_predicates', none) %}
