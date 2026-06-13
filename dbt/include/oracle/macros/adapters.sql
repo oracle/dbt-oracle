@@ -173,6 +173,47 @@
   {%- endif -%}
 
 {%- endmacro %}
+
+{% macro oracle__relation_is_partitioned(relation) -%}
+  {%- if not execute -%}
+    {{ return(false) }}
+  {%- endif -%}
+
+  {% call statement('relation_is_partitioned', fetch_result=True) %}
+    select partitioned
+    from sys.all_tables
+    where upper(table_name) = upper('{{ relation.identifier }}')
+      {% if relation.schema %}
+      and upper(owner) = upper('{{ relation.schema }}')
+      {% endif %}
+  {% endcall %}
+
+  {%- set table = load_result('relation_is_partitioned').table -%}
+  {%- if table is none or table.rows | length == 0 -%}
+    {{ return(false) }}
+  {%- endif -%}
+
+  {{ return(table.rows[0][0] | upper == 'YES') }}
+{%- endmacro %}
+
+{% macro oracle__apply_partition_config_to_existing_relation(relation) -%}
+  {%- set partition_config = config.get('partition_config', {}) -%}
+  {%- set partition_clause = partition_config.get('clause') -%}
+  {%- set apply_to_existing = partition_config.get('apply_to_existing', false) -%}
+  {%- set online = partition_config.get('online', true) -%}
+
+  {%- if partition_clause and apply_to_existing -%}
+    {%- set is_partitioned = oracle__relation_is_partitioned(relation) -%}
+    {%- if not is_partitioned -%}
+      {% call statement('apply_partition_config_to_existing_relation', fetch_result=False) %}
+        alter table {{ relation }}
+        modify {{ partition_clause }}
+        {% if online %} online {% endif %}
+      {% endcall %}
+    {%- endif -%}
+  {%- endif -%}
+{%- endmacro %}
+
 {% macro oracle__create_view_as(relation, sql) -%}
   {%- set sql_header = config.get('sql_header', none) -%}
    {%- set contract_config = config.get('contract') -%}

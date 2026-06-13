@@ -1,5 +1,7 @@
 name: dbt-tests-adapter
-on: push
+on:
+  push:
+  workflow_call:
 
 permissions:
   contents: read
@@ -51,9 +53,7 @@ jobs:
       - name: Install dbt-oracle with core dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest 'dbt-tests-adapter~=1.11,<1.12'
-          pip install -r requirements.txt
-          pip install -e .
+          pip install -e '.[test]'
 
       - name: Check create-pem-from-p12 script is installed in bin
         run: |

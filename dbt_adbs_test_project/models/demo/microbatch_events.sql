@@ -1,6 +1,5 @@
-"""
-Copyright (c) 2026, Oracle and/or its affiliates.
-Copyright (c) 2020, Vitor Avancini
+{#
+ Copyright (c) 2026, Oracle and/or its affiliates.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -13,5 +12,20 @@ Copyright (c) 2020, Vitor Avancini
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
-"""
-version = "1.11.1"
+#}
+{{ config(materialized='table', event_time='event_time') }}
+
+select 1 as event_id,
+       CAST(TRUNC(CURRENT_DATE) - 2 AS TIMESTAMP) as event_time,
+       'created' as event_type
+from dual
+union all
+select 2 as event_id,
+       CAST(TRUNC(CURRENT_DATE) - 1 AS TIMESTAMP) as event_time,
+       'updated' as event_type
+from dual
+union all
+select 3 as event_id,
+       CAST(TRUNC(CURRENT_DATE) AS TIMESTAMP) as event_time,
+       'completed' as event_type
+from dual

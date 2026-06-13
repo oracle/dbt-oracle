@@ -17,7 +17,7 @@ quoting:
 
 seeds:
     dbt_adbs_test_project:
-        quote_columns: false
+        +quote_columns: false
         kafka_message:
           +column_types:
             message: CLOB
@@ -34,11 +34,10 @@ seeds:
 
 snapshots:
     dbt_adbs_test_project:
-        target_schema: "{{ env_var('DBT_ORACLE_USER') }}"
+        +target_schema: "{{ env_var('DBT_ORACLE_USER') }}"
 
 on-run-start:
     - "select 'hook start' from dual"
 
 on-run-end:
     - "select 'hook ended' from dual"
-

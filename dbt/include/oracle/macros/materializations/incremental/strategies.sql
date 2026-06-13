@@ -156,6 +156,66 @@
   {% do return(get_incremental_merge_sql(arg_dict)) %}
 {% endmacro %}
 
+{% macro oracle__wrap_incremental_sql_with_tmp_cleanup(build_sql, tmp_relation) %}
+    {%- set incremental_sql = build_sql | trim -%}
+    BEGIN
+      {{ incremental_sql }}{% if not incremental_sql.endswith(';') %};{% endif %}
+    EXCEPTION
+      WHEN OTHERS THEN
+        BEGIN
+          EXECUTE IMMEDIATE 'TRUNCATE TABLE {{ tmp_relation }}';
+        EXCEPTION
+          WHEN OTHERS THEN
+            NULL;
+        END;
+        BEGIN
+          EXECUTE IMMEDIATE 'DROP TABLE {{ tmp_relation }}';
+        EXCEPTION
+          WHEN OTHERS THEN
+            NULL;
+        END;
+        RAISE;
+    END;
+{% endmacro %}
+
+{% macro oracle__microbatch_timestamp_literal(timestamp_value) %}
+  {% set timestamp_text = timestamp_value.strftime('%Y-%m-%d %H:%M:%S.%f') %}
+  {% do return("TO_TIMESTAMP('" ~ timestamp_text ~ "', 'YYYY-MM-DD HH24:MI:SS.FF')") %}
+{% endmacro %}
+
+{% macro oracle__get_incremental_microbatch_sql(args_dict) %}
+    {%- set parallel = config.get('parallel', none) -%}
+    {%- set insert_mode = config.get('insert_mode', none) -%}
+    {%- set insert_hint = generate_insert_hint(parallel, insert_mode) -%}
+    {%- set dest_columns = args_dict["dest_columns"] -%}
+    {%- set temp_relation = args_dict["temp_relation"] -%}
+    {%- set target_relation = args_dict["target_relation"] -%}
+    {%- set dest_column_names = dest_columns | map(attribute='name') | list -%}
+    {%- set dest_cols_csv = get_quoted_column_csv(model, dest_column_names)  -%}
+    {%- set event_time = adapter.check_and_quote_identifier(model.config.event_time, model.columns) -%}
+    {%- set microbatch_predicates = [] -%}
+
+    {% if model.batch and model.batch.event_time_start -%}
+        {% do microbatch_predicates.append("DBT_INTERNAL_DEST." ~ event_time ~ " >= " ~ oracle__microbatch_timestamp_literal(model.batch.event_time_start)) %}
+    {% endif %}
+    {% if model.batch and model.batch.event_time_end -%}
+        {% do microbatch_predicates.append("DBT_INTERNAL_DEST." ~ event_time ~ " < " ~ oracle__microbatch_timestamp_literal(model.batch.event_time_end)) %}
+    {% endif %}
+
+    BEGIN
+    DELETE FROM {{ target_relation }} DBT_INTERNAL_DEST
+      WHERE {% for predicate in microbatch_predicates -%}
+        {{ "AND " if not loop.first }}{{ predicate }}
+      {%- endfor %};
+    INSERT {{ insert_hint }}
+      INTO {{ target_relation }} ({{ dest_cols_csv }})
+      (
+        SELECT {{ dest_cols_csv }}
+        FROM {{ temp_relation }}
+      );
+    END;
+{% endmacro %}
+
 
 {% macro oracle__get_delete_sql_for_delete_insert_strategy(target, source, unique_key, incremental_predicates) %}
     {%- if unique_key -%}
