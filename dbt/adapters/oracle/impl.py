@@ -212,9 +212,10 @@ class OracleAdapter(SQLAdapter):
         return f"{add_to} + interval '{number}' {interval}"
 
     def get_relation(self, database: str, schema: str, identifier: str) -> Optional[BaseRelation]:
-        if database == 'None':
-            database = self.config.credentials.database
-        return super().get_relation(database, schema, identifier)
+        # In Oracle the database parameter doesn't apply to relation lookups,
+        # it uses SCHEMA.TABLE, not DATABASE.SCHEMA.TABLE
+        # Use None for consistent cache lookups regardless of database parameter in profiles.yml.
+        return super().get_relation(None, schema, identifier)
 
     def _get_one_catalog_by_relations(
             self,
