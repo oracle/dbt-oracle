@@ -49,18 +49,21 @@ SELECT * FROM {{ ref('seed') }}
 class TestQuotedLowerCaseTableName:
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {
             "seed.csv": seed_csv,
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_model_foo.sql": my_model_foo_sql,
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def project_config_update(self):
         return {
             "quoting": {
@@ -93,18 +96,21 @@ class TestQuotedLowerCaseTableName:
 class TestQuotedTitleCaseTableName:
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {
             "seed.csv": seed_csv,
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_model_foo.sql": my_model_foo2_sql,
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def project_config_update(self):
         return {
             "quoting": {
@@ -137,12 +143,14 @@ class TestQuotedTitleCaseTableName:
 class TestUnQuotedLowerCaseTableName:
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {
             "seed.csv": seed_csv,
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_model_foo.sql": my_model_foo_sql,
@@ -171,12 +179,14 @@ class TestUnQuotedLowerCaseTableName:
 class TestUnQuotedTitleCaseTableName:
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {
             "seed.csv": seed_csv,
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_model_foo.sql": my_model_foo2_sql,
@@ -200,5 +210,4 @@ class TestUnQuotedTitleCaseTableName:
         sql = 'SELECT COUNT(*) from FOO'
         result = project.run_sql(sql, fetch="all")
         assert result == [(4,)]
-
 

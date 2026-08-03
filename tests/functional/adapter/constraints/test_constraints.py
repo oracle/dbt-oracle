@@ -80,6 +80,7 @@ class OracleColumnsEqualSetup:
 class TestOracleTableConstraintsColumnsEqual(OracleColumnsEqualSetup, BaseTableConstraintsColumnsEqual):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_model_wrong_order.sql": my_model_wrong_order_sql,
@@ -91,6 +92,7 @@ class TestOracleTableConstraintsColumnsEqual(OracleColumnsEqualSetup, BaseTableC
 class TestOracleViewConstraintsColumnsEqual(OracleColumnsEqualSetup, BaseViewConstraintsColumnsEqual):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_model_wrong_order.sql": my_model_view_wrong_order_sql,
@@ -102,6 +104,7 @@ class TestOracleViewConstraintsColumnsEqual(OracleColumnsEqualSetup, BaseViewCon
 class TestOracleIncrementalConstraintsColumnsEqual(OracleColumnsEqualSetup, BaseIncrementalConstraintsColumnsEqual):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_model_wrong_order.sql": my_model_incremental_wrong_order_sql,
@@ -113,6 +116,7 @@ class TestOracleIncrementalConstraintsColumnsEqual(OracleColumnsEqualSetup, Base
 class TestOracleTableConstraintsDdlEnforcement(BaseConstraintsRuntimeDdlEnforcement):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_model.sql": my_model_wrong_order_sql,
@@ -120,6 +124,7 @@ class TestOracleTableConstraintsDdlEnforcement(BaseConstraintsRuntimeDdlEnforcem
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def expected_sql(self):
         return _expected_sql_oracle
 
@@ -127,6 +132,7 @@ class TestOracleTableConstraintsDdlEnforcement(BaseConstraintsRuntimeDdlEnforcem
 class TestOracleIncrementalConstraintsDdlEnforcement(BaseIncrementalConstraintsRuntimeDdlEnforcement):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_model.sql": my_model_incremental_wrong_order_sql,
@@ -134,6 +140,7 @@ class TestOracleIncrementalConstraintsDdlEnforcement(BaseIncrementalConstraintsR
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def expected_sql(self):
         return _expected_sql_oracle
 
@@ -141,6 +148,7 @@ class TestOracleIncrementalConstraintsDdlEnforcement(BaseIncrementalConstraintsR
 class TestOracleTableConstraintsRollback(BaseConstraintsRollback):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_model.sql": my_model_sql,
@@ -148,10 +156,12 @@ class TestOracleTableConstraintsRollback(BaseConstraintsRollback):
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def null_model_sql(self):
         return my_model_with_nulls_sql
 
     @pytest.fixture(scope="class")
+    @classmethod
     def expected_error_messages(self):
         return ["ORA-01400: cannot insert NULL into"]
 
@@ -159,6 +169,7 @@ class TestOracleTableConstraintsRollback(BaseConstraintsRollback):
 class TestOracleIncrementalConstraintsRollback(BaseIncrementalConstraintsRollback):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_model.sql": my_incremental_model_sql,
@@ -166,10 +177,12 @@ class TestOracleIncrementalConstraintsRollback(BaseIncrementalConstraintsRollbac
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def null_model_sql(self):
         return my_model_incremental_with_nulls_sql
 
     @pytest.fixture(scope="class")
+    @classmethod
     def expected_error_messages(self):
         return ["ORA-01400: cannot insert NULL into"]
 
@@ -177,6 +190,7 @@ class TestOracleIncrementalConstraintsRollback(BaseIncrementalConstraintsRollbac
 class TestOracleModelConstraintsRuntimeEnforcement(BaseModelConstraintsRuntimeEnforcement):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_model.sql": my_model_sql,
@@ -184,6 +198,7 @@ class TestOracleModelConstraintsRuntimeEnforcement(BaseModelConstraintsRuntimeEn
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def expected_sql(self):
         return """
 create table <model_identifier> (

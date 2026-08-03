@@ -141,10 +141,12 @@ union all
 class TestDateAdd(BaseDateAdd):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {"data_dateadd.csv": seeds__data_dateadd_csv}
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_dateadd.yml": models__test_dateadd_yml,
@@ -157,6 +159,7 @@ class TestDateAdd(BaseDateAdd):
 class TestDateTrunc(BaseDateTrunc):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {"data_date_trunc.csv": seeds__data_date_trunc_csv}
 
@@ -168,10 +171,12 @@ class TestLastDay(BaseLastDay):
 class TestDateDiff(BaseDateDiff):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {"data_datediff.csv": seeds__data_datediff_csv}
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_datediff.yml": models__test_datediff_yml,

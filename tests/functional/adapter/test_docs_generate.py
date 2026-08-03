@@ -148,6 +148,7 @@ def base_expected_catalog(
 class TestOracleDocsGenerate(BaseDocsGenerate):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "schema.yml": models__schema_yml,
@@ -157,6 +158,7 @@ class TestOracleDocsGenerate(BaseDocsGenerate):
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def expected_catalog(self, project, profile_user):
         return base_expected_catalog(
             project,
@@ -172,6 +174,7 @@ class TestOracleDocsGenerate(BaseDocsGenerate):
         )
 
     @pytest.fixture(scope="class")
+    @classmethod
     def project_config_update(self, unique_schema):
         alternate_schema = unique_schema
         return {

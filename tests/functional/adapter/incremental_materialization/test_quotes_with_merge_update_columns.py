@@ -57,6 +57,7 @@ SELECT * FROM dual
 class TestIncrementalMergeQuotedColumns:
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {
             "seed.csv": seed_csv,
@@ -64,6 +65,7 @@ class TestIncrementalMergeQuotedColumns:
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_incr_model.sql": my_incr_model_sql,
@@ -136,5 +138,4 @@ class TestIncrementalMergeQuotedColumns:
 
         result = project.run_sql(used_id_5_query, fetch="all")
         assert result == expected_result
-
 

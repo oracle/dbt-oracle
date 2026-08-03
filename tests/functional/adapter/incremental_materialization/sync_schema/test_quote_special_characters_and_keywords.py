@@ -70,6 +70,7 @@ ALTER TABLE {schema}.seed DROP ("birth_ date in yyyy-mm-dd") CASCADE CONSTRAINTS
 class TestSyncSchemaIncrementalMergeQuotedColumns:
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {
             "seed.csv": seed_csv,
@@ -79,6 +80,7 @@ class TestSyncSchemaIncrementalMergeQuotedColumns:
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_incr_model.sql": my_incr_model_sql,
@@ -156,5 +158,4 @@ class TestSyncSchemaIncrementalMergeQuotedColumns:
 
         result = project.run_sql(used_id_5_query, fetch="all")
         assert result == expected_result
-
 

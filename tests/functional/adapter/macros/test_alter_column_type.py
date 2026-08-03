@@ -49,18 +49,21 @@ class TestAlterColumnDataTypeMacro:
     """
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {
             "my_seed.csv": my_seed_csv,
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_model.sql": my_model_sql,
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def macros(self):
         return {"wrap_alter_column_type.sql": alter_column_type_wrapper_macro}
 
@@ -80,5 +83,4 @@ class TestAlterColumnDataTypeMacro:
                             ('NAME', 'CLOB', 0),
                             ('SOME_DATE', 'TIMESTAMP(6)', 0)]
         assert expected_columns == columns
-
 

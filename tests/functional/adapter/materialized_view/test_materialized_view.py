@@ -153,6 +153,7 @@ class OracleMaterializedViewChanges(MaterializedViewChanges):
         set_model_file(project, my_materialized_view, initial_model)
 
     @pytest.fixture(scope="class", autouse=True)
+    @classmethod
     def models(self):
         yield {
             "my_table.sql": MY_TABLE,

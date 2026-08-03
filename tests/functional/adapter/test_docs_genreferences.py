@@ -198,6 +198,7 @@ def expected_references_catalog(
 class TestOracleDocsGenReferences(BaseDocsGenReferences):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "schema.yml": ref_models__schema_yml,
@@ -209,6 +210,7 @@ class TestOracleDocsGenReferences(BaseDocsGenReferences):
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def project_config_update(self, unique_schema):
         alternate_schema = unique_schema
         return {
@@ -224,6 +226,7 @@ class TestOracleDocsGenReferences(BaseDocsGenReferences):
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def expected_catalog(self, project, profile_user):
         return expected_references_catalog(
             project,

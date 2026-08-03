@@ -22,6 +22,7 @@ from dbt.tests.util import run_dbt
 
 class TestSimpleBigSeedBatched(SeedConfigBase):
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         seed_data = ["seed_id"]
         seed_data.extend([str(i) for i in range(20_000)])

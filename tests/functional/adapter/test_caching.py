@@ -69,6 +69,7 @@ class OracleBaseCaching(BaseCachingTest):
 class TestCachingLowerCaseModel(OracleBaseCaching):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "model.sql": model_sql,
@@ -78,6 +79,7 @@ class TestCachingLowerCaseModel(OracleBaseCaching):
 class TestCachingUppercaseModel(OracleBaseCaching):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "MODEL.sql": model_sql,
@@ -87,6 +89,7 @@ class TestCachingUppercaseModel(OracleBaseCaching):
 class TestCachingSelectedSchemaOnly(OracleBaseCaching):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "model.sql": model_sql,

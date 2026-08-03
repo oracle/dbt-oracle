@@ -56,6 +56,7 @@ SELECT * from joined
 
 class BaseGenerateSeries(BaseUtils):
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_generate_series.yml": models__test_generate_series_yml,

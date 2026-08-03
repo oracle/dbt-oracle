@@ -65,6 +65,7 @@ models:
 class TestGenericTestsOracle(BaseGenericTests):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {
             "base.csv": seeds_base_csv,
@@ -72,6 +73,7 @@ class TestGenericTestsOracle(BaseGenericTests):
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "view_model.sql": base_view_sql,

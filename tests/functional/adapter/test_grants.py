@@ -53,6 +53,7 @@ class TestSeedGrantsOracle(BaseSeedGrants):
 class TestModelGrantsOracle(BaseModelGrants):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         updated_schema = self.interpolate_name_overrides(model_schema_yml)
 
@@ -65,6 +66,7 @@ class TestModelGrantsOracle(BaseModelGrants):
 class TestIncrementalGrantsOracle(BaseIncrementalGrants):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         updated_schema = self.interpolate_name_overrides(incremental_model_schema_yml)
         return {
@@ -82,6 +84,7 @@ class TestInvalidGrantsOracle(BaseInvalidGrants):
         return "ORA-00990: missing or invalid privilege"
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_invalid_model.sql": my_invalid_model_sql,
@@ -91,6 +94,7 @@ class TestInvalidGrantsOracle(BaseInvalidGrants):
 class TestSnapshotGrantsOracle(BaseSnapshotGrants):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def snapshots(self):
         return {
             "my_snapshot.sql": my_snapshot_sql,

@@ -51,10 +51,12 @@ models:
 
 class TestIncrementalPartitionConfig:
     @pytest.fixture(scope="class")
+    @classmethod
     def schema(self):
         return "test_incremental_partition_config"
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "incremental_model.sql": incremental_model_sql,

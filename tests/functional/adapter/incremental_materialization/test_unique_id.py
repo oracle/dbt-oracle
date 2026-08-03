@@ -110,6 +110,7 @@ select 'CO','Denver', null, TO_DATE('2021-06-18', 'YYYY-MM-DD') FROM DUAL
 class TestIncrementalUniqueKey(BaseIncrementalUniqueKey):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "trinary_unique_key_list.sql": models__trinary_unique_key_list_sql,
@@ -129,6 +130,7 @@ class TestIncrementalUniqueKey(BaseIncrementalUniqueKey):
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {
             "duplicate_insert.sql": seeds__duplicate_insert_sql,

@@ -115,6 +115,7 @@ select {{ dbt.current_timestamp() }} as current_ts_column from dual
 class TestCastBoolToText(BaseCastBoolToText):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_cast_bool_to_text.yml": models__test_cast_bool_to_text_yml,
@@ -135,6 +136,7 @@ class TestConcat(BaseConcat):
 class TestEscapeSingleQuotesQuote(BaseEscapeSingleQuotesQuote):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_escape_single_quotes.yml": models__test_escape_single_quotes_yml,
@@ -151,6 +153,7 @@ class TestExcept(BaseExcept):
 class TestHash(BaseHash):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {"data_hash.csv": seeds__data_hash_csv}
 
@@ -158,6 +161,7 @@ class TestHash(BaseHash):
 class TestStringLiteral(BaseStringLiteral):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_string_literal.yml": models__test_string_literal_yml,
@@ -178,6 +182,7 @@ class TestStringRight(BaseRight):
 class TestStringReplace(BaseReplace):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_replace.yml": models__test_replace_yml,
@@ -194,8 +199,8 @@ class TestStringLength(BaseLength):
 class TestCurrentTimestampNaiveOracle(BaseCurrentTimestampNaive):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "current_ts.sql": models__current_ts_sql,
         }
-

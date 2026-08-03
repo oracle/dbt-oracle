@@ -52,6 +52,7 @@ class TestOracleShowLimit(BaseShowLimit):
 class TestOracleShowSqlHeader(BaseShowSqlHeader):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "sql_header.sql": models__sql_header,

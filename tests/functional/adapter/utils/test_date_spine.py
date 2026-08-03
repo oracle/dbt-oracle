@@ -51,6 +51,7 @@ left join expected_dates on generated_dates.date_day = expected_dates.expected
 
 class BaseDateSpine(BaseUtils):
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_date_spine.yml": models__test_date_spine_yml,
@@ -62,4 +63,3 @@ class BaseDateSpine(BaseUtils):
 
 class TestDateSpine(BaseDateSpine):
     pass
-
