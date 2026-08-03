@@ -55,7 +55,7 @@ class BaseDateSpine(BaseUtils):
     def models(self):
         return {
             "test_date_spine.yml": models__test_date_spine_yml,
-            "test_date_spine.sql": self.interpolate_macro_namespace(
+            "test_date_spine.sql": self().interpolate_macro_namespace(
                 models__test_date_spine_sql, "date_spine"
             ),
         }

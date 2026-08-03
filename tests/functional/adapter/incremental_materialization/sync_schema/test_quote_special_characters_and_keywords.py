@@ -158,4 +158,3 @@ class TestSyncSchemaIncrementalMergeQuotedColumns:
 
         result = project.run_sql(used_id_5_query, fetch="all")
         assert result == expected_result
-

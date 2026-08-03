@@ -60,7 +60,7 @@ class BaseGenerateSeries(BaseUtils):
     def models(self):
         return {
             "test_generate_series.yml": models__test_generate_series_yml,
-            "test_generate_series.sql": self.interpolate_macro_namespace(
+            "test_generate_series.sql": self().interpolate_macro_namespace(
                 models__test_generate_series_sql, "generate_series"
             ),
         }

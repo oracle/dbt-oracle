@@ -119,7 +119,7 @@ class TestCastBoolToText(BaseCastBoolToText):
     def models(self):
         return {
             "test_cast_bool_to_text.yml": models__test_cast_bool_to_text_yml,
-            "test_cast_bool_to_text.sql": self.interpolate_macro_namespace(
+            "test_cast_bool_to_text.sql": self().interpolate_macro_namespace(
                 models__test_cast_bool_to_text_sql, "cast_bool_to_text"
             ),
         }
@@ -140,7 +140,7 @@ class TestEscapeSingleQuotesQuote(BaseEscapeSingleQuotesQuote):
     def models(self):
         return {
             "test_escape_single_quotes.yml": models__test_escape_single_quotes_yml,
-            "test_escape_single_quotes.sql": self.interpolate_macro_namespace(
+            "test_escape_single_quotes.sql": self().interpolate_macro_namespace(
                 models__test_escape_single_quotes_quote_sql, "escape_single_quotes"
             ),
         }
@@ -165,7 +165,7 @@ class TestStringLiteral(BaseStringLiteral):
     def models(self):
         return {
             "test_string_literal.yml": models__test_string_literal_yml,
-            "test_string_literal.sql": self.interpolate_macro_namespace(
+            "test_string_literal.sql": self().interpolate_macro_namespace(
                 models__test_string_literal_sql, "string_literal"
             ),
         }
@@ -186,7 +186,7 @@ class TestStringReplace(BaseReplace):
     def models(self):
         return {
             "test_replace.yml": models__test_replace_yml,
-            "test_replace.sql": self.interpolate_macro_namespace(
+            "test_replace.sql": self().interpolate_macro_namespace(
                 models__test_replace_sql, "replace"
             ),
         }

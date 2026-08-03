@@ -129,4 +129,3 @@ class TestSnapshotCheckInvalidateHardDeletes:
         snapshot_of_deleted_rows = project.run_sql(f"select * from cc_all_snapshot where id=2", fetch="all")
         assert len(snapshot_of_deleted_rows) == 1
 
-

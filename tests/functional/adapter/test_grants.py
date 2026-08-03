@@ -55,7 +55,7 @@ class TestModelGrantsOracle(BaseModelGrants):
     @pytest.fixture(scope="class")
     @classmethod
     def models(self):
-        updated_schema = self.interpolate_name_overrides(model_schema_yml)
+        updated_schema = self().interpolate_name_overrides(model_schema_yml)
 
         return {
             "my_model.sql": my_model_sql,
@@ -68,7 +68,7 @@ class TestIncrementalGrantsOracle(BaseIncrementalGrants):
     @pytest.fixture(scope="class")
     @classmethod
     def models(self):
-        updated_schema = self.interpolate_name_overrides(incremental_model_schema_yml)
+        updated_schema = self().interpolate_name_overrides(incremental_model_schema_yml)
         return {
             "my_incremental_model.sql": my_incremental_model_sql,
             "schema.yml": updated_schema,
@@ -98,5 +98,5 @@ class TestSnapshotGrantsOracle(BaseSnapshotGrants):
     def snapshots(self):
         return {
             "my_snapshot.sql": my_snapshot_sql,
-            "schema.yml": self.interpolate_name_overrides(snapshot_schema_yml),
+            "schema.yml": self().interpolate_name_overrides(snapshot_schema_yml),
         }

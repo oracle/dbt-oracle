@@ -83,4 +83,3 @@ class TestAlterColumnDataTypeMacro:
                             ('NAME', 'CLOB', 0),
                             ('SOME_DATE', 'TIMESTAMP(6)', 0)]
         assert expected_columns == columns
-

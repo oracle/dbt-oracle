@@ -150,7 +150,7 @@ class TestDateAdd(BaseDateAdd):
     def models(self):
         return {
             "test_dateadd.yml": models__test_dateadd_yml,
-            "test_dateadd.sql": self.interpolate_macro_namespace(
+            "test_dateadd.sql": self().interpolate_macro_namespace(
                 models__test_dateadd_sql, "dateadd"
             ),
         }
@@ -180,7 +180,7 @@ class TestDateDiff(BaseDateDiff):
     def models(self):
         return {
             "test_datediff.yml": models__test_datediff_yml,
-            "test_datediff.sql": self.interpolate_macro_namespace(
+            "test_datediff.sql": self().interpolate_macro_namespace(
                 models__test_datediff_sql, "datediff"
             ),
         }

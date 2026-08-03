@@ -210,4 +210,3 @@ class TestUnQuotedTitleCaseTableName:
         sql = 'SELECT COUNT(*) from FOO'
         result = project.run_sql(sql, fetch="all")
         assert result == [(4,)]
-

@@ -60,7 +60,7 @@ class TestTypeBigIntOracle(BaseTypeBigInt):
     def models(self):
         return {
             "expected.sql": models__bigint_expected_sql,
-            "actual.sql": self.interpolate_macro_namespace(models__bigint_actual_sql, "type_bigint"),
+            "actual.sql": self().interpolate_macro_namespace(models__bigint_actual_sql, "type_bigint"),
         }
 
 
@@ -68,24 +68,24 @@ class TestTypeFloatOracle(BaseTypeFloat):
 
     @pytest.fixture(scope="class")
     @classmethod
-    def models(self):
-        return {"actual.sql": self.interpolate_macro_namespace(models__float_actual_sql, "type_float")}
+    def models(cls):
+        return {"actual.sql": cls().interpolate_macro_namespace(models__float_actual_sql, "type_float")}
 
 
 class TestTypeIntOracle(BaseTypeInt):
 
     @pytest.fixture(scope="class")
     @classmethod
-    def models(self):
-        return {"actual.sql": self.interpolate_macro_namespace(models__int_actual_sql, "type_int")}
+    def models(cls):
+        return {"actual.sql": cls().interpolate_macro_namespace(models__int_actual_sql, "type_int")}
 
 
 class TestTypeNumericOracle(BaseTypeNumeric):
 
     @pytest.fixture(scope="class")
     @classmethod
-    def models(self):
-        return {"actual.sql": self.interpolate_macro_namespace(models__numeric_actual_sql, "type_numeric")}
+    def models(cls):
+        return {"actual.sql": cls().interpolate_macro_namespace(models__numeric_actual_sql, "type_numeric")}
 
 
 class TestTypeBooleanOracle(BaseTypeBoolean):
@@ -98,4 +98,4 @@ class TestTypeBooleanOracle(BaseTypeBoolean):
     @pytest.fixture(scope="class")
     @classmethod
     def models(self):
-        return {"actual.sql": self.interpolate_macro_namespace(models__boolean_actual_sql, "type_boolean")}
+        return {"actual.sql": self().interpolate_macro_namespace(models__boolean_actual_sql, "type_boolean")}
