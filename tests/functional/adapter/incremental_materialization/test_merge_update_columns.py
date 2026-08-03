@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2022, 2026, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -133,7 +133,6 @@ class TestIncrementalMergeUpdateColumns:
 
         result = project.run_sql(used_id_5_query, fetch="all")
         assert result == expected_result
-
 
 
 
