@@ -60,7 +60,8 @@ models:
       - name: gender
         tests:
           - accepted_values:
-              values: ['Male', 'Female']
+              arguments:
+                values: ['Male', 'Female']
   - name: countries
     columns:
       - name: country_id
@@ -73,10 +74,10 @@ models:
       - name: country_id
         tests:
           - relationships:
-              to: ref('countries')
-              field: country_id
+              arguments:
+                to: ref('countries')
+                field: country_id
           - dbt_constraints.foreign_key:
-              pk_table_name: ref('countries')
-              pk_column_name: country_id
-
-
+              arguments:
+                pk_table_name: ref('countries')
+                pk_column_name: country_id
