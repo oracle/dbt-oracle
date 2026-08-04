@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2022, 2026, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,8 +53,9 @@ class TestSeedGrantsOracle(BaseSeedGrants):
 class TestModelGrantsOracle(BaseModelGrants):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
-        updated_schema = self.interpolate_name_overrides(model_schema_yml)
+        updated_schema = self().interpolate_name_overrides(model_schema_yml)
 
         return {
             "my_model.sql": my_model_sql,
@@ -65,8 +66,9 @@ class TestModelGrantsOracle(BaseModelGrants):
 class TestIncrementalGrantsOracle(BaseIncrementalGrants):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
-        updated_schema = self.interpolate_name_overrides(incremental_model_schema_yml)
+        updated_schema = self().interpolate_name_overrides(incremental_model_schema_yml)
         return {
             "my_incremental_model.sql": my_incremental_model_sql,
             "schema.yml": updated_schema,
@@ -82,6 +84,7 @@ class TestInvalidGrantsOracle(BaseInvalidGrants):
         return "ORA-00990: missing or invalid privilege"
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_invalid_model.sql": my_invalid_model_sql,
@@ -91,8 +94,9 @@ class TestInvalidGrantsOracle(BaseInvalidGrants):
 class TestSnapshotGrantsOracle(BaseSnapshotGrants):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def snapshots(self):
         return {
             "my_snapshot.sql": my_snapshot_sql,
-            "schema.yml": self.interpolate_name_overrides(snapshot_schema_yml),
+            "schema.yml": self().interpolate_name_overrides(snapshot_schema_yml),
         }

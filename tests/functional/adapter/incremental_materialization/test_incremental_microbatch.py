@@ -21,6 +21,7 @@ from dbt.tests.adapter.incremental.test_incremental_microbatch import BaseMicrob
 
 class TestMicrobatch(BaseMicrobatch):
     @pytest.fixture(scope="class")
+    @classmethod
     def input_model_sql(self) -> str:
         return """
 {{ config(materialized='table', event_time='event_time') }}
@@ -32,6 +33,7 @@ select 3 as id, TIMESTAMP '2020-01-03 00:00:00' as event_time from dual
 """
 
     @pytest.fixture(scope="class")
+    @classmethod
     def insert_two_rows_sql(self, project) -> str:
         test_schema_relation = project.adapter.Relation.create(
             database=project.database, schema=project.test_schema

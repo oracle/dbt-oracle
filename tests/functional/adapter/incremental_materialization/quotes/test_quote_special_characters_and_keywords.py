@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2022, 2026, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,6 +56,7 @@ SELECT * FROM dual
 class TestIncrementalMergeQuoteWithKeywordsandSpecialChars:
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {
             "seed.csv": seed_csv,
@@ -63,6 +64,7 @@ class TestIncrementalMergeQuoteWithKeywordsandSpecialChars:
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "my_incr_model.sql": my_incr_model_sql,
@@ -136,5 +138,3 @@ class TestIncrementalMergeQuoteWithKeywordsandSpecialChars:
 
         result = project.run_sql(used_id_5_query, fetch="all")
         assert result == expected_result
-
-

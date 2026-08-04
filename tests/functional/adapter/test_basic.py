@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2022, 2026, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +29,7 @@ from dbt.tests.adapter.basic.test_base import BaseSimpleMaterializations
 from dbt.tests.adapter.basic.test_singular_tests import BaseSingularTests
 from dbt.tests.adapter.basic.test_singular_tests_ephemeral import BaseSingularTestsEphemeral
 from dbt.tests.adapter.basic.test_empty import BaseEmpty
+from dbt.tests.adapter.empty.test_empty import BaseTestEmptySeedFlag
 from dbt.tests.adapter.basic.test_ephemeral import BaseEphemeral
 from dbt.tests.adapter.basic.test_incremental import BaseIncremental, BaseIncrementalNotSchemaChange
 from dbt.tests.adapter.basic.test_generic_tests import BaseGenericTests
@@ -154,6 +155,7 @@ class TestSimpleMaterializationsOracle(BaseSimpleMaterializations):
 class TestSingularTestsOracle(BaseSingularTests):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def tests(self):
         return {
             "passing.sql": test_passing_sql,
@@ -164,6 +166,7 @@ class TestSingularTestsOracle(BaseSingularTests):
 class TestSingularTestsEphemeralOracle(BaseSingularTestsEphemeral):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "ephemeral.sql": config_materialized_ephemeral + model_ephemeral,
@@ -174,6 +177,12 @@ class TestSingularTestsEphemeralOracle(BaseSingularTestsEphemeral):
 
 
 class TestEmptyOracle(BaseEmpty):
+    pass
+
+
+class TestEmptySeedFlagOracle(BaseTestEmptySeedFlag):
+    """Verify that ``dbt seed --empty`` creates Oracle seed tables without rows."""
+
     pass
 
 
@@ -192,6 +201,7 @@ class TestGenericTestsOracle(BaseGenericTests):
 class TestSnapshotCheckColsOracle(BaseSnapshotCheckCols):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def snapshots(self):
         return {
             "cc_all_snapshot.sql": cc_all_snapshot_sql,
@@ -203,6 +213,7 @@ class TestSnapshotCheckColsOracle(BaseSnapshotCheckCols):
 class TestSnapshotTimestampOracle(BaseSnapshotTimestamp):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def snapshots(self):
         return {
             "ts_snapshot.sql": ts_snapshot_sql,
@@ -212,6 +223,7 @@ class TestSnapshotTimestampOracle(BaseSnapshotTimestamp):
 class TestBaseAdapterMethodOracle(BaseAdapterMethod):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "upstream.sql": models__upstream_sql,
@@ -223,5 +235,6 @@ class TestBaseAdapterMethodOracle(BaseAdapterMethod):
 class TestIncrementalNotSchemaChangeOracle(BaseIncrementalNotSchemaChange):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {"incremental_not_schema_change.sql": incremental_not_schema_change_sql}

@@ -1,6 +1,8 @@
 name: dbt-tests-adapter
 on:
   push:
+    branches:
+      - "**"
   workflow_call:
 
 permissions:
@@ -13,23 +15,30 @@ jobs:
       fail-fast: true
       matrix:
         os: [ ubuntu-latest ]
-        python-version: ['3.10', '3.11', '3.12', '3.13']
+        python-version: ['3.10', '3.11', '3.12', '3.13', '3.14']
 
     services:
-      oracle_db:
-        image: container-registry.oracle.com/database/free:latest-lite
+      adb:
+        image: ghcr.io/oracle/adb-free:latest-26ai
         env:
-          ORACLE_PWD: ${{ secrets.DBT_ORACLE_PASSWORD }}
-        options: --name oracle_db
+          WORKLOAD_TYPE: ATP
+          START_ORDS: "False"
+          ENABLE_ARCHIVE_LOG: "False"
+          ADMIN_PASSWORD: ${{ secrets.DBT_ORACLE_ADMIN_PASSWORD }}
+          WALLET_PASSWORD: ${{ secrets.DBT_ORACLE_TEST_WALLET_PASSWORD }}
         ports:
           - 1521:1521
+        options: >-
+          --name adb
+          --cap-add SYS_ADMIN
+          --device /dev/fuse
 
     steps:
       - name: Check out dbt-oracle repository code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -38,26 +47,23 @@ jobs:
           chmod +x ${{ github.workspace }}/.github/scripts/install_oracle_instantclient.sh
           ${{ github.workspace }}/.github/scripts/install_oracle_instantclient.sh
 
-      - name: Copy Create User script
-        run: |
-          chmod +x ${{ github.workspace }}/.github/scripts/create_new_user.sh
-          docker cp ${{ github.workspace }}/.github/scripts/create_new_user.sh oracle_db:/home/oracle/create_new_user.sh
-
       - name: Create dbt test users
         run: |
-          docker exec oracle_db /home/oracle/create_new_user.sh dbt_test ${{ secrets.DBT_ORACLE_PASSWORD }}
-          docker exec oracle_db /home/oracle/create_new_user.sh dbt_test_user_1 ${{ secrets.DBT_ORACLE_PASSWORD }}
-          docker exec oracle_db /home/oracle/create_new_user.sh dbt_test_user_2 ${{ secrets.DBT_ORACLE_PASSWORD }}
-          docker exec oracle_db /home/oracle/create_new_user.sh dbt_test_user_3 ${{ secrets.DBT_ORACLE_PASSWORD }}
+          chmod +x ${{ github.workspace }}/.github/scripts/create_new_user.sh
+          docker cp ${{ github.workspace }}/.github/scripts/create_new_user.sh adb:/tmp/create_new_user.sh
+          docker exec adb /tmp/create_new_user.sh dbt_test \
+            '${{ secrets.DBT_ORACLE_ADMIN_PASSWORD }}' '${{ secrets.DBT_ORACLE_PASSWORD }}'
+          docker exec adb /tmp/create_new_user.sh dbt_test_user_1 \
+            '${{ secrets.DBT_ORACLE_ADMIN_PASSWORD }}' '${{ secrets.DBT_ORACLE_PASSWORD }}'
+          docker exec adb /tmp/create_new_user.sh dbt_test_user_2 \
+            '${{ secrets.DBT_ORACLE_ADMIN_PASSWORD }}' '${{ secrets.DBT_ORACLE_PASSWORD }}'
+          docker exec adb /tmp/create_new_user.sh dbt_test_user_3 \
+            '${{ secrets.DBT_ORACLE_ADMIN_PASSWORD }}' '${{ secrets.DBT_ORACLE_PASSWORD }}'
 
       - name: Install dbt-oracle with core dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -e '.[test]'
-
-      - name: Check create-pem-from-p12 script is installed in bin
-        run: |
-          create-pem-from-p12 --help
 
       - name: Run adapter tests - ORA_PYTHON_DRIVER_TYPE => THICK
         run: |
@@ -69,10 +75,10 @@ jobs:
           DBT_ORACLE_PORT: 1521
           DBT_ORACLE_SCHEMA: DBT_TEST
           DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_PASSWORD }}
-          DBT_ORACLE_DATABASE: FREEPDB1
-          DBT_ORACLE_SERVICE: FREEPDB1
+          DBT_ORACLE_DATABASE: MYATP
+          DBT_ORACLE_SERVICE: MYATP
           DBT_ORACLE_PROTOCOL: tcp
-          LD_LIBRARY_PATH: /opt/oracle/instantclient_23_7
+          LD_LIBRARY_PATH: /opt/oracle/instantclient_23_26
           TNS_ADMIN: /opt/tns_admin
           DBT_TEST_USER_1: DBT_TEST_USER_1
           DBT_TEST_USER_2: DBT_TEST_USER_2
@@ -88,8 +94,8 @@ jobs:
           DBT_ORACLE_PORT: 1521
           DBT_ORACLE_SCHEMA: DBT_TEST
           DBT_ORACLE_PASSWORD: ${{ secrets.DBT_ORACLE_PASSWORD }}
-          DBT_ORACLE_DATABASE: FREEPDB1
-          DBT_ORACLE_SERVICE: FREEPDB1
+          DBT_ORACLE_DATABASE: MYATP
+          DBT_ORACLE_SERVICE: MYATP
           DBT_ORACLE_PROTOCOL: tcp
           DISABLE_OOB: on
           TNS_ADMIN: /opt/tns_admin

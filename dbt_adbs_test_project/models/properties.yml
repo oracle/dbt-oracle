@@ -3,3 +3,5 @@ models:
   - name: sales_cost_incremental
     config:
       post-hook: "SELECT COUNT(*) FROM sales_cost_incremental"
+      # dbt Core v1.12: allow unrelated downstream branches to continue after a failure.
+      on_error: continue

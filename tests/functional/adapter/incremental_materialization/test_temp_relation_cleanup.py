@@ -55,10 +55,12 @@ models:
 
 class TestIncrementalTempRelationCleanup:
     @pytest.fixture(scope="class")
+    @classmethod
     def schema(self):
         return "test_temp_relation_cleanup"
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "failing_incremental.sql": failing_incremental_sql,

@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2022, 2026, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,6 +65,7 @@ models:
 class TestGenericTestsOracle(BaseGenericTests):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {
             "base.csv": seeds_base_csv,
@@ -72,6 +73,7 @@ class TestGenericTestsOracle(BaseGenericTests):
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "view_model.sql": base_view_sql,

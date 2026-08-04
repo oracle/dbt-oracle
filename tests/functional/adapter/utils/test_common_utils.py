@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2022, 2026, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -115,10 +115,11 @@ select {{ dbt.current_timestamp() }} as current_ts_column from dual
 class TestCastBoolToText(BaseCastBoolToText):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_cast_bool_to_text.yml": models__test_cast_bool_to_text_yml,
-            "test_cast_bool_to_text.sql": self.interpolate_macro_namespace(
+            "test_cast_bool_to_text.sql": self().interpolate_macro_namespace(
                 models__test_cast_bool_to_text_sql, "cast_bool_to_text"
             ),
         }
@@ -135,10 +136,11 @@ class TestConcat(BaseConcat):
 class TestEscapeSingleQuotesQuote(BaseEscapeSingleQuotesQuote):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_escape_single_quotes.yml": models__test_escape_single_quotes_yml,
-            "test_escape_single_quotes.sql": self.interpolate_macro_namespace(
+            "test_escape_single_quotes.sql": self().interpolate_macro_namespace(
                 models__test_escape_single_quotes_quote_sql, "escape_single_quotes"
             ),
         }
@@ -151,6 +153,7 @@ class TestExcept(BaseExcept):
 class TestHash(BaseHash):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {"data_hash.csv": seeds__data_hash_csv}
 
@@ -158,10 +161,11 @@ class TestHash(BaseHash):
 class TestStringLiteral(BaseStringLiteral):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_string_literal.yml": models__test_string_literal_yml,
-            "test_string_literal.sql": self.interpolate_macro_namespace(
+            "test_string_literal.sql": self().interpolate_macro_namespace(
                 models__test_string_literal_sql, "string_literal"
             ),
         }
@@ -178,10 +182,11 @@ class TestStringRight(BaseRight):
 class TestStringReplace(BaseReplace):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_replace.yml": models__test_replace_yml,
-            "test_replace.sql": self.interpolate_macro_namespace(
+            "test_replace.sql": self().interpolate_macro_namespace(
                 models__test_replace_sql, "replace"
             ),
         }
@@ -194,8 +199,8 @@ class TestStringLength(BaseLength):
 class TestCurrentTimestampNaiveOracle(BaseCurrentTimestampNaive):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "current_ts.sql": models__current_ts_sql,
         }
-

@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2022, 2026, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -141,14 +141,16 @@ union all
 class TestDateAdd(BaseDateAdd):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {"data_dateadd.csv": seeds__data_dateadd_csv}
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_dateadd.yml": models__test_dateadd_yml,
-            "test_dateadd.sql": self.interpolate_macro_namespace(
+            "test_dateadd.sql": self().interpolate_macro_namespace(
                 models__test_dateadd_sql, "dateadd"
             ),
         }
@@ -157,6 +159,7 @@ class TestDateAdd(BaseDateAdd):
 class TestDateTrunc(BaseDateTrunc):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {"data_date_trunc.csv": seeds__data_date_trunc_csv}
 
@@ -168,14 +171,16 @@ class TestLastDay(BaseLastDay):
 class TestDateDiff(BaseDateDiff):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {"data_datediff.csv": seeds__data_datediff_csv}
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_datediff.yml": models__test_datediff_yml,
-            "test_datediff.sql": self.interpolate_macro_namespace(
+            "test_datediff.sql": self().interpolate_macro_namespace(
                 models__test_datediff_sql, "datediff"
             ),
         }

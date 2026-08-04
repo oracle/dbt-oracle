@@ -1,5 +1,5 @@
 """
-Copyright (c) 2022, Oracle and/or its affiliates.
+Copyright (c) 2022, 2026, Oracle and/or its affiliates.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -153,6 +153,7 @@ class OracleMaterializedViewChanges(MaterializedViewChanges):
         set_model_file(project, my_materialized_view, initial_model)
 
     @pytest.fixture(scope="class", autouse=True)
+    @classmethod
     def models(self):
         yield {
             "my_table.sql": MY_TABLE,

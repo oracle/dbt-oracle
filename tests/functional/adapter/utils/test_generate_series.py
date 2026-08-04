@@ -1,5 +1,5 @@
 """
-Copyright (c) 2023, Oracle and/or its affiliates.
+Copyright (c) 2023, 2026, Oracle and/or its affiliates.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -56,10 +56,11 @@ SELECT * from joined
 
 class BaseGenerateSeries(BaseUtils):
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_generate_series.yml": models__test_generate_series_yml,
-            "test_generate_series.sql": self.interpolate_macro_namespace(
+            "test_generate_series.sql": self().interpolate_macro_namespace(
                 models__test_generate_series_sql, "generate_series"
             ),
         }

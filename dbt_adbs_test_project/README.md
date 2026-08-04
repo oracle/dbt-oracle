@@ -21,8 +21,8 @@ dbt --version
 
 ```text
 Core:
-  - installed: 1.3.0
-  - latest:    1.3.0 - Up to date!
+  - installed: 1.12.0
+  - latest:    1.12.0 - Up to date!
 ```
 
 ### Check database connectivity
@@ -32,7 +32,7 @@ dbt debug --profiles-dir ./
 ```
 
 ```text
-dbt version: 1.3.0
+dbt version: 1.12.0
 python version: 3.8.13
 ..
 ..
@@ -65,11 +65,26 @@ After this, you can test various dbt features included in this project
 | Generic Test - Accepted values | `dbt test` | [schema.yml](./models/schema.yml)
 | Generic Test - Relationships | `dbt test` | [schema.yml](./models/schema.yml)
 | Operations |  `dbt run-operation`  | Check [macros](macros)
+| v1.12 ad hoc operation | `dbt run-operation --sql "select 1 from dual"` | Executes an Oracle statement without a macro |
+| v1.12 named selector composition | `dbt ls --select selector:sample_models` | [selectors.yml](selectors.yml) |
+| v1.12 downstream failure behavior | `dbt run -s sales_cost_incremental+` | `on_error: continue` in [properties.yml](models/properties.yml) |
 | Snapshots | `dbt snapshot` | Check [snapshots](snapshots)
 | Analyses | `dbt compile` | [eu_customers.sql](./analysis/eu_customers.sql)
 | Exposures | `dbt run` or `dbt test` | [exposures.yml](./models/exposures.yml)
 | Generate documentation | `dbt docs generate` |
 | Serve project documentation on port 8080 | `dbt docs serve`
+
+## dbt Core v1.12 compatibility
+
+The project uses the v1.12 generic-test `arguments` syntax and validates the
+new `run-operation --sql`, `selector:` selection method, and `on_error` model
+configuration. The opt-in v2 parser is not currently usable with `dbt-oracle`:
+the bundled experimental parser does not yet recognize the Oracle adapter.
+
+`dbt_constraints` 1.0.9 is the latest supported package release, but its
+published macro documentation does not match its macro signatures. With dbt
+1.12's default macro-argument validation enabled, dbt therefore emits warnings
+for that dependency. They are not caused by this project's macros or schema.
 
 
 ## Tests [TODO]

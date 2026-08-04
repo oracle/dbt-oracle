@@ -1,5 +1,5 @@
 """
-Copyright (c) 2023, Oracle and/or its affiliates.
+Copyright (c) 2023, 2026, Oracle and/or its affiliates.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -51,10 +51,11 @@ left join expected_dates on generated_dates.date_day = expected_dates.expected
 
 class BaseDateSpine(BaseUtils):
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "test_date_spine.yml": models__test_date_spine_yml,
-            "test_date_spine.sql": self.interpolate_macro_namespace(
+            "test_date_spine.sql": self().interpolate_macro_namespace(
                 models__test_date_spine_sql, "date_spine"
             ),
         }
@@ -62,4 +63,3 @@ class BaseDateSpine(BaseUtils):
 
 class TestDateSpine(BaseDateSpine):
     pass
-

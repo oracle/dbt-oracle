@@ -1,5 +1,5 @@
 """
-Copyright (c) 2025, Oracle and/or its affiliates.
+Copyright (c) 2025, 2026, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -68,6 +68,7 @@ DELETE FROM {schema}.seed WHERE id = 2
 class TestSnapshotCheckInvalidateHardDeletes:
 
     @pytest.fixture(scope="class")
+    @classmethod
     def seeds(self):
         return {
             "seed.csv": my_seed_csv,
@@ -78,6 +79,7 @@ class TestSnapshotCheckInvalidateHardDeletes:
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def snapshots(self):
         return {
             "cc_all_snapshot.sql": cc_all_snapshot_sql,
@@ -126,6 +128,3 @@ class TestSnapshotCheckInvalidateHardDeletes:
         # Deleted record will be invalidated. r['dbt_valid_to'] is set to current timestamp.
         snapshot_of_deleted_rows = project.run_sql(f"select * from cc_all_snapshot where id=2", fetch="all")
         assert len(snapshot_of_deleted_rows) == 1
-
-
-

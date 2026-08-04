@@ -1,5 +1,5 @@
 """
-Copyright (c) 2023, Oracle and/or its affiliates.
+Copyright (c) 2023, 2026, Oracle and/or its affiliates.
 Copyright (c) 2020, Vitor Avancini
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,12 +45,14 @@ select 3 as id, 'anyway' as msg, 'purple' as color from dual
 class TestIncrementalPredicatesMergeOracle(BaseIncrementalPredicates):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "delete_insert_incremental_predicates.sql": models__delete_insert_incremental_predicates_sql
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def project_config_update(self):
         return {
             "models": {
@@ -65,12 +67,14 @@ class TestIncrementalPredicatesMergeOracle(BaseIncrementalPredicates):
 class TestPredicatesMergeOracle(BaseIncrementalPredicates):
 
     @pytest.fixture(scope="class")
+    @classmethod
     def models(self):
         return {
             "delete_insert_incremental_predicates.sql": models__delete_insert_incremental_predicates_sql
         }
 
     @pytest.fixture(scope="class")
+    @classmethod
     def project_config_update(self):
         return {
             "models": {

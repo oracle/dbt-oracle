@@ -1,0 +1,9 @@
+selectors:
+  - name: sample_models
+    description: Core sample models used for exercising the v1.12 selector method.
+    definition:
+      union:
+        - method: fqn
+          value: dbt_adbs_test_project.people
+        - method: fqn
+          value: dbt_adbs_test_project.eu.countries
